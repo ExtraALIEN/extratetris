@@ -1,4 +1,4 @@
-def build_empty_field_list(width, height):
+def buildEmptyFieldList(width, height):
     return [[0 for j in range(width)] for i in range(height)]
 
 
