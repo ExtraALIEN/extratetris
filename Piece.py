@@ -12,13 +12,13 @@ SHAPES = [
 ]
 
 
-def getShape(number):
+def get_shape(number):
     return SHAPES[number]
 
 
 class Piece:
     def __init__(self):
-        self.shape = getShape(randint(0, 6))
+        self.shape = get_shape(randint(0, 6))
         for i in range(randint(0, 4)):
             self.rotate()
 
