@@ -8,7 +8,7 @@ class ActivePiece(Piece):
         self.y = y
 
 
-    def show(self):
+    def dev_show(self):
         print(self.shape)
         print(self.x)
         print(self.y)
