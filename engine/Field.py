@@ -26,6 +26,6 @@ class Field:
 
     def create_piece(self):
         piece = self.queue.release_next_piece()
-        piece = ActivePiece(piece, field_surface=self.top_points(), x=self.width//2, y=self.height, )
+        piece = ActivePiece(piece, field_surface=self.top_points(), x=self.width//2, y=self.height)
         piece.dev_show()
         return piece

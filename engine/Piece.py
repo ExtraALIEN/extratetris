@@ -18,7 +18,7 @@ def get_shape(number):
 
 class Piece:
     def __init__(self):
-        self.shape = get_shape(randint(0, 6))
+        self.shape = get_shape(randint(0, len(SHAPES)))
         for i in range(randint(0, 4)):
             self.rotate()
 

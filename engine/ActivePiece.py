@@ -17,7 +17,7 @@ class ActivePiece(Piece):
 
     def bottom_point(self, x):
         bottom = 0
-        for y in range(len(self.shape)-1, -1,-1):
+        for y in range(len(self.shape)-1, -1, -1):
             if self.shape[y][x] != 0:
                 return self.y-y
         return self.y
