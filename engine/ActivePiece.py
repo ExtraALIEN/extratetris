@@ -24,10 +24,10 @@ class ActivePiece(Piece):
             return self.y
         return [bottom_point(x) for x in range(len(self.shape[0]))]
 
-    def moveLeft(self):
+    def move_left(self):
         if self.x > 0:
             self.x -= 1
 
-    def moveRight(self):
+    def move_right(self):
         if self.x < self.field.width - len(self.shape[0]):
             self.x += 1
