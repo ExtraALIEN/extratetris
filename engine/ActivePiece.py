@@ -35,7 +35,6 @@ class ActivePiece(Piece):
                         return True
         return False
 
-
     def move_left(self):
         phantom = copy.deepcopy(self)
         phantom.x -= 1
@@ -47,6 +46,16 @@ class ActivePiece(Piece):
         phantom.x += 1
         if not phantom.blocked():
             self.x = phantom.x
+
+    def move_down(self):
+        phantom = copy.deepcopy(self)
+        phantom.y -= 1
+        if not phantom.blocked():
+            self.y = phantom.y
+            self.check_landing()
+
+    def check_landing(self):
+        pass
 
     def rotate(self):
         phantom = copy.deepcopy(self)
