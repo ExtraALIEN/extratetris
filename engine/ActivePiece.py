@@ -1,5 +1,5 @@
 from Piece import Piece
-
+import copy
 
 class ActivePiece(Piece):
     def __init__(self, current_piece, x, y, field, field_surface):
@@ -25,29 +25,41 @@ class ActivePiece(Piece):
             return self.y
         return [bottom_point(x) for x in range(len(self.shape[0]))]
 
+    def blocked(self):
+        for y in range(len(self.shape)):
+            for x in range(len(self.shape[0])):
+                if self.shape[y][x] != 0:
+                    if not 0 <= x + self.x <= self.field.width - 1:
+                        return True
+                    if self.field.surface[y][x] != 0:
+                        return True
+        return False
+
 
     def move_left(self):
-        if self.x > 0:
-            self.x -= 1
+        phantom = copy.deepcopy(self)
+        phantom.x -= 1
+        if not phantom.blocked():
+            self.x = phantom.x
 
     def move_right(self):
-        if self.x < self.field.width - len(self.shape[0]):
-            self.x += 1
+        phantom = copy.deepcopy(self)
+        phantom.x += 1
+        if not phantom.blocked():
+            self.x = phantom.x
 
     def rotate(self):
-        def blocked(self):
-            radius = len(self.shape) // 2
-            if self.x < radius and self.shape[-1][0] > 0:
-                return True
-            elif (self.field.width - 1) - self.x < radius and self.shape[0][-1] > 0:
-                return True
-            return False
-
-        if not blocked(self):
-            if len(self.shape) > len(self.shape[0]):
-                self.y += 1
-            elif len(self.shape) < len(self.shape[0]):
-                self.y -= 1
+        phantom = copy.deepcopy(self)
+        if len(phantom.shape) < len(phantom.shape[0]):    # horizontal
+            phantom.y += 1
+            if phantom.shape[0][0] > 0:
+                phantom.x += 1
+        elif len(phantom.shape) > len(phantom.shape[0]):  # vertical
+            phantom.y -= 1
+            if phantom.shape[-1][0] > 0:
+                phantom.x -= 1
+        super(ActivePiece, phantom).rotate()
+        if not phantom.blocked():
+            self.x = phantom.x
+            self.y = phantom.y
             super(ActivePiece, self).rotate()
-        else:
-            print('blocked', self.x)

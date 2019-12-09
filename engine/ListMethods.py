@@ -12,3 +12,19 @@ def rotate(arr, clockwise):
         else:
             result.insert(0, s)
     return result
+
+
+def vertical_blocks(arr, x):
+    s = 0
+    for el in arr:
+        if el[arr] > 0:
+            s += 1
+    return s
+
+
+def horizontal_blocks(arr, x):
+    s = 0
+    for el in arr[x]:
+        if el > 0:
+            s += 1
+    return s
