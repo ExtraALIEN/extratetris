@@ -2,18 +2,16 @@ from Piece import Piece
 import copy
 
 class ActivePiece(Piece):
-    def __init__(self, current_piece, x, y, field, field_surface):
+    def __init__(self, current_piece, x, y, field):
         self.shape = current_piece.shape
         self.x = x
         self.prev_x = x
         self.y = y
         self.field = field
-        self.field_surface = field_surface
 
 
     def dev_show(self):
         print(self.shape)
-        print(self.field_surface)
         print(self.x)
         print(self.y)
 
