@@ -23,7 +23,7 @@ class ActivePiece(Piece):
                 if self.shape[y][x] != 0:
                     return self.y-y
             return self.y
-        return [bottom_point(x) for x in range(len(self.shape[0]))]
+        return [{x+self.x: bottom_point(x)} for x in range(len(self.shape[0]))]
 
     def blocked(self):
         for y in range(len(self.shape)):
@@ -31,7 +31,9 @@ class ActivePiece(Piece):
                 if self.shape[y][x] != 0:
                     if not 0 <= x + self.x <= self.field.width - 1:
                         return True
-                    if self.field.surface[y][x] != 0:
+                    elif self.field.surface[self.y-y][self.x+x] != 0:
+                        return True
+                    elif self.y - y < 0:
                         return True
         return False
 
@@ -52,10 +54,8 @@ class ActivePiece(Piece):
         phantom.y -= 1
         if not phantom.blocked():
             self.y = phantom.y
-            self.check_landing()
-
-    def check_landing(self):
-        pass
+        else:
+            self.field.land_piece()
 
     def rotate(self):
         phantom = copy.deepcopy(self)
