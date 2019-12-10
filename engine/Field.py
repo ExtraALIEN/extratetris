@@ -25,7 +25,7 @@ class Field:
         piece = self.queue.release_next_piece()
         piece = ActivePiece(piece,
                             field=self,
-                            x=self.width//2,
+                            x=self.width//2 - 1,
                             y=self.height)
         piece.dev_show()
         return piece
