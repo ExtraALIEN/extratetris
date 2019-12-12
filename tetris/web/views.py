@@ -15,3 +15,13 @@ def signup(request):
     else:
         form = SignupForm()
     return render(request, 'web/signup.html', {'form': form})
+
+def login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/')
+    else:
+        form = LoginForm()
+    return render(request, 'web/login.html', {'form': form})

@@ -19,3 +19,8 @@ class SignupForm(forms.Form):
         new_player = Player(**self.cleaned_data)
         new_player.save()
         return new_player
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=20)
+    password = forms.CharField(max_length=20, widget=forms.PasswordInput)
