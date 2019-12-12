@@ -9,7 +9,9 @@ def index(request):
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
-        return HttpResponseRedirect('web/index.html')
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/')
     else:
         form = SignupForm()
-    return render (request, 'web/signup.html', {'form' :form})
+    return render(request, 'web/signup.html', {'form': form})

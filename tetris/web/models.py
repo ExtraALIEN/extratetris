@@ -7,16 +7,16 @@ class Team(models.Model):
 
 
 class Player(models.Model):
-    name = models.CharField(max_length=20)
+    username = models.CharField(max_length=20)
     password = models.TextField(max_length=20)
     email = models.EmailField()
-    is_robot = models.BooleanField()
-    joined = models.DateTimeField()
-    rating = models.FloatField()
-    total_score = models.IntegerField()
-    experience = models.IntegerField()
-    max_speed = models.FloatField()
-    team = models.ForeignKey(Team, on_delete=models.SET_NULL, blank=True)
+    is_robot = models.BooleanField(default=False)
+    joined = models.DateTimeField(auto_now_add=True)
+    rating = models.FloatField(default=1500.0)
+    total_score = models.IntegerField(default=0)
+    experience = models.IntegerField(default=0)
+    max_speed = models.FloatField(default=0)
+    team = models.ForeignKey(Team, on_delete=models.SET_NULL, blank=True, null=True)
     #games =
     #wins =
 
@@ -35,11 +35,11 @@ GAME_TYPES = [
 
 class SingleGameRecord(models.Model):
     type = models.CharField(max_length=2, choices=GAME_TYPES)
-    players = models.ManyToManyField(Player, blank=True)
-    winner = models.ForeignKey(Player, blank=True, on_delete=models.DO_NOTHING)
+    players = models.ManyToManyField(Player, related_name='user_games')
+    winner = models.ForeignKey(Player, on_delete=models.DO_NOTHING, related_name='user_wins')
 
 
 class TeamGameRecord(models.Model):
     type = models.CharField(max_length=2, choices=GAME_TYPES)
-    teams = models.ManyToManyField(Team, blank=True)
-    winner_team = models.ForeignKey(Team, blank=True, on_delete=models.DO_NOTHING)
+    teams = models.ManyToManyField(Team, related_name='team_games')
+    winner_team = models.ForeignKey(Team, on_delete=models.DO_NOTHING, related_name='team_wins')
