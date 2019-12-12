@@ -1,14 +1,15 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from web.forms import SignupForm
 
 def index(request):
-    return HttpResponse("Index")
-
-def login(request):
-    return HttpResponse("Login")
+    return render(request, 'web/index.html', {})
 
 def signup(request):
-    return HttpResponse("Signup")
-
-def lobby(request):
-    return HttpResponse("Lobby")
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        return HttpResponseRedirect('web/index.html')
+    else:
+        form = SignupForm()
+    return render (request, 'web/signup.html', {'form' :form})
