@@ -1,23 +1,26 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from web.forms import SignupForm, LoginForm
+from web.forms import SignupForm, LoginForm, CreateGameForm
 from web.helpers import session_login
 from datetime import timedelta
 from django.utils import timezone
 
 
 def index(request):
-    player = request.user.username
-    return render(request, 'web/index.html', {'player': player})
+    text = 'Войдите или зарегистрируйтесь'
+    if request.user is not None:
+        text = "Добро пожаловать, " + request.user.username
+    return render(request, 'web/index.html', {'text': text})
 
 
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/')
+            player = form.save()
+            redirect = player.login()
+            return redirect
     else:
         form = SignupForm()
     return render(request, 'web/signup.html', {'form': form})
@@ -42,3 +45,21 @@ def login(request):
     else:
         form = LoginForm(auto_id='%s')
     return render(request, 'web/login.html', {'form': form, 'error': error})
+
+
+def logout(request):
+    current_session = request.session
+    if current_session is not None:
+        current_session.delete()
+    return HttpResponseRedirect('/')
+
+
+def create_game(request):
+    if request.method == 'POST':
+        form = CreateGameForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('#')
+    else:
+        form = CreateGameForm()
+    return render(request, 'web/create-game.html', {'form': form})

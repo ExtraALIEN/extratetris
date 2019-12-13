@@ -5,5 +5,10 @@
 {% endblock %}
 
 {% block login %}
-{{player}}
+{{text}} <a href='/logout/'>Выход</a>
+{% endblock %}
+
+{% block lobby %}
+  <a href='/create-game/'>Создать игру</a>
+  <p>Текущие игры</p>
 {% endblock %}

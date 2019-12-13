@@ -29,3 +29,15 @@ class LoginForm(forms.Form):
         player = Player.objects.get(username=self.cleaned_data['username'],
                                     password=self.cleaned_data['password'])
         return player
+
+NUMBER_PLAYERS = [
+    (1,1),
+    (2,2),
+    (4,4)
+]
+
+class CreateGameForm(forms.Form):
+    from web.models import GAME_TYPES
+    players = forms.ChoiceField(choices=NUMBER_PLAYERS)
+    game_type = forms.ChoiceField(choices=GAME_TYPES)
+    team_game = forms.BooleanField(required=False)

@@ -1,4 +1,7 @@
 from django.db import models
+from django.utils import timezone
+from datetime import timedelta
+
 
 class Team(models.Model):
     name = models.CharField(max_length=20)
@@ -20,7 +23,21 @@ class Player(models.Model):
     #games =
     #wins =
 
+    def login(self):
+        from web.helpers import auto_login
+        from django.http import HttpResponseRedirect
+        key = auto_login(self)
+        response = HttpResponseRedirect('/')
+        response.set_cookie('session_key', key,
+                            domain='localhost',
+                            httponly=True,
+                            expires=timezone.now()+timedelta(days=5))
+        return response
 
+    def logout(self, request):
+        key = request.COOKIES.get('session_key')
+        Session.objects.delete(key=key)
+        return HttpResponseRedirect('/')
 
 
 GAME_TYPES = [
@@ -32,6 +49,7 @@ GAME_TYPES = [
     ('AC', 'Accelerate'),
     ('CF', 'Captue the Flag'),
 ]
+
 
 class SingleGameRecord(models.Model):
     type = models.CharField(max_length=2, choices=GAME_TYPES)
