@@ -71,6 +71,9 @@ class TetrisRoom(models.Model):
     def add_player(self, player):
         self.active_players.add(player)
 
+    def remove_player(self, player):
+        self.active_players.remove(player)
+
     def count_players(self):
         current = self.active_players.count()
         return str(current) + '/' + str(self.players)
@@ -84,3 +87,6 @@ class TetrisRoom(models.Model):
 
     def play_url(self):
         return '/room/'+ str(self.pk)+'/play/'
+
+    def exit_url(self):
+        return '/room/'+ str(self.pk)+'/exit/'

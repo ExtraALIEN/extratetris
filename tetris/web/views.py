@@ -87,3 +87,10 @@ def play_room(request, room_number):
     room = TetrisRoom.objects.get(pk=room_number)
     room.add_player(request.user)
     return HttpResponseRedirect(room.get_url())
+
+
+def exit_room(request, room_number):
+    from web.models import TetrisRoom
+    room = TetrisRoom.objects.get(pk=room_number)
+    room.remove_player(request.user)
+    return HttpResponseRedirect(room.get_url())
