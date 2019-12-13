@@ -1,0 +1,14 @@
+{% extends './index.html' %}
+
+{% block login %}
+<form class="login-form" action="/login/" method="post">
+  {% csrf_token %}
+  {% for field in form %}
+    <label for='{{field.id_for_label}}'>{{field.label}}</label>
+    {{field}}
+  {% endfor %}
+  <button type='submit'>Вход</button>
+  {{error}}
+</form>
+<a href="/signup/">Зарегистрироваться</a>
+{% endblock %}

@@ -1,16 +1,9 @@
-{% extends "./base.html" %}
+{% extends "./base_main.html" %}
 
-{% block page_title_text %} Войдите или зарегистрируйтесь {% endblock %}
+{% block page_title_text %}
+ Войдите или зарегистрируйтесь
+{% endblock %}
 
 {% block login %}
-<form class="login-form" action="#" method="post">
-  <label for='username'> Имя пользователя:
-    <input id='username' type="text" name="username" value="">
-  </label>
-  <label for='username'> Пароль:
-    <input id='password' type="password" name="password" value="">
-  </label>
-  <button type='submit'>Вход</button>
-</form>
-<a href="/signup/">Зарегистрироваться</a>
+{{player}}
 {% endblock %}

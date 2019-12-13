@@ -43,3 +43,9 @@ class TeamGameRecord(models.Model):
     type = models.CharField(max_length=2, choices=GAME_TYPES)
     teams = models.ManyToManyField(Team, related_name='team_games')
     winner_team = models.ForeignKey(Team, on_delete=models.DO_NOTHING, related_name='team_wins')
+
+
+class Session(models.Model):
+    key = models.CharField(max_length=255, unique=True)
+    user = models.ForeignKey(Player, blank=True, null=True, on_delete=models.CASCADE)
+    expires = models.DateTimeField()
