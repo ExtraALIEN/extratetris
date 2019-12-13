@@ -1,5 +1,5 @@
 from django import forms
-from web.models import Player
+from web.models import Player, TetrisRoom
 
 
 class SignupForm(forms.Form):
@@ -30,14 +30,26 @@ class LoginForm(forms.Form):
                                     password=self.cleaned_data['password'])
         return player
 
-NUMBER_PLAYERS = [
-    (1,1),
-    (2,2),
-    (4,4)
-]
+
 
 class CreateGameForm(forms.Form):
-    from web.models import GAME_TYPES
+    from web.helpers import GAME_TYPES, NUMBER_PLAYERS
     players = forms.ChoiceField(choices=NUMBER_PLAYERS)
     game_type = forms.ChoiceField(choices=GAME_TYPES)
     team_game = forms.BooleanField(required=False)
+
+
+    def save(self, author):
+        # options = {
+        #     'players' : self.cleaned_data['players'],
+        #     'for_teams' : self.cleaned_data['team_game'],
+        #     'author': Player.objects.get(pk=author.pk),
+        #     'type' : self.cleaned_data['game_type']
+        # }
+        new_room = TetrisRoom()
+        new_room.players = self.cleaned_data['players']
+        new_room.for_teams = self.cleaned_data['team_game']
+        new_room.type = self.cleaned_data['game_type']
+        new_room.author = author
+        new_room.save()
+        return new_room

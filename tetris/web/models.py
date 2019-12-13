@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
+from web.helpers import GAME_TYPES, NUMBER_PLAYERS
 
 
 class Team(models.Model):
@@ -40,17 +41,6 @@ class Player(models.Model):
         return HttpResponseRedirect('/')
 
 
-GAME_TYPES = [
-    ('CL', 'Classic'),
-    ('DM', 'Deathmatch'),
-    ('TA', 'Time Attack'),
-    ('SA', 'Score Attack'),
-    ('DR', 'Drag Racing'),
-    ('AC', 'Accelerate'),
-    ('CF', 'Captue the Flag'),
-]
-
-
 class SingleGameRecord(models.Model):
     type = models.CharField(max_length=2, choices=GAME_TYPES)
     players = models.ManyToManyField(Player, related_name='user_games')
@@ -67,3 +57,15 @@ class Session(models.Model):
     key = models.CharField(max_length=255, unique=True)
     user = models.ForeignKey(Player, blank=True, null=True, on_delete=models.CASCADE)
     expires = models.DateTimeField()
+
+
+class TetrisRoom(models.Model):
+    author = models.OneToOneField(Player, on_delete=models.CASCADE, related_name="current_room")
+    players = models.IntegerField()
+    type = models.CharField(max_length=2, choices=GAME_TYPES)
+    for_teams = models.BooleanField()
+    active_players = models.ManyToManyField(Player, blank=True,null=True)
+    active_teams = models.ManyToManyField(Team,blank=True,null=True)
+
+    def get_url(self):
+        return '/room/'+ str(self.pk)
