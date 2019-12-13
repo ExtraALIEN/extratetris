@@ -37,3 +37,6 @@ class Field:
                     self.surface[self.active_piece.y-y][x+self.active_piece.x] \
                         = self.active_piece.shape[y][x]
         self.active_piece = self.create_piece()
+
+    def updater(self):
+        return self.surface

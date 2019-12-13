@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from web.helpers import GAME_TYPES, NUMBER_PLAYERS
+from engine.Room import Room
 
 
 class Team(models.Model):
@@ -70,6 +71,8 @@ class TetrisRoom(models.Model):
 
     def add_player(self, player):
         self.active_players.add(player)
+        if self.is_full():
+            self.start_game()
 
     def remove_player(self, player):
         self.active_players.remove(player)
@@ -77,6 +80,9 @@ class TetrisRoom(models.Model):
     def count_players(self):
         current = self.active_players.count()
         return str(current) + '/' + str(self.players)
+
+    def is_full(self):
+        return self.active_players.count() == self.players
 
 
     def get_url(self):
@@ -90,3 +96,6 @@ class TetrisRoom(models.Model):
 
     def exit_url(self):
         return '/room/'+ str(self.pk)+'/exit/'
+
+    def start_game(self):
+        game = Room(self.active_players)
