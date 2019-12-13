@@ -10,5 +10,14 @@
 
 {% block lobby %}
   <a href='/create-game/'>Создать игру</a>
-  <p>Текущие игры</p>
+  <h2>Текущие игры</h2>
+  <ul>
+    {% for room in rooms %}
+      <li>
+        Тип игры:<b>{{room.type}}</b>
+        Игроков: {{room.count_players}}
+        <a href={{room.get_url}}>Подойти</a>
+      </li>
+    {% endfor %}
+  </ul>
 {% endblock %}

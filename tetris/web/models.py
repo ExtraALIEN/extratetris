@@ -24,6 +24,7 @@ class Player(models.Model):
     #games =
     #wins =
 
+
     def login(self):
         from web.helpers import auto_login
         from django.http import HttpResponseRedirect
@@ -67,5 +68,19 @@ class TetrisRoom(models.Model):
     active_players = models.ManyToManyField(Player, blank=True,null=True)
     active_teams = models.ManyToManyField(Team,blank=True,null=True)
 
+    def add_player(self, player):
+        self.active_players.add(player)
+
+    def count_players(self):
+        current = self.active_players.count()
+        return str(current) + '/' + str(self.players)
+
+
     def get_url(self):
         return '/room/'+ str(self.pk)
+
+    def delete_url(self):
+        return '/room/'+ str(self.pk)+'/delete/'
+
+    def play_url(self):
+        return '/room/'+ str(self.pk)+'/play/'

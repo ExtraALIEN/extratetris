@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>ExtraTetris</title>
+  </head>
+  <body>
+    <h2>{{room.type}}</h2>
+    <p>Ожидание игроков...{{room.count_players}}</p>
+    <p>Инициатор игры: {{room.author.username}}</p>
+    <a href={{room.play_url}}>Играть</a>
+    <p>Игроки:</p>
+    {%for player in room.active_players.all%}
+    <p>{{player.username}}</p>
+    {% endfor %}
+    <a href={{room.delete_url}}>Отменить игру</a>
+  </body>
+</html>

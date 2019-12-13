@@ -8,10 +8,13 @@ from django.utils import timezone
 
 
 def index(request):
+    from web.models import TetrisRoom
     text = 'Войдите или зарегистрируйтесь'
     if request.user is not None:
         text = "Добро пожаловать, " + request.user.username
-    return render(request, 'web/index.html', {'text': text})
+    rooms = TetrisRoom.objects.all()
+
+    return render(request, 'web/index.html', {'text': text, 'rooms': rooms})
 
 
 def signup(request):
@@ -64,3 +67,23 @@ def create_game(request):
     else:
         form = CreateGameForm(auto_id='%s')
     return render(request, 'web/create-game.html', {'form': form})
+
+
+def enter_room(request, room_number):
+    from web.models import TetrisRoom
+    room = TetrisRoom.objects.get(pk=room_number)
+    return render(request, 'web/room.html', {'room': room})
+
+
+def delete_room(request, room_number):
+    from web.models import TetrisRoom
+    room = TetrisRoom.objects.get(pk=room_number)
+    room.delete()
+    return HttpResponseRedirect('/')
+
+
+def play_room(request, room_number):
+    from web.models import TetrisRoom
+    room = TetrisRoom.objects.get(pk=room_number)
+    room.add_player(request.user)
+    return HttpResponseRedirect(room.get_url())
