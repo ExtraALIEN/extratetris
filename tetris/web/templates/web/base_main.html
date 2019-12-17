@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title> ExtraTetris - {% block page_title_text %}{% endblock %}</title>
+
   </head>
   <body>
     <header>
@@ -13,13 +14,19 @@
       {% endblock %}
     </header>
     <main>
+      {% block create_game %}
+      {% endblock %}
+      {% block enter_game %}
+      {% endblock %}
       {% block lobby %}
       {% endblock %}
-      {% block create_game%}
+      {% block game %}
       {% endblock %}
     </main>
     <footer>
       <p>Made by ExtraAlien</p>
     </footer>
+    {% block scripts %}
+    {% endblock %}
   </body>
 </html>

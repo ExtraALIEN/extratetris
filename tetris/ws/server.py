@@ -2,40 +2,60 @@ import asyncio
 import websockets
 import json
 
-rooms_entered = {}
+rooms_active = {}
 connections = {}
 
 async def tetris_ws(conn, path):
     async for msg in conn:
         data = json.loads(msg)
-        if data['type'] == 'connect':
-            await conn.send(connect(conn, data['room_id']))
+        if data['type'] == 'init-room':
+            await conn.send(init_room(data['room']))
+        elif data['type'] == 'connect':
+            await conn.send(connect(conn, data))
         elif data['type'] == 'disconnect':
             await disconnect(conn)
         elif data['type'] == 'msg':
             await broadcast(conn, data['msg'])
+        else:
+            print(data)
 
 
-def connect(conn, room_id):
-    if room_id not in rooms_entered:
-        rooms_entered[room_id] = set()
-    if not conn in connections:
-        rooms_entered[room_id].add(conn)
-        connections[conn] = room_id
-        return 'entered room # '+ room_id
+def init_room(room):
+    print(room)
+    id = room['id']
+    if id in rooms_active:
+        return 'room exists #'+ id
+    rooms_active[id] = {}
+    for x in range(int(room['players'])):
+        rooms_active[id][str(x)] = None
+    print(rooms_active)
+    return 'Room created #' + id
+
+def connect(conn, data):
+    id = data['room_id']
+    if id not in rooms_active:
+        return 'room does not exist #'
+    pos = data['pos']
+    if conn not in connections:
+        if rooms_active[id][pos] is None:
+            rooms_active[id][pos] = conn
+            connections[conn] = id
+            return 'entered room # ' + id
+        else:
+            return 'another player at position ' + pos + ' at room # ' + id
     else:
-        return 'already connected, room # '+ connections[conn]
+        return 'already connected, room # ' + connections[conn]
 
 
 async def disconnect(conn):
     room_id = connections[conn]
     connections.pop(conn, None)
-    rooms_entered[room_id].remove(conn)
+    rooms_active[room_id].remove(conn)
     await conn.send('disconnected')
 
 async def broadcast(conn, msg):
     if conn in connections:
-        for ws in rooms_entered[connections[conn]]:
+        for ws in rooms_active[connections[conn]]:
             await ws.send(msg)
 
 start_server = websockets.serve(tetris_ws, "localhost", 9000)

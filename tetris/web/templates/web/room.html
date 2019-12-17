@@ -1,14 +1,17 @@
+{% extends "./base_main.html" %}
+
 <!DOCTYPE html>
 <html lang="ru" dir="ltr">
   <head>
     <meta charset="utf-8">
     <title>ExtraTetris</title>
+    <script src='/static/js/room.js'></script>
   </head>
   <body>
     <h2>{{room.type}}</h2>
     <p>Ожидание игроков...{{room.count_players}}</p>
     <p>Инициатор игры: {{room.author.username}}</p>
-    <a href={{room.play_url}}>Играть</a>
+    <a href={{room.play_url}}>Занять место</a>
     <a href={{room.exit_url}}>Выход</a>
     <p>Игроки:</p>
     {%for player in room.active_players.all%}
@@ -17,3 +20,32 @@
     <a href={{room.delete_url}}>Отменить игру</a>
   </body>
 </html>
+
+{% block game %}
+  <h2>Room number:
+    <span data-room-number='{{room.pk}}' id='room-number'>{{room.pk}}</span>
+    Type:
+    <span data-room-type='{{room.type}}' id='room-type'>{{room.type}}</span>
+  </h2>
+  <p data-room-players='{{room.players}}' id='room-players'>>Ожидание игроков...{{room.count_players}}</p>
+  <p>Инициатор игры: {{room.author.username}}</p>
+  {% for pos in positions %}
+    <div id='position{{pos}}'
+         class='tetris-field'
+         data-pos='{{pos}}'
+         style='width:100px; height:100px; background-color: red; display:inline-block'></div>
+  {% endfor %}
+  <a href={{room.play_url}}>Занять место</a>
+  <a href={{room.exit_url}}>Выход</a>
+  <p>Игроки:</p>
+  {%for player in room.active_players.all%}
+  <p>{{player.username}}</p>
+  {% endfor %}
+  <a href={{room.delete_url}}>Отменить игру</a>
+{% endblock %}
+
+{% block scripts %}
+  {%for script in scripts %}
+    <script src='/static/js/{{script}}.js'></script>
+  {% endfor %}
+{% endblock %}

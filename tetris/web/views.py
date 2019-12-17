@@ -72,7 +72,11 @@ def create_game(request):
 def enter_room(request, room_number):
     from web.models import TetrisRoom
     room = TetrisRoom.objects.get(pk=room_number)
-    return render(request, 'web/room.html', {'room': room})
+    positions = [x for x in range(room.players)]
+    scripts = ['enterroom']
+    return render(request, 'web/room.html', {'room': room,
+                                             'positions': positions,
+                                             'scripts': scripts})
 
 
 def delete_room(request, room_number):
