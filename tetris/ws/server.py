@@ -56,7 +56,7 @@ async def connect(conn, data):
     if id not in rooms_active:
         return 'room does not exist #'
     pos = data['pos']
-    if 'player' not in data:
+    if 'player' not in data or data['player'] == None:
         player = detect_player(conn)
         await conn.send(json.dumps({'type': 'player', 'player': player}))
     else:
@@ -66,11 +66,12 @@ async def connect(conn, data):
             rooms_active[id][pos] = conn
             rooms_players[id][pos] = player
             connections[conn] = id
-            return 'player ' + player + 'entered room # ' + id
+            msg = 'player ' + player + 'entered room # ' + id
         else:
-            return 'another player(' + rooms_players[id][pos] + ') at position ' + pos + ' at room # ' + id
+            msg = 'another player(' + rooms_players[id][pos] + ') at position ' + pos + ' at room # ' + id
     else:
-        return 'already connected, room # ' + connections[conn]
+        msg = 'already connected, room # ' + connections[conn]
+    return json.dumps({'type': 'info','msg':msg})
 
 
 async def disconnect(conn):

@@ -7,17 +7,19 @@ function sendInitRoomSignal(){
                               room: {
                                   type: type,
                                   id: number,
-                                  players: players
+                                  players: players,
                               }
                             })
               )
     };
   conn.onmessage = function(event){
-    let ans = JSON.parse(event.data);
-    let type = ans.type;
+    let data = JSON.parse(event.data);
+    let type = data.type;
     if(type === 'player'){
-       player = ans.player;
+       player = data.player;
        console.log(player);
+    }else if (type=== 'info'){
+      console.log(data.msg);
     }
   }
 }
@@ -28,7 +30,7 @@ function sendConnectToRoomSignal(){
   conn.send(JSON.stringify({type: 'connect',
                             room_id: number,
                             pos: pos,
-
+                            player: player
                           }));
 }
 
