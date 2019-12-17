@@ -14,7 +14,7 @@ async def tetris_ws(conn, path):
         if type == 'init':
             await conn.send(init_room(data['room']))
         elif type == 'connect':
-            await conn.send(connect(conn, data))
+            await conn.send(await connect(conn, data))
         elif type == 'disconnect':
             await disconnect(conn)
         elif type == 'msg':
@@ -44,7 +44,6 @@ def init_room(room):
         return resp
     rooms_active[id] = {}
     rooms_players[id] = {}
-
     for x in range(int(room['players'])):
         rooms_active[id][str(x)] = None
         rooms_players[id][str(x)] = None
@@ -52,12 +51,16 @@ def init_room(room):
     resp = json.dumps({'msg': msg})
     return resp
 
-def connect(conn, data):
+async def connect(conn, data):
     id = data['room_id']
     if id not in rooms_active:
         return 'room does not exist #'
     pos = data['pos']
-    player = detect_player(conn)
+    if 'player' not in data:
+        player = detect_player(conn)
+        await conn.send(json.dumps({'type': 'player', 'player': player}))
+    else:
+        player = data['player']
     if conn not in connections:
         if rooms_active[id][pos] is None:
             rooms_active[id][pos] = conn

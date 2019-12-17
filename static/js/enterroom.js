@@ -13,7 +13,12 @@ function sendInitRoomSignal(){
               )
     };
   conn.onmessage = function(event){
-    console.log(event.data);
+    let ans = JSON.parse(event.data);
+    let type = ans.type;
+    if(type === 'player'){
+       player = ans.player;
+       console.log(player);
+    }
   }
 }
 
@@ -29,8 +34,8 @@ function sendConnectToRoomSignal(){
 
 
 let conn = new WebSocket('ws://localhost:9000');
-
 let player;
+
 sendInitRoomSignal();
 fields = document.querySelectorAll('.tetris-field');
 [...fields].forEach(a=> a.addEventListener('click', sendConnectToRoomSignal));
