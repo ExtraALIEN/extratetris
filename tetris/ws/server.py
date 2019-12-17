@@ -3,39 +3,39 @@ import websockets
 import json
 
 rooms_entered = {}
-socket_room = {}
+connections = {}
 
-async def tetris_ws(websocket, path):
-    async for msg in websocket:
+async def tetris_ws(conn, path):
+    async for msg in conn:
         data = json.loads(msg)
         if data['type'] == 'connect':
-            await websocket.send(connect(websocket, data['room_id']))
+            await conn.send(connect(conn, data['room_id']))
         elif data['type'] == 'disconnect':
-            await disconnect(websocket)
+            await disconnect(conn)
         elif data['type'] == 'msg':
-            await broadcast(websocket, data['msg'])
+            await broadcast(conn, data['msg'])
 
 
-def connect(websocket, room_id):
+def connect(conn, room_id):
     if room_id not in rooms_entered:
         rooms_entered[room_id] = set()
-    if not websocket in socket_room:
-        rooms_entered[room_id].add(websocket)
-        socket_room[websocket] = room_id
+    if not conn in connections:
+        rooms_entered[room_id].add(conn)
+        connections[conn] = room_id
         return 'entered room # '+ room_id
     else:
-        return 'already connected, room # '+ socket_room[websocket]
+        return 'already connected, room # '+ connections[conn]
 
 
-async def disconnect(websocket):
-    room_id = socket_room[websocket]
-    socket_room.pop(websocket, None)
-    rooms_entered[room_id].remove(websocket)
-    await websocket.send('disconnected')
+async def disconnect(conn):
+    room_id = connections[conn]
+    connections.pop(conn, None)
+    rooms_entered[room_id].remove(conn)
+    await conn.send('disconnected')
 
-async def broadcast(websocket, msg):
-    if websocket in socket_room:
-        for ws in rooms_entered[socket_room[websocket]]:
+async def broadcast(conn, msg):
+    if conn in connections:
+        for ws in rooms_entered[connections[conn]]:
             await ws.send(msg)
 
 start_server = websockets.serve(tetris_ws, "localhost", 9000)
