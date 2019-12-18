@@ -52,6 +52,7 @@ class CreateGameForm(forms.Form):
         new_room.type = self.cleaned_data['game_type']
         new_room.author = author
         new_room.save()
+        new_room.engine_create(new_room.pk, new_room.players)
         new_room.add_player(author)
 
 

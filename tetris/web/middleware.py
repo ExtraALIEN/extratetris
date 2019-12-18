@@ -1,5 +1,6 @@
 from web.models import Session, Player
 from django.utils import timezone
+import engine.rooms
 
 class SessionMiddleware:
     def __init__(self, get_response):

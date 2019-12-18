@@ -6,7 +6,6 @@ from web.helpers import session_login
 from datetime import timedelta
 from django.utils import timezone
 
-
 def index(request):
     from web.models import TetrisRoom
     text = 'Войдите или зарегистрируйтесь'

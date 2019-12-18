@@ -48,7 +48,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'web.middleware.SessionMiddleware'
+    'web.middleware.SessionMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'tetris.urls'

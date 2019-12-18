@@ -69,6 +69,10 @@ class TetrisRoom(models.Model):
     # start_players = models.ManyToManyField(Player, blank=True,null=True)
     active_teams = models.ManyToManyField(Team,blank=True,null=True)
 
+    def engine_create(self, id, size):
+        from ws.roomUtils import create_room
+        create_room(str(id), int(size))
+
     def add_player(self, player):
         self.active_players.add(player)
         if self.is_full():

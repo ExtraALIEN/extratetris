@@ -20,8 +20,22 @@ function sendInitRoomSignal(){
        console.log(`player ${player}`);
     } else if (type === 'info'){
       console.log(data.msg);
+    } else if (type === 'connect'){
+
     }
   };
+
+}
+
+function loadRoom(){
+  // conn.onopen = function(){
+  //   let number = document.getElementById('room-number').dataset.roomNumber;
+  //   conn.send(JSON.stringify({type: 'load-room',
+  //                             room_id: number
+  //                           })
+  //             )
+  //   };
+
 
 }
 
@@ -37,16 +51,31 @@ function sendConnectToRoomSignal(){
 
 
 let conn = new WebSocket('ws://localhost:9000');
+conn.onmessage = function(event){
+  let data = JSON.parse(event.data);
+  let type = data.type;
+  if(type === 'player'){
+     player = data.player;
+     console.log(`player ${player}`);
+  } else if (type === 'info'){
+    console.log(data.msg);
+  } else if (type === 'connect'){
+
+  }
+};
+
 conn.onerror = function(error){
   console.log('websocket error');
   console.log(error);
 };
 
-conn.onclose = function(){
+conn.onclose = function(event){
   console.log('websocket closed');
+  console.log(event);
 };
 let player;
 
-sendInitRoomSignal();
+//sendInitRoomSignal();
+// loadRoom();
 fields = document.querySelectorAll('.tetris-field');
 [...fields].forEach(a=> a.addEventListener('click', sendConnectToRoomSignal));

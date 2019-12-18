@@ -1,15 +1,19 @@
 import asyncio
 import websockets
 import json
-from ws.roomUtils import init_room, connect
+from ws.roomUtils import connect
+# import engine.rooms
 
 
 async def tetris_ws(conn, path):
     async for msg in conn:
         data = json.loads(msg)
+        print(data)
         type = data['type']
         if type == 'init':
             await conn.send(init_room(data['room']))
+        elif type == 'load-room':
+            await conn.send(load_room(data['room_id']))
         elif type == 'connect':
             await conn.send(await connect(conn, data))
         elif type == 'disconnect':
@@ -26,11 +30,9 @@ async def disconnect(conn):
     rooms_active[room_id].remove(conn)
     await conn.send('disconnected')
 
-
-async def broadcast(conn, msg):
-    if conn in connections:
-        for ws in rooms_active[connections[conn]]:
-            await ws.send(msg)
+# engine.rooms.active = {}
+# engine.rooms.players = {}
+# engine.rooms.connections = {}
 
 start_server = websockets.serve(tetris_ws, "localhost", 9000)
 
