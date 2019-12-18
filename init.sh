@@ -4,5 +4,6 @@ sudo service nginx stop
 sudo service nginx start
 killall gunicorn
 cd tetris
-gunicorn -c ../etc/gconf.py tetris.wsgi
+gunicorn -c ../etc/gconf.py tetris.wsgi &
+
 cd ..

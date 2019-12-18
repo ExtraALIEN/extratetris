@@ -1,11 +1,12 @@
 import asyncio
 import websockets
-import json
-from ws.roomUtils import connect
+
 # import engine.rooms
 
 
 async def tetris_ws(conn, path):
+    import json
+    from ws.roomUtils import connect
     async for msg in conn:
         data = json.loads(msg)
         print(data)

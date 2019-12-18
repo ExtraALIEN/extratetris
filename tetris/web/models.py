@@ -60,6 +60,18 @@ class Session(models.Model):
     expires = models.DateTimeField()
 
 
+class BitRoom(models.Model):
+    room_number = models.IntegerField()
+    raw_data = models.BinaryField()
+
+class BitPlayers(models.Model):
+    room_number = models.IntegerField()
+    raw_data = models.BinaryField()
+
+class BitConnection(models.Model):
+    conn = models.BinaryField()
+    room_number = models.IntegerField()
+
 class TetrisRoom(models.Model):
     author = models.OneToOneField(Player, on_delete=models.CASCADE, related_name="current_room")
     players = models.IntegerField()
