@@ -1,6 +1,6 @@
-from ListMethods import buildEmptyFieldList
-from QueuePieces import QueuePieces
-from ActivePiece import ActivePiece
+from engine.ListMethods import buildEmptyFieldList
+from engine.QueuePieces import QueuePieces
+from engine.ActivePiece import ActivePiece
 
 
 class Field:
@@ -12,6 +12,8 @@ class Field:
         self.surface = buildEmptyFieldList(width, height)
         self.queue = QueuePieces()
         self.active_piece = None
+        self.websocket = None
+        self.player = None
 
     def top_points(self):
         def top_point(x):
@@ -37,6 +39,3 @@ class Field:
                     self.surface[self.active_piece.y-y][x+self.active_piece.x] \
                         = self.active_piece.shape[y][x]
         self.active_piece = self.create_piece()
-
-    def updater(self):
-        return self.surface

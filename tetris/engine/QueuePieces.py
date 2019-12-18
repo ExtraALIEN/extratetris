@@ -1,4 +1,4 @@
-from Piece import Piece
+from engine.Piece import Piece
 
 
 class QueuePieces:

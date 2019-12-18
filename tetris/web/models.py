@@ -66,6 +66,7 @@ class TetrisRoom(models.Model):
     type = models.CharField(max_length=2, choices=GAME_TYPES)
     for_teams = models.BooleanField()
     active_players = models.ManyToManyField(Player, blank=True,null=True)
+    # start_players = models.ManyToManyField(Player, blank=True,null=True)
     active_teams = models.ManyToManyField(Team,blank=True,null=True)
 
     def add_player(self, player):

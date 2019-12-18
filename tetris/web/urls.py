@@ -12,5 +12,4 @@ urlpatterns = [
     path('room/<int:room_number>/delete/', views.delete_room),
     path('room/<int:room_number>/play/', views.play_room),
     path('room/<int:room_number>/exit/', views.exit_room),
-    path('detect/', views.detect_user)
 ]

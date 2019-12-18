@@ -1,5 +1,5 @@
 from random import randint
-from ListMethods import rotate as list_rotate
+from engine.ListMethods import rotate as list_rotate
 
 SHAPES = [
     [[1, 1, 1, 1]],

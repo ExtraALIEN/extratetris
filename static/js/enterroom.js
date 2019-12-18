@@ -17,11 +17,12 @@ function sendInitRoomSignal(){
     let type = data.type;
     if(type === 'player'){
        player = data.player;
-       console.log(player);
-    }else if (type=== 'info'){
+       console.log(`player ${player}`);
+    } else if (type === 'info'){
       console.log(data.msg);
     }
-  }
+  };
+
 }
 
 function sendConnectToRoomSignal(){
@@ -36,6 +37,14 @@ function sendConnectToRoomSignal(){
 
 
 let conn = new WebSocket('ws://localhost:9000');
+conn.onerror = function(error){
+  console.log('websocket error');
+  console.log(error);
+};
+
+conn.onclose = function(){
+  console.log('websocket closed');
+};
 let player;
 
 sendInitRoomSignal();

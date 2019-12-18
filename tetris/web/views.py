@@ -7,9 +7,6 @@ from datetime import timedelta
 from django.utils import timezone
 
 
-def detect_user(request):
-    return render(request,'web/detect.html',{'user': request.user.username})
-
 def index(request):
     from web.models import TetrisRoom
     text = 'Войдите или зарегистрируйтесь'
