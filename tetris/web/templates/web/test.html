@@ -11,7 +11,9 @@ socket.onmessage = function(e){
   console.log('message',e);
 };
 socket.onopen = function(e){
+  socket.send(JSON.stringify{type:"fg"});
   console.log('open',e);
+
 };
 socket.onclose = function(e){
   console.log('close',e);

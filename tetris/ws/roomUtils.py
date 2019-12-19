@@ -55,7 +55,7 @@ def init_room(room):
     return resp
 
 
-async def connect(conn, data):
+async def make_connect(conn, data):
     id = data['room_id']
     print(connections, id)
     try:

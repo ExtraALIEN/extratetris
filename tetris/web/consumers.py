@@ -1,24 +1,21 @@
 import asyncio
 import json
-from channels.consumer import AsyncConsumer
-from channels.db import database_sync_to_async
+from channels.generic.websocket import JsonWebsocketConsumer
+from ws.roomUtils import make_connect
 
-class WsConsumer(AsyncConsumer):
-    async def websocket_connect(self, event):
-        print("connected", event)
-        await self.send({
-            'type': 'websocket.accept',
+class Connector(JsonWebsocketConsumer):
+    def connect(self):
+        self.accept()
 
-        })
-        await asyncio.sleep(4)
-        await self.send({
-            'type': 'websocket.send',
-            'text': 'hello'
+    def receive_json(self, data):
+        print(data)
+        type = data['type']
+        if type == 'connect':
+            make_connect(self, data)
+            self.send_json(json.dumps({'type': 2}))
+        else:
+            self.send_json({'type':3})
 
-        })
 
-    async def websocket_receive(self, event):
-        print("receive", event)
-
-    async def websocket_disconnect(self, event):
-        print("disconnected", event)
+    def disconnect(self, close_code):
+        pass
