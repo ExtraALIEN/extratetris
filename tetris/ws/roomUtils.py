@@ -1,8 +1,8 @@
 import json
-import pickle
 from engine.Room import Room
-from web.models import TetrisRoom, BitRoom, BitPlayers, BitConnection
+from web.models import TetrisRoom
 # import engine.rooms
+from ws.dbio import save, load, findConnectionRoom
 
 active = {}
 players = {}
@@ -15,20 +15,16 @@ def create_room(id, size):
     for x in range(size):
         active_players[str(x)] = None
     print(active_room)
-    r = pickle.dumps(active_room)
-    new_r = BitRoom(room_number=id, raw_data=r)
-    new_r.save()
-    p = pickle.dumps(active_players)
-    new_p = BitPlayer(room_number=id, raw_data=p)
-    new_p.save()
+    save(active_room, 'room', id=id)
+    save(active_players, 'players', id=id)
 
 
 
 def detect_player(conn):
-    print(conn.request_headers)
+    # print(conn.request_headers)
     cookies = conn.request_headers['COOKIE'].split('; ')
     for x in cookies:
-        print(x)
+        # print(x)
         if x.startswith('session_key='):
             from web.models import Session
             key = x.replace('session_key=', '')
@@ -61,41 +57,35 @@ def init_room(room):
 
 async def connect(conn, data):
     id = data['room_id']
-    print(active, id)
-    r = None
-    p = None
+    print(connections, id)
     try:
-        r = BitRoom.objects.get(room_number=int(id))
-        p = BitPlayers.objects.get(room_number=int(id))
-        import pickle
-        active_room = pickle.loads(r)
-        active_players = pickle.loads(p)
-        pos = int(data['pos'])
+        active_room = load('room', id=int(id))
+        active_players = load('players', id=int(id))
         if 'player' not in data or data['player'] is None:
             player_name = detect_player(conn)
             await conn.send(json.dumps({'type': 'player', 'player': player_name}))
         else:
             player_name = data['player']
-        c = pickle.dumps(conn)
-        try:
-            connected = BitConnection.objects.get(conn=c)
-            msg = 'already connected, room # ' + str(connected.room_number)
+        if conn in connections:
+            msg = 'already connected, room # ' + str(connections[conn])
             return json.dumps({'type': 'info', 'msg': msg})
-        except Error:
+        else:
+            pos = int(data['pos'])
             if active_room.fields[pos].websocket is None:
                 active_room.fields[pos].websocket = conn
                 active_players[pos] = player_name
-                connected.room_number = int(id)
+                connections[conn] = int(id)
+                save(active_room, 'room', id=int(id))
+                save(active_players, 'players', id=int(id))
                 msg = 'player ' + player_name + 'entered room # ' + id
                 resp = json.dumps({'type': 'connect',
                                    'pos': pos,
                                    'player': player_name
                                    })
-                # make dumps
-                r.save()
-                p.save()
-                c.save()
-                await broadcast(active_room, resp)
+                return await broadcast(active_room, resp)
             else:
                 msg = 'another player(' + active_players[pos] + ') at position ' + str(pos) + ' at room # ' + id
                 return json.dumps({'type': 'info', 'msg': msg})
+    except Error:
+        msg = "Error while connecting, room # " + id
+        return json.dumps({'type': 'info', 'msg': msg})

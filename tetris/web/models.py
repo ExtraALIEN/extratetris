@@ -69,7 +69,7 @@ class BitPlayers(models.Model):
     raw_data = models.BinaryField()
 
 class BitConnection(models.Model):
-    conn = models.BinaryField()
+    raw_data = models.BinaryField()
     room_number = models.IntegerField()
 
 class TetrisRoom(models.Model):
