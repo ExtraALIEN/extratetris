@@ -25,7 +25,7 @@ SECRET_KEY = ')%+5#rlo43xkli9qa-bb&t0k7fqv@j)hh1e%kxd6g!#9sgr^uf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','gunicorn']
+ALLOWED_HOSTS = ['localhost','gunicorn', 'daphne']
 
 
 # Application definition
