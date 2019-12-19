@@ -25,7 +25,7 @@ SECRET_KEY = ')%+5#rlo43xkli9qa-bb&t0k7fqv@j)hh1e%kxd6g!#9sgr^uf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gunicorn']
+ALLOWED_HOSTS = ['localhost','gunicorn']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'web'
 ]
 
@@ -53,7 +54,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'tetris.urls'
-
+ASGI_APPLICATION = "tetris.routing.application"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

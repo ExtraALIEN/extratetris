@@ -97,3 +97,6 @@ def exit_room(request, room_number):
     room = TetrisRoom.objects.get(pk=room_number)
     room.remove_player(request.user)
     return HttpResponseRedirect(room.get_url())
+
+def testpage(request):
+    return render(request, 'web/test.html', {})
