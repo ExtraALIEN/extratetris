@@ -3,9 +3,10 @@
 // websocket scripts
 console.log(window.location);
 let loc = window.location;
-let wsStart = 'ws://';
-let endpoint = wsStart + loc.host + loc.pathname;
-let socket = new WebSocket(endpoint);
+
+
+
+let socket = new WebSocket('ws://localhost/ws/');
 socket.onmessage = function(e){
   console.log('message',e);
 };
@@ -20,3 +21,5 @@ socket.onerror = function(e){
 };
 
 </script>
+// let wsStart = 'ws://';
+// let endpoint = wsStart + loc.host + loc.pathname;

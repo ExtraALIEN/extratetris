@@ -50,7 +50,7 @@ function sendConnectToRoomSignal(){
 }
 
 
-let conn = new WebSocket('ws://localhost:9000');
+let conn = new WebSocket('ws://localhost');
 conn.onmessage = function(event){
   let data = JSON.parse(event.data);
   let type = data.type;
