@@ -1,5 +1,6 @@
 import engine.status as status
 from engine.Room import Room
+from web.models import TetrisRoom, Player
 
 def create_room(id, size):
     new_room = Room(size)
@@ -9,17 +10,24 @@ def create_room(id, size):
     print('new_room', new_room)
     status.active_rooms[id] = new_room
     status.players[id] = room_players
+    print('created engine room # ', str(id))
     print('status', status.active_rooms)
+
+
+def find_next_id():
+    return TetrisRoom.objects.next_id()
 
 
 def make_connect(conn, data):
     id = data['room_id']
-    if id not in status.active_rooms:
+    print(status.active_rooms)
+    print(id, type(id))
+    if int(id) not in status.active_rooms:
         msg = 'No room'
-        return ({'type': 'info', 'msg': msg})
+        return {'type': 'info', 'msg': msg}
     else:
         msg = 'Room exists'
-        return ({'type': 'info', 'msg': msg})
+        return {'type': 'info', 'msg': msg}
 # def make_connect(conn, data):
 #     id = data['room_id']
 #     try:

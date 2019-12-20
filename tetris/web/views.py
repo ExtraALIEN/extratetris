@@ -4,10 +4,12 @@ from django.shortcuts import get_object_or_404, render
 from web.forms import SignupForm, LoginForm, CreateGameForm
 from web.helpers import session_login
 from datetime import timedelta
+import time
 from django.utils import timezone
+from web.models import TetrisRoom
 
 def index(request):
-    from web.models import TetrisRoom
+
     text = 'Войдите или зарегистрируйтесь'
     if request.user is not None:
         text = "Добро пожаловать, " + request.user.username
@@ -63,14 +65,17 @@ def create_game(request):
             new_room = form.save(request.user)
             url = new_room.get_url()
             return HttpResponseRedirect(url)
+
     else:
         form = CreateGameForm(auto_id='%s')
-    return render(request, 'web/create-game.html', {'form': form})
+        scripts = ['createroom']
+    return render(request, 'web/create-game.html', {'form': form,
+                                                    'scripts': scripts})
 
 
 def enter_room(request, room_number):
     from web.models import TetrisRoom
-    room = TetrisRoom.objects.get(pk=room_number)
+    room = TetrisRoom.objects.get(room_id=room_number)
     positions = [x for x in range(room.players)]
     scripts = ['enterroom']
     return render(request, 'web/room.html', {'room': room,
@@ -80,21 +85,21 @@ def enter_room(request, room_number):
 
 def delete_room(request, room_number):
     from web.models import TetrisRoom
-    room = TetrisRoom.objects.get(pk=room_number)
+    room = TetrisRoom.objects.get(room_id=room_number)
     room.delete()
     return HttpResponseRedirect('/')
 
 
 def play_room(request, room_number):
     from web.models import TetrisRoom
-    room = TetrisRoom.objects.get(pk=room_number)
+    room = TetrisRoom.objects.get(room_id=room_number)
     room.add_player(request.user)
     return HttpResponseRedirect(room.get_url())
 
 
 def exit_room(request, room_number):
     from web.models import TetrisRoom
-    room = TetrisRoom.objects.get(pk=room_number)
+    room = TetrisRoom.objects.get(room_id=room_number)
     room.remove_player(request.user)
     return HttpResponseRedirect(room.get_url())
 

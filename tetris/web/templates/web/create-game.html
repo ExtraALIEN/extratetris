@@ -8,6 +8,14 @@
     <label for='{{field.id_for_label}}'>{{field.label}}</label>
     {{field}}
   {% endfor %}
-  <button type='submit'>Создать игру</button>
+  <button id='create' type='submit'>Создать игру</button>
+
   </form>
+    <button id='check'>Проверить</>
+{% endblock %}
+
+{% block scripts %}
+  {%for script in scripts %}
+    <script src='/static/js/{{script}}.js'></script>
+  {% endfor %}
 {% endblock %}

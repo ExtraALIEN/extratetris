@@ -1,6 +1,7 @@
 from django import forms
 from web.models import Player, TetrisRoom
 import json
+from django.db.utils import IntegrityError
 
 
 class SignupForm(forms.Form):
@@ -48,12 +49,17 @@ class CreateGameForm(forms.Form):
         #     'type' : self.cleaned_data['game_type']
         # }
         new_room = TetrisRoom()
-        new_room.players = self.cleaned_data['players']
+        new_room.players = int(self.cleaned_data['players'])
         new_room.type = self.cleaned_data['game_type']
         new_room.author = author
         new_room.players_at_positions = json.dumps([{x: ""} for x in range(new_room.players)])
-        new_room.save()
-        new_room.engine_create(new_room.pk, new_room.players)
+        new_room.room_id = TetrisRoom.objects.next_id()
+        print('before:', TetrisRoom.objects.all())
+        try:
+            new_room.save()
+        except IntegrityError:
+            print('duplicate entry')
+        print('after', TetrisRoom.objects.all())
         # new_room.add_player(author)
 
 

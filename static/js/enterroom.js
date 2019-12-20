@@ -53,6 +53,7 @@ function sendConnectToRoomSignal(){
 let conn = new WebSocket('ws://localhost/ws/connect/');
 conn.onmessage = function(event){
   let data = JSON.parse(event.data);
+  console.log(data);
   let type = data.type;
   if(type === 'player'){
      player = data.player;

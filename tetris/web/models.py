@@ -51,17 +51,23 @@ class Session(models.Model):
     expires = models.DateTimeField()
 
 
+class TetrisRoomManager(models.Manager):
+    def next_id(self):
+        if self.all().count() > 0:
+            return self.all().order_by('-pk')[0].pk + 1
+        else:
+            return 1
+
 class TetrisRoom(models.Model):
+    objects = TetrisRoomManager()
+    room_id = models.IntegerField(default=0)
     author = models.OneToOneField(Player, on_delete=models.CASCADE, related_name="current_room")
     players = models.IntegerField()
     type = models.CharField(max_length=2, choices=GAME_TYPES)
     active_players = models.ManyToManyField(Player)
     players_at_positions = models.TextField(default="")
-    # start_players = models.ManyToManyField(Player, blank=True,null=True)
 
-    def engine_create(self, id, size):
-        from engine.roomUtils import create_room
-        create_room(id, int(size))
+    # start_players = models.ManyToManyField(Player, blank=True,null=True)
 
     def add_player(self, player):
         self.active_players.add(player)
@@ -80,16 +86,16 @@ class TetrisRoom(models.Model):
         return self.active_players.count() == self.players
 
     def get_url(self):
-        return '/room/'+ str(self.pk)
+        return '/room/'+ str(self.room_id)
 
     def delete_url(self):
-        return '/room/'+ str(self.pk)+'/delete/'
+        return '/room/'+ str(self.room_id)+'/delete/'
 
     def play_url(self):
-        return '/room/'+ str(self.pk)+'/play/'
+        return '/room/'+ str(self.room_id)+'/play/'
 
     def exit_url(self):
-        return '/room/'+ str(self.pk)+'/exit/'
+        return '/room/'+ str(self.room_id)+'/exit/'
 
     def start_game(self):
         pass
