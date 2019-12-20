@@ -3,19 +3,17 @@ import json
 from channels.generic.websocket import JsonWebsocketConsumer
 from engine.roomUtils import make_connect, create_room, find_next_id
 
-class Connector(JsonWebsocketConsumer):
+class ConnectRoom(JsonWebsocketConsumer):
     def connect(self):
         self.accept()
 
     def receive_json(self, data):
         print(data)
-        self.send_json(2)
         type = data['type']
         if type == 'connect':
-            print(type)
+            print(data)
             self.send_json(make_connect(self, data))
-        else:
-            self.send_json({'type': 3})
+        
 
 
     def disconnect(self, close_code):

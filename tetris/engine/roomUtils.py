@@ -1,6 +1,6 @@
 import engine.status as status
 from engine.Room import Room
-from web.models import TetrisRoom, Player
+from web.models import TetrisRoom, Player, Session
 
 def create_room(id, size):
     new_room = Room(size)
@@ -18,16 +18,54 @@ def find_next_id():
     return TetrisRoom.objects.next_id()
 
 
+def detect_player(conn):
+    print('detecting player')
+    headers = conn.scope['headers']
+    cppkies = None
+    for x in headers:
+        if x[0].decode('utf-8').lower() == 'cookie':
+            cookies = x[1].decode('utf-8').split('; ')
+            break
+    # cookies = conn.request_headers['COOKIE'].split('; ')
+    print(cookies)
+    for x in cookies:
+        # print(x)
+        if x.startswith('session_key='):
+            key = x.replace('session_key=', '')
+            player = Session.objects.get(key=key).user
+            return player
+    # create new player
+    return 'guest'
+
 def make_connect(conn, data):
     id = data['room_id']
     print(status.active_rooms)
     print(id, type(id))
     if int(id) not in status.active_rooms:
-        msg = 'No room'
+        msg = 'No room # ' + id
         return {'type': 'info', 'msg': msg}
     else:
-        msg = 'Room exists'
-        return {'type': 'info', 'msg': msg}
+        player = detect_player(conn)
+        conn.send_json({'type': 'player', 'player': player.username})
+
+        if conn in status.connections:
+            msg = 'already connected, room # ' + str(status.connections[conn])
+            return {'type': 'info', 'msg': msg}
+
+        pos = int(data['pos'])
+        active_room = status.active_rooms[int(id)]
+        active_players = status.players[int(id)]
+        if active_room.fields[pos].websocket is None:
+            active_room.fields[pos].websocket = conn
+            active_room.fields[pos].player = player
+            active_players[pos] = player.username
+            status.connections[conn] = int(id)
+            msg = 'player ' + player.username + 'entered room # ' + id
+            resp = {'type': 'connect',
+                               'pos': pos,
+                               'player': player.username
+                               }
+            return resp
 # def make_connect(conn, data):
 #     id = data['room_id']
 #     try:
