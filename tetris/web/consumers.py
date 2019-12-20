@@ -1,7 +1,7 @@
 import asyncio
 import json
 from channels.generic.websocket import JsonWebsocketConsumer
-from ws.roomUtils import make_connect
+from engine.roomUtils import make_connect
 
 class Connector(JsonWebsocketConsumer):
     def connect(self):

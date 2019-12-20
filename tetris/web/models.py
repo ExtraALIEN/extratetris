@@ -4,28 +4,24 @@ from datetime import timedelta
 from web.helpers import GAME_TYPES, NUMBER_PLAYERS
 
 
-class Team(models.Model):
-    name = models.CharField(max_length=20)
-    rating = models.FloatField()
-    joined = models.DateTimeField()
-
-
 class Player(models.Model):
-    username = models.CharField(max_length=20)
-    password = models.TextField(max_length=20)
-    email = models.EmailField()
     is_robot = models.BooleanField(default=False)
-    joined = models.DateTimeField(auto_now_add=True)
+    is_guest = models.BooleanField(default=False)
+    login = models.CharField(max_length=20, unique=True)
+    password = models.TextField(max_length=20, blank=True, null=True)
+    username = models.CharField(max_length=20)
+    email = models.EmailField()
+    date_joined = models.DateTimeField(auto_now_add=True)
     rating = models.FloatField(default=1500.0)
     total_score = models.IntegerField(default=0)
     experience = models.IntegerField(default=0)
     max_speed = models.FloatField(default=0)
-    team = models.ForeignKey(Team, on_delete=models.SET_NULL, blank=True, null=True)
+
     #games =
     #wins =
 
 
-    def login(self):
+    def do_login(self):
         from web.helpers import auto_login
         from django.http import HttpResponseRedirect
         key = auto_login(self)
@@ -36,7 +32,7 @@ class Player(models.Model):
                             expires=timezone.now()+timedelta(days=5))
         return response
 
-    def logout(self, request):
+    def do_logout(self, request):
         key = request.COOKIES.get('session_key')
         Session.objects.delete(key=key)
         return HttpResponseRedirect('/')
@@ -48,11 +44,6 @@ class SingleGameRecord(models.Model):
     winner = models.ForeignKey(Player, on_delete=models.DO_NOTHING, related_name='user_wins')
 
 
-class TeamGameRecord(models.Model):
-    type = models.CharField(max_length=2, choices=GAME_TYPES)
-    teams = models.ManyToManyField(Team, related_name='team_games')
-    winner_team = models.ForeignKey(Team, on_delete=models.DO_NOTHING, related_name='team_wins')
-
 
 class Session(models.Model):
     key = models.CharField(max_length=255, unique=True)
@@ -60,26 +51,13 @@ class Session(models.Model):
     expires = models.DateTimeField()
 
 
-class BitRoom(models.Model):
-    room_number = models.IntegerField()
-    raw_data = models.BinaryField()
-
-class BitPlayers(models.Model):
-    room_number = models.IntegerField()
-    raw_data = models.BinaryField()
-
-class BitConnection(models.Model):
-    raw_data = models.BinaryField()
-    room_number = models.IntegerField()
-
 class TetrisRoom(models.Model):
     author = models.OneToOneField(Player, on_delete=models.CASCADE, related_name="current_room")
     players = models.IntegerField()
     type = models.CharField(max_length=2, choices=GAME_TYPES)
-    for_teams = models.BooleanField()
-    active_players = models.ManyToManyField(Player, blank=True,null=True)
+    active_players = models.ManyToManyField(Player)
+    players_at_positions = models.TextField(default="")
     # start_players = models.ManyToManyField(Player, blank=True,null=True)
-    active_teams = models.ManyToManyField(Team,blank=True,null=True)
 
     def engine_create(self, id, size):
         from engine.roomUtils import create_room
@@ -87,6 +65,7 @@ class TetrisRoom(models.Model):
 
     def add_player(self, player):
         self.active_players.add(player)
+
         if self.is_full():
             self.start_game()
 

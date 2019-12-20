@@ -11,6 +11,15 @@ def create_room(id, size):
     status.players[id] = room_players
     print('status', status.active_rooms)
 
+
+def make_connect(conn, data):
+    id = data['room_id']
+    if id not in status.active_rooms:
+        msg = 'No room'
+        return ({'type': 'info', 'msg': msg})
+    else:
+        msg = 'Room exists'
+        return ({'type': 'info', 'msg': msg})
 # def make_connect(conn, data):
 #     id = data['room_id']
 #     try:

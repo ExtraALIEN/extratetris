@@ -21,7 +21,7 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             player = form.save()
-            redirect = player.login()
+            redirect = player.do_login()
             return redirect
     else:
         form = SignupForm()
@@ -31,9 +31,9 @@ def signup(request):
 def login(request):
     error = ""
     if request.method == 'POST':
-        username = request.POST.get('username')
+        login = request.POST.get('login')
         password = request.POST.get('password')
-        key = session_login(username, password)
+        key = session_login(login, password)
         if key:
             response = HttpResponseRedirect('/')
             response.set_cookie('session_key', key,

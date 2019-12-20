@@ -4,10 +4,10 @@ from datetime import timedelta
 from django.utils import timezone
 
 
-def session_login(username, password):
+def session_login(login, password):
     from web.models import Session, Player
     try:
-        user = Player.objects.get(username=username)
+        user = Player.objects.get(login=login)
     except Player.DoesNotExist:
         return None
 
