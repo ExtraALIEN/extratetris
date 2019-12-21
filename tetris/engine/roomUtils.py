@@ -34,7 +34,8 @@ def detect_player(conn):
             player = Session.objects.get(key=key).user
             if player:
                 return player
-    # create new player
+    #guest = Player.objects.create_guest()
+    print(conn['scope']['path'])
     return 'guest'
 
 def make_connect(conn, data):
@@ -83,6 +84,7 @@ def make_connect(conn, data):
 def init_room(conn, data):
     print(conn)
     id = int(data['room_id'])
+    print(id, status.active_rooms)
     room = status.active_rooms[id]
     enter_room(id, conn)
     for x in range(len(room.fields)):
