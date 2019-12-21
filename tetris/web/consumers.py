@@ -1,7 +1,7 @@
 import asyncio
 import json
 from channels.generic.websocket import JsonWebsocketConsumer
-from engine.roomUtils import make_connect, create_room, find_next_id, announce_players, room_disconnect
+from engine.roomUtils import make_connect, create_room, find_next_id, init_room, room_disconnect
 
 class ConnectRoom(JsonWebsocketConsumer):
     def connect(self):
@@ -12,7 +12,7 @@ class ConnectRoom(JsonWebsocketConsumer):
         print(data)
         type = data['type']
         if type == 'init':
-            announce_players(self, data)
+            init_room(self, data)
         elif type == 'connect':
             make_connect(self, data)
         elif type == 'disconnect':

@@ -47,8 +47,8 @@ def make_connect(conn, data):
         player = detect_player(conn)
         conn.send_json({'type': 'player', 'player': player.username})
 
-        if conn in status.connections:
-            msg = 'already connected, room # ' + str(status.connections[conn]['id'])
+        if player in status.players:
+            msg = 'already connected, room # ' + str(status.players[player]['id'])
             conn.send_json({'type': 'info', 'msg': msg})
         else:
             pos = int(data['pos'])
@@ -57,7 +57,7 @@ def make_connect(conn, data):
                 active_room.fields[pos].websocket = conn
                 active_room.fields[pos].player = player
                 status.connections[conn] = {'id': int(id), 'pos': pos}
-
+                status.players[player] = {'id': int(id), 'pos': pos}
                 tetris_room = TetrisRoom.objects.get(room_id=int(id))
                 print(tetris_room)
                 tetris_room.add_player(player, pos)
@@ -80,7 +80,8 @@ def make_connect(conn, data):
                                  'msg' : msg}
             conn.send_json(resp)
 
-def announce_players(conn, data):
+def init_room(conn, data):
+    print(conn)
     id = int(data['room_id'])
     room = status.active_rooms[id]
     enter_room(id, conn)
@@ -108,6 +109,7 @@ def room_disconnect(conn, data):
     player_to_remove = active_room.fields[pos].player
     active_room.fields[pos].player = None
     del status.connections[conn]
+    del status.players[player_to_remove]
     tetris_room = TetrisRoom.objects.get(room_id=int(id))
     tetris_room.remove_player(player_to_remove, pos)
     dis = {'type': 'disconnect-player',
