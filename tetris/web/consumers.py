@@ -21,7 +21,8 @@ class ConnectRoom(JsonWebsocketConsumer):
 
 
     def disconnect(self, close_code):
-        pass
+        room_disconnect(self, False)
+
 
 
 class CreateRoom(JsonWebsocketConsumer):

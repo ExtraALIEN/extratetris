@@ -62,10 +62,12 @@ conn.onmessage = function(event){
     let span = document.querySelector(selector);
     span.innerHTML = "";
     dis = document.querySelector('.connected[id^="disconnect"]');
-    dis.classList.remove('connected');
     let myField = document.querySelector('.tetris-field.connected')
-    if (pos === myField.dataset.pos){
+    console.log(pos, myField);
+    if (myField && +pos === +myField.dataset.pos){
+      console.log('removing');
       myField.classList.remove('connected');
+      dis.classList.remove('connected');
     }
   }
 

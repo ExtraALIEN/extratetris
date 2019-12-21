@@ -14,6 +14,11 @@ def create_room(id, size):
 def find_next_id():
     return TetrisRoom.objects.next_id()
 
+def enter_room(id, conn):
+    status.room_lobby[id].add(conn)
+
+def exit_room(id, conn):
+    status.room_lobby[id].remove(conn)
 
 def detect_player(conn):
     print('detecting player')
@@ -43,41 +48,41 @@ def make_connect(conn, data):
         conn.send_json({'type': 'player', 'player': player.username})
 
         if conn in status.connections:
-            msg = 'already connected, room # ' + str(status.connections[conn])
+            msg = 'already connected, room # ' + str(status.connections[conn]['id'])
             conn.send_json({'type': 'info', 'msg': msg})
-
-        pos = int(data['pos'])
-        active_room = status.active_rooms[int(id)]
-        if active_room.fields[pos].websocket is None:
-            active_room.fields[pos].websocket = conn
-            active_room.fields[pos].player = player
-            status.connections[conn] = int(id)
-
-            tetris_room = TetrisRoom.objects.get(room_id=int(id))
-            tetris_room.add_player(player, pos)
-            msg = 'player ' + player.username + 'entered room # ' + id
-            upd = {'type': 'update-players',
-                               'pos': pos,
-                               'player': player.username,
-                                }
-            broadcast_room(int(id), upd)
-            resp = {'type': 'connected',
-                               'pos': pos,
-                               'player': player.username,
-                               'msg' : msg
-                               }
-
         else:
-            pl = active_room.fields[pos].player.username
-            msg = 'Another player ' + pl + ' at place # ' + str(pos) + ' room ' + id
-            resp = {'type': 'info',
-                             'msg' : msg}
-        conn.send_json(resp)
+            pos = int(data['pos'])
+            active_room = status.active_rooms[int(id)]
+            if active_room.fields[pos].websocket is None:
+                active_room.fields[pos].websocket = conn
+                active_room.fields[pos].player = player
+                status.connections[conn] = {'id': int(id), 'pos': pos}
+
+                tetris_room = TetrisRoom.objects.get(room_id=int(id))
+                tetris_room.add_player(player, pos)
+                msg = 'player ' + player.username + 'entered room # ' + id
+                upd = {'type': 'update-players',
+                                   'pos': pos,
+                                   'player': player.username,
+                                    }
+                broadcast_room(int(id), upd)
+                resp = {'type': 'connected',
+                                   'pos': pos,
+                                   'player': player.username,
+                                   'msg' : msg
+                                   }
+
+            else:
+                pl = active_room.fields[pos].player.username
+                msg = 'Another player ' + pl + ' at place # ' + str(pos) + ' room ' + id
+                resp = {'type': 'info',
+                                 'msg' : msg}
+            conn.send_json(resp)
 
 def announce_players(conn, data):
     id = int(data['room_id'])
     room = status.active_rooms[id]
-    status.room_lobby[id].add(conn)
+    enter_room(id, conn)
     for x in range(len(room.fields)):
         field = room.fields[x]
         if field.player is not None:
@@ -89,9 +94,18 @@ def announce_players(conn, data):
 
 
 def room_disconnect(conn, data):
-    id = int(data['room_id'])
-    pos = data['pos']
+    if data is not False:
+        id = int(data['room_id'])
+        pos = int(data['pos'])
+    else:
+        if conn in status.connections:
+            id = status.connections[conn]['id']
+            pos = status.connections[conn]['pos']
+            exit_room(id, conn)
     active_room = status.active_rooms[id]
+    active_room.fields[pos].websocket = None
+    active_room.fields[pos].player = None
+    del status.connections[conn]
     dis = {'type': 'disconnect-player',
                    'pos': pos}
     broadcast_room(id, dis)
