@@ -5,7 +5,21 @@ from datetime import timedelta
 from web.helpers import GAME_TYPES, NUMBER_PLAYERS
 
 
+class PlayerManager(models.Manager):
+
+    def create_guest(self):
+        guestcounter = self.filter(is_guest=True).count() + 1
+        guest_login = 'guest' + str(guestcounter)
+        guest = Player(is_guest=True,
+                      login=guest_login,
+                      password='',
+                      email='guest@extratetris.com',
+                      username='anonymous')
+        guest.save()
+        return guest
+
 class Player(models.Model):
+    objects = PlayerManager()
     is_robot = models.BooleanField(default=False)
     is_guest = models.BooleanField(default=False)
     login = models.CharField(max_length=20, unique=True)
@@ -22,11 +36,11 @@ class Player(models.Model):
     #wins =
 
 
-    def do_login(self):
+    def do_login(self, url='/'):
         from web.helpers import auto_login
         from django.http import HttpResponseRedirect
         key = auto_login(self)
-        response = HttpResponseRedirect('/')
+        response = HttpResponseRedirect(url)
         response.set_cookie('session_key', key,
                             domain='localhost',
                             httponly=True,
@@ -37,6 +51,8 @@ class Player(models.Model):
         key = request.COOKIES.get('session_key')
         Session.objects.delete(key=key)
         return HttpResponseRedirect('/')
+
+
 
 
 class SingleGameRecord(models.Model):

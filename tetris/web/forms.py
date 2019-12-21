@@ -1,5 +1,6 @@
 from django import forms
 from web.models import Player, TetrisRoom
+from web.helpers import GAME_TYPES, NUMBER_PLAYERS
 import json
 from django.db.utils import IntegrityError
 
@@ -36,7 +37,7 @@ class LoginForm(forms.Form):
 
 
 class CreateGameForm(forms.Form):
-    from web.helpers import GAME_TYPES, NUMBER_PLAYERS
+
     players = forms.ChoiceField(choices=NUMBER_PLAYERS)
     game_type = forms.ChoiceField(choices=GAME_TYPES)
 
@@ -54,12 +55,10 @@ class CreateGameForm(forms.Form):
         new_room.author = author
         new_room.players_at_positions = json.dumps({x: "" for x in range(new_room.players)})
         new_room.room_id = TetrisRoom.objects.next_id()
-        print('before:', TetrisRoom.objects.all())
-        try:
-            new_room.save()
-        except IntegrityError:
-            print('duplicate entry')
-        print('after', TetrisRoom.objects.all())
+        new_room.save()
+        # except IntegrityError:
+        #     print('duplicate entry')
+
         # new_room.add_player(author)
 
 

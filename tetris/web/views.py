@@ -6,7 +6,7 @@ from web.helpers import session_login
 from datetime import timedelta
 import time
 from django.utils import timezone
-from web.models import TetrisRoom
+from web.models import TetrisRoom, Player
 
 def index(request):
 
@@ -62,9 +62,16 @@ def create_game(request):
     if request.method == 'POST':
         form = CreateGameForm(request.POST)
         if form.is_valid():
-            new_room = form.save(request.user)
-            url = new_room.get_url()
-            return HttpResponseRedirect(url)
+            print('user:', request.user)
+            if request.user is None:
+                guest = Player.objects.create_guest()
+                new_room = form.save(guest)
+                url = new_room.get_url()
+                return guest.do_login(url=url)
+            else:
+                new_room = form.save(request.user)
+                url = new_room.get_url()
+                return HttpResponseRedirect(url)
 
     else:
         form = CreateGameForm(auto_id='%s')

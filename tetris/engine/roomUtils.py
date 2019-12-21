@@ -32,8 +32,8 @@ def detect_player(conn):
         if x.startswith('session_key='):
             key = x.replace('session_key=', '')
             player = Session.objects.get(key=key).user
-            print(player)
-            return player
+            if player:
+                return player
     # create new player
     return 'guest'
 
