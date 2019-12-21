@@ -1,15 +1,3 @@
-function loadRoom(){
-  // conn.onopen = function(){
-  //   let number = document.getElementById('room-number').dataset.roomNumber;
-  //   conn.send(JSON.stringify({type: 'load-room',
-  //                             room_id: number
-  //                           })
-  //             )
-  //   };
-
-
-}
-
 function sendConnectToRoomSignal(){
   let number = document.getElementById('room-number').dataset.roomNumber;
   let pos = this.dataset.pos;
@@ -19,7 +7,6 @@ function sendConnectToRoomSignal(){
                             player: player
                           }));
 }
-
 
 let conn = new WebSocket('ws://localhost/ws/connect/');
 
@@ -49,6 +36,8 @@ conn.onmessage = function(event){
     let pos = data.pos;
     let div = document.getElementById('position'+pos);
     div.classList.add('connected');
+    let dis = document.getElementById('disconnect'+pos);
+    dis.classList.add('connected');
   } else if (type === 'update-players'){
     console.log('update');
     let new_player = data.player;
@@ -71,7 +60,6 @@ conn.onclose = function(event){
 };
 let player;
 
-//sendInitRoomSignal();
-// loadRoom();
 fields = document.querySelectorAll('.tetris-field');
 [...fields].forEach(a=> a.addEventListener('click', sendConnectToRoomSignal));
+let dis = document.querySelectorAll('[id^="disconnect"]');

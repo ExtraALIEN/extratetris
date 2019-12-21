@@ -35,9 +35,11 @@
          data-pos='{{pos}}'
          data-player = 'abc'>
          <span class='player-name'><span>
+
     </div>
+    <button id='disconnect{{pos}}'>Отойти</button>
   {% endfor %}
-  <a href={{room.exit_url}}>Выход</a>
+
   <p>Игроки:</p>
   {%for player in room.active_players.all%}
   <p>{{player.username}}</p>

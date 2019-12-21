@@ -87,9 +87,7 @@ def announce_players(conn, data):
     room = status.active_rooms[int(id)]
     for x in range(len(room.fields)):
         field = room.fields[x]
-        print(x, field.websocket, field.player)
         if field.player is not None:
-            print(x, 'upd')
             upd = {'type': 'update-players',
                                'pos': x,
                                'player': field.player.username

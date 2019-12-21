@@ -19,3 +19,12 @@
 .new-info{
   padding: 20px;
 }
+
+[id^="disconnect"] {
+  display:none;
+
+}
+
+[id^="disconnect"].connected{
+  display:block;
+}
