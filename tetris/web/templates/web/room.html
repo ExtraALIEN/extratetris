@@ -11,8 +11,6 @@
     <h2>{{room.type}}</h2>
     <p>Ожидание игроков...{{room.count_players}}</p>
     <p>Инициатор игры: {{room.author.username}}</p>
-    <a href={{room.play_url}}>Занять место</a>
-    <a href={{room.exit_url}}>Выход</a>
     <p>Игроки:</p>
     {%for player in room.active_players.all%}
     <p>{{player.username}}</p>

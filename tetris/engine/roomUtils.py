@@ -59,6 +59,7 @@ def make_connect(conn, data):
                 status.connections[conn] = {'id': int(id), 'pos': pos}
 
                 tetris_room = TetrisRoom.objects.get(room_id=int(id))
+                print(tetris_room)
                 tetris_room.add_player(player, pos)
                 msg = 'player ' + player.username + 'entered room # ' + id
                 upd = {'type': 'update-players',
@@ -104,8 +105,11 @@ def room_disconnect(conn, data):
             exit_room(id, conn)
     active_room = status.active_rooms[id]
     active_room.fields[pos].websocket = None
+    player_to_remove = active_room.fields[pos].player
     active_room.fields[pos].player = None
     del status.connections[conn]
+    tetris_room = TetrisRoom.objects.get(room_id=int(id))
+    tetris_room.remove_player(player_to_remove, pos)
     dis = {'type': 'disconnect-player',
                    'pos': pos}
     broadcast_room(id, dis)

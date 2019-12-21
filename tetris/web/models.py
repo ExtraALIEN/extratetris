@@ -74,16 +74,20 @@ class TetrisRoom(models.Model):
         self.active_players.add(player)
         pp = json.loads(self.players_at_positions)
         pp[str(pos)] = player.username
-        print(pp)
         self.players_at_positions = json.dumps(pp)
+        self.save()
         #if self.is_full():
             #self.start_game()
 
     def player_names(self):
         return json.loads(self.players_at_positions)
 
-    def remove_player(self, player):
+    def remove_player(self, player, pos):
         self.active_players.remove(player)
+        pp = json.loads(self.players_at_positions)
+        pp[str(pos)] = ''
+        self.players_at_positions = json.dumps(pp)
+        self.save()
 
     def count_players(self):
         current = self.active_players.count()
@@ -97,12 +101,6 @@ class TetrisRoom(models.Model):
 
     def delete_url(self):
         return '/room/'+ str(self.room_id)+'/delete/'
-
-    def play_url(self):
-        return '/room/'+ str(self.room_id)+'/play/'
-
-    def exit_url(self):
-        return '/room/'+ str(self.room_id)+'/exit/'
 
     def start_game(self):
         pass
