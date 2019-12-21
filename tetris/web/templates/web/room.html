@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8">
     <title>ExtraTetris</title>
-    <script src='/static/js/room.js'></script>
+    <link rel="stylesheet" href="/css/style.css">
   </head>
   <body>
     <h2>{{room.type}}</h2>
@@ -33,16 +33,16 @@
     <div id='position{{pos}}'
          class='tetris-field'
          data-pos='{{pos}}'
-         data-player = 'abc',
-         style='width:100px; height:100px; background-color: red; display:inline-block'></div>
+         data-player = 'abc'>
+    </div>
   {% endfor %}
-  <a href={{room.play_url}}>Занять место</a>
   <a href={{room.exit_url}}>Выход</a>
   <p>Игроки:</p>
   {%for player in room.active_players.all%}
   <p>{{player.username}}</p>
   {% endfor %}
   <a href={{room.delete_url}}>Отменить игру</a>
+
 {% endblock %}
 
 {% block scripts %}

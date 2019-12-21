@@ -11,9 +11,8 @@ class ConnectRoom(JsonWebsocketConsumer):
         print(data)
         type = data['type']
         if type == 'connect':
-            print(data)
             self.send_json(make_connect(self, data))
-        
+
 
 
     def disconnect(self, close_code):

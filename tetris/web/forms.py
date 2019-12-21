@@ -52,7 +52,7 @@ class CreateGameForm(forms.Form):
         new_room.players = int(self.cleaned_data['players'])
         new_room.type = self.cleaned_data['game_type']
         new_room.author = author
-        new_room.players_at_positions = json.dumps([{x: ""} for x in range(new_room.players)])
+        new_room.players_at_positions = json.dumps({x: "" for x in range(new_room.players)})
         new_room.room_id = TetrisRoom.objects.next_id()
         print('before:', TetrisRoom.objects.all())
         try:

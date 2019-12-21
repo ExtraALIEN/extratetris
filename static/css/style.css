@@ -1,0 +1,21 @@
+.tetris-field {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  background-color: red;
+}
+
+.connected {
+  background-color: green;
+}
+
+.info {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #84c3cc;
+}
+
+.new-info{
+  padding: 20px;
+}

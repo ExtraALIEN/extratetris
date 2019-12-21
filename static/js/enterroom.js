@@ -60,8 +60,14 @@ conn.onmessage = function(event){
      console.log(`player ${player}`);
   } else if (type === 'info'){
     console.log(data.msg);
-  } else if (type === 'connect'){
+    let info = document.getElementById('info')
+    info.innerHTML = data.msg;
+    info.classList.add('new-info');
 
+  } else if (type === 'connected'){
+    let pos = data.pos;
+    let div = document.getElementById('position'+pos);
+    div.classList.add('connected');
   }
 };
 

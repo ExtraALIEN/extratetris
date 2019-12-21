@@ -1,3 +1,4 @@
+import json
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
@@ -69,11 +70,14 @@ class TetrisRoom(models.Model):
 
     # start_players = models.ManyToManyField(Player, blank=True,null=True)
 
-    def add_player(self, player):
+    def add_player(self, player, pos):
         self.active_players.add(player)
-
-        if self.is_full():
-            self.start_game()
+        pp = json.loads(self.players_at_positions)
+        pp[str(pos)] = player.username
+        print(pp)
+        self.players_at_positions = json.dumps(pp)
+        #if self.is_full():
+            #self.start_game()
 
     def remove_player(self, player):
         self.active_players.remove(player)
