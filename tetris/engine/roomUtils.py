@@ -70,9 +70,34 @@ def make_connect(conn, data):
                                'player': player.username,
                                'msg' : msg
                                }
+            upd = {'type': 'update-players',
+                               'pos': pos,
+                               'player': player.username,
+                                }
+            broadcast_room(active_room, upd)
         else:
             pl = active_room.fields[pos].player.username
             msg = 'Another player ' + pl + ' at place # ' + str(pos) + ' room ' + id
             resp = {'type': 'info',
                              'msg' : msg}
         return resp
+
+def announce_players(conn, data):
+    id = data['room_id']
+    room = status.active_rooms[int(id)]
+    for x in range(len(room.fields)):
+        field = room.fields[x]
+        print(x, field.websocket, field.player)
+        if field.player is not None:
+            print(x, 'upd')
+            upd = {'type': 'update-players',
+                               'pos': x,
+                               'player': field.player.username
+                                }
+            conn.send_json(upd)
+
+
+def broadcast_room(room, data):
+    for field in room.fields:
+        if field.websocket is not None:
+            field.websocket.send_json(data)

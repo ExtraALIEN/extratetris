@@ -79,6 +79,9 @@ class TetrisRoom(models.Model):
         #if self.is_full():
             #self.start_game()
 
+    def player_names(self):
+        return json.loads(self.players_at_positions)
+
     def remove_player(self, player):
         self.active_players.remove(player)
 

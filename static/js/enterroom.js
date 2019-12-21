@@ -1,32 +1,3 @@
-function sendInitRoomSignal(){
-  conn.onopen = function(){
-    let number = document.getElementById('room-number').dataset.roomNumber;
-    let type = document.getElementById('room-type').dataset.roomType;
-    let players = document.getElementById('room-players').dataset.roomPlayers;
-    conn.send(JSON.stringify({type: 'init',
-                              room: {
-                                  type: type,
-                                  id: number,
-                                  players: players,
-                              }
-                            })
-              )
-    };
-  conn.onmessage = function(event){
-    let data = JSON.parse(event.data);
-    let type = data.type;
-    if(type === 'player'){
-       player = data.player;
-       console.log(`player ${player}`);
-    } else if (type === 'info'){
-      console.log(data.msg);
-    } else if (type === 'connect'){
-
-    }
-  };
-
-}
-
 function loadRoom(){
   // conn.onopen = function(){
   //   let number = document.getElementById('room-number').dataset.roomNumber;
@@ -51,6 +22,16 @@ function sendConnectToRoomSignal(){
 
 
 let conn = new WebSocket('ws://localhost/ws/connect/');
+
+conn.onopen = function(event){
+  let number = document.getElementById('room-number').dataset.roomNumber;
+  conn.send(JSON.stringify({
+    'type': 'init',
+    'room_id': number
+  }));
+}
+
+
 conn.onmessage = function(event){
   let data = JSON.parse(event.data);
   console.log(data);
@@ -68,7 +49,15 @@ conn.onmessage = function(event){
     let pos = data.pos;
     let div = document.getElementById('position'+pos);
     div.classList.add('connected');
+  } else if (type === 'update-players'){
+    console.log('update');
+    let new_player = data.player;
+    let pos = data.pos;
+    let selector = `#position${pos} .player-name`;
+    let span = document.querySelector(selector);
+    span.innerHTML = new_player;
   }
+
 };
 
 conn.onerror = function(error){
