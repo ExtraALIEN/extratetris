@@ -8,6 +8,16 @@ function sendConnectToRoomSignal(){
                           }));
 }
 
+
+function sendDisconnectSignal(){
+  let number = document.getElementById('room-number').dataset.roomNumber;
+  let pos = this.dataset.pos;
+  conn.send(JSON.stringify({type: 'disconnect',
+                            room_id: number,
+                            pos: pos,
+                        }));
+}
+
 let conn = new WebSocket('ws://localhost/ws/connect/');
 
 conn.onopen = function(event){
@@ -45,6 +55,18 @@ conn.onmessage = function(event){
     let selector = `#position${pos} .player-name`;
     let span = document.querySelector(selector);
     span.innerHTML = new_player;
+  } else if (type === 'disconnect-player'){
+    console.log('player disconnected');
+    let pos = data.pos;
+    let selector = `#position${pos} .player-name`;
+    let span = document.querySelector(selector);
+    span.innerHTML = "";
+    dis = document.querySelector('.connected[id^="disconnect"]');
+    dis.classList.remove('connected');
+    let myField = document.querySelector('.tetris-field.connected')
+    if (pos === myField.dataset.pos){
+      myField.classList.remove('connected');
+    }
   }
 
 };
@@ -62,4 +84,5 @@ let player;
 
 fields = document.querySelectorAll('.tetris-field');
 [...fields].forEach(a=> a.addEventListener('click', sendConnectToRoomSignal));
-let dis = document.querySelectorAll('[id^="disconnect"]');
+let diss = document.querySelectorAll('[id^="disconnect"]');
+[...diss].forEach(a=> a.addEventListener('click', sendDisconnectSignal));
