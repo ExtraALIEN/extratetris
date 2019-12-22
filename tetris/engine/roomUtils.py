@@ -20,10 +20,11 @@ def enter_room(id, conn):
 def exit_room(id, conn):
     status.room_lobby[id].remove(conn)
 
-def detect_player(conn):
+def detect_player(conn, id):
     print('detecting player')
     headers = conn.scope['headers']
     cookies = None
+    player = None
     for x in headers:
         if x[0].decode('utf-8').lower() == 'cookie':
             cookies = x[1].decode('utf-8').split('; ')
@@ -31,12 +32,18 @@ def detect_player(conn):
     for x in cookies:
         if x.startswith('session_key='):
             key = x.replace('session_key=', '')
-            player = Session.objects.get(key=key).user
-            if player:
+            print('find session, key= ', key)
+            try:
+                player = Session.objects.get(key=key).user
                 return player
-    #guest = Player.objects.create_guest()
-    print(conn['scope']['path'])
-    return 'guest'
+            except Session.DoesNotExist:
+                pass
+    if player is None:
+        url = '/room/'+str(id)+'/'
+        guest = Player.objects.create_guest()
+        guest.do_login(url=url)
+        return guest
+
 
 def make_connect(conn, data):
     id = data['room_id']
@@ -45,7 +52,7 @@ def make_connect(conn, data):
         msg = 'No room # ' + id
         conn.send_json({'type': 'info', 'msg': msg})
     else:
-        player = detect_player(conn)
+        player = detect_player(conn, id=id)
         conn.send_json({'type': 'player', 'player': player.username})
 
         if player in status.players:
