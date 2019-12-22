@@ -10,6 +10,7 @@ class ConnectRoom(JsonWebsocketConsumer):
 
     def receive_json(self, data):
         print(data)
+        print(self)
         type = data['type']
         if type == 'init':
             init_room(self, data)

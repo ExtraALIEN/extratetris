@@ -1,30 +1,40 @@
 {% extends "./base_main.html" %}
 
 {% block game %}
-  <h2>Room number:
-    <span data-room-number='{{room.room_id}}' id='room-number'>{{room.room_id}}</span>
-    Type:
-    <span data-room-type='{{room.type}}' id='room-type'>{{room.type}}</span>
-  </h2>
-  <p data-room-players='{{room.players}}' id='room-players'>>Ожидание игроков...{{room.count_players}}</p>
-  <p>Инициатор игры: {{room.author.username}}</p>
-  {% for pos in positions %}
-    <div id='position{{pos}}'
-         class='tetris-field'
-         data-pos='{{pos}}'
-         data-player = 'abc'>
-         <span class='player-name'><span>
+  {% if not room.started %}
+    <section>
+      <h2>Room number:
+        <span data-room-number='{{room.room_id}}' id='room-number'>{{room.room_id}}</span>
+        Type:
+        <span data-room-type='{{room.type}}' id='room-type'>{{room.type}}</span>
+      </h2>
+      <p data-room-players='{{room.players}}' id='room-players'>>Ожидание игроков...{{room.count_players}}</p>
+      <p>Инициатор игры: {{room.author.username}}</p>
+      {% for pos in positions %}
+        <div id='position{{pos}}'
+             class='tetris-field'
+             data-pos='{{pos}}'
+             data-player = 'abc'>
+             <span class='player-name'><span>
 
-    </div>
-    <button id='disconnect{{pos}}' data-pos='{{pos}}'>Отойти</button>
-  {% endfor %}
+        </div>
+        <button id='disconnect{{pos}}' data-pos='{{pos}}'>Отойти</button>
+      {% endfor %}
 
-  <p>Игроки:</p>
-  {%for player in room.active_players.all%}
-  <p>{{player.username}}</p>
-  {% endfor %}
-  <a href={{room.delete_url}}>Отменить игру</a>
+      <p>Игроки:</p>
+      {%for player in room.active_players.all%}
+      <p>{{player.username}}</p>
+      {% endfor %}
+      <a href={{room.delete_url}}>Отменить игру</a>
+    </section>
+    <section id='game'>
 
+    </section>
+  {% elif room.started %}
+    <p>started</p>
+    <button id='check'>Check</button>
+    <a href={{room.delete_url}}>Отменить игру</a>
+  {% endif %}
 {% endblock %}
 
 {% block scripts %}

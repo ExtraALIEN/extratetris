@@ -53,6 +53,7 @@ def make_connect(conn, data):
         conn.send_json({'type': 'info', 'msg': msg})
     else:
         player = detect_player(conn, id=id)
+        print('player= ', player.login)
         conn.send_json({'type': 'player', 'player': player.username})
 
         if player in status.players:
@@ -82,10 +83,9 @@ def make_connect(conn, data):
                                    }
                 conn.send_json(resp)
                 if tetris_room.is_full():
-                    info = {'type':'info',
-                            'msg' : 'room full'
-                                        }
-                    broadcast_room(int(id), info)
+                    tetris_room.start()
+                    start_signal = {'type': 'start-game'}
+                    broadcast_room(int(id), start_signal)
 
             else:
                 pl = active_room.fields[pos].player.username
@@ -134,6 +134,7 @@ def room_disconnect(conn, data):
     broadcast_room(id, dis)
     if data is False:
         print(Player.objects.all().count())
+        print('removing player')
         player_to_remove.delete()
         print(Player.objects.all().count())
 

@@ -1,3 +1,29 @@
+function nodeScriptReplace(node) {
+        if ( nodeScriptIs(node) === true ) {
+                node.parentNode.replaceChild( nodeScriptClone(node) , node );
+        }
+        else {
+                var i        = 0;
+                var children = node.childNodes;
+                while ( i < children.length ) {
+                        nodeScriptReplace( children[i++] );
+                }
+        }
+
+        return node;
+}
+function nodeScriptIs(node) {
+        return node.tagName === 'SCRIPT';
+}
+function nodeScriptClone(node){
+        var script  = document.createElement("script");
+        script.text = node.innerHTML;
+        for( var i = node.attributes.length-1; i >= 0; i-- ) {
+                script.setAttribute( node.attributes[i].name, node.attributes[i].value );
+        }
+        return script;
+}
+
 function sendConnectToRoomSignal(){
   let number = document.getElementById('room-number').dataset.roomNumber;
   let pos = this.dataset.pos;
@@ -35,13 +61,11 @@ conn.onmessage = function(event){
   let type = data.type;
   if(type === 'player'){
      player = data.player;
-     console.log(`player ${player}`);
   } else if (type === 'info'){
     console.log(data.msg);
     let info = document.getElementById('info')
     info.innerHTML = data.msg;
     info.classList.add('new-info');
-
   } else if (type === 'connected'){
     let pos = data.pos;
     let div = document.getElementById('position'+pos);
@@ -49,28 +73,32 @@ conn.onmessage = function(event){
     let dis = document.getElementById('disconnect'+pos);
     dis.classList.add('connected');
   } else if (type === 'update-players'){
-    console.log('update');
     let new_player = data.player;
     let pos = data.pos;
     let selector = `#position${pos} .player-name`;
     let span = document.querySelector(selector);
     span.innerHTML = new_player;
   } else if (type === 'disconnect-player'){
-    console.log('player disconnected');
     let pos = data.pos;
     let selector = `#position${pos} .player-name`;
     let span = document.querySelector(selector);
     span.innerHTML = "";
     dis = document.querySelector('.connected[id^="disconnect"]');
     let myField = document.querySelector('.tetris-field.connected')
-    console.log(pos, myField);
     if (myField && +pos === +myField.dataset.pos){
-      console.log('removing');
       myField.classList.remove('connected');
       dis.classList.remove('connected');
     }
-  }
-
+  } else if (type === 'start-game'){
+    console.log('start game');
+    console.log(window.location.href);
+    fetch(window.location.href)
+                   .then(res => res.text())
+                   .then(function(text) {
+                      document.body.innerHTML = text;
+                      nodeScriptReplace(document.getElementsByTagName("body")[0]);
+                    });
+  }                    
 };
 
 conn.onerror = function(error){

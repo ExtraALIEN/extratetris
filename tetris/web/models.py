@@ -71,7 +71,7 @@ class Session(models.Model):
 class TetrisRoomManager(models.Manager):
     def next_id(self):
         if self.all().count() > 0:
-            return self.all().order_by('-pk')[0].pk + 1
+            cur = self.all().order_by('-pk')[0].pk + 1
         else:
             return 1
 
@@ -83,6 +83,7 @@ class TetrisRoom(models.Model):
     type = models.CharField(max_length=2, choices=GAME_TYPES)
     active_players = models.ManyToManyField(Player)
     players_at_positions = models.TextField(default="")
+    started = models.BooleanField(default=False)
 
     # start_players = models.ManyToManyField(Player, blank=True,null=True)
 
@@ -113,3 +114,7 @@ class TetrisRoom(models.Model):
 
     def delete_url(self):
         return '/room/'+ str(self.room_id)+'/delete/'
+
+    def start(self):
+        self.started = True
+        self.save()

@@ -85,6 +85,8 @@ def enter_room(request, room_number):
     room = TetrisRoom.objects.get(room_id=room_number)
     positions = [x for x in range(room.players)]
     scripts = ['enterroom']
+    if room.started:
+        scripts = ['gamecontrols']
     return render(request, 'web/room.html', {'room': room,
                                              'positions': positions,
                                              'scripts': scripts})
@@ -111,4 +113,5 @@ def exit_room(request, room_number):
     return HttpResponseRedirect(room.get_url())
 
 def testpage(request):
+    print('test')
     return render(request, 'web/test.html', {})
