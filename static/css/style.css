@@ -28,3 +28,19 @@
 [id^="disconnect"].connected{
   display:block;
 }
+
+.tetris-view{
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.tetris-view .cell{
+  display: inline-block;
+  width:10px;
+  height:10px;
+  border: 1px solid grey;
+}
+
+.cell.color-1{
+  background-color: green;
+}

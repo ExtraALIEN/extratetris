@@ -1,3 +1,5 @@
+import {updateSurface} from './gamecontrols.js';
+
 function nodeScriptReplace(node) {
         if ( nodeScriptIs(node) === true ) {
                 node.parentNode.replaceChild( nodeScriptClone(node) , node );
@@ -98,7 +100,9 @@ conn.onmessage = function(event){
                       document.body.innerHTML = text;
                       nodeScriptReplace(document.getElementsByTagName("body")[0]);
                     });
-  }                    
+  } else if (type === 'surface') {
+    updateSurface(data);
+  }
 };
 
 conn.onerror = function(error){
@@ -112,7 +116,7 @@ conn.onclose = function(event){
 };
 let player;
 
-fields = document.querySelectorAll('.tetris-field');
+let fields = document.querySelectorAll('.tetris-field');
 [...fields].forEach(a=> a.addEventListener('click', sendConnectToRoomSignal));
 let diss = document.querySelectorAll('[id^="disconnect"]');
 [...diss].forEach(a=> a.addEventListener('click', sendDisconnectSignal));

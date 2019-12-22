@@ -13,18 +13,13 @@
       {% for pos in positions %}
         <div id='position{{pos}}'
              class='tetris-field'
-             data-pos='{{pos}}'
-             data-player = 'abc'>
+             data-pos='{{pos}}'>
              <span class='player-name'><span>
 
         </div>
         <button id='disconnect{{pos}}' data-pos='{{pos}}'>Отойти</button>
       {% endfor %}
 
-      <p>Игроки:</p>
-      {%for player in room.active_players.all%}
-      <p>{{player.username}}</p>
-      {% endfor %}
       <a href={{room.delete_url}}>Отменить игру</a>
     </section>
     <section id='game'>
@@ -34,11 +29,30 @@
     <p>started</p>
     <button id='check'>Check</button>
     <a href={{room.delete_url}}>Отменить игру</a>
+    <div class='grid'>
+      {% for pos in positions %}
+        <div id='field{{pos}}'
+             class='tetris-view'
+             data-pos='{{pos}}'>
+             <!-- <span class='player-name'><span> -->
+             {% for y in height %}
+               <div data-y={{y}} class='row'>
+                 {% for x in width %}
+                   <div data-x={{x}} class='cell'>
+
+                   </div>
+                 {% endfor %}
+               </div>
+             {% endfor %}
+        </div>
+        <button id='disconnect{{pos}}' data-pos='{{pos}}'>Отойти</button>
+      {% endfor %}
+    </div>
   {% endif %}
 {% endblock %}
 
 {% block scripts %}
   {%for script in scripts %}
-    <script src='/static/js/{{script}}.js'></script>
+    <script type='module' src='/static/js/{{script}}.js'></script>
   {% endfor %}
 {% endblock %}

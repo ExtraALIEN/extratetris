@@ -1,6 +1,7 @@
 import engine.status as status
 from engine.Room import Room
 from web.models import TetrisRoom, Player, Session
+from engine.ingame import init_fields
 
 def create_room(id, size):
     new_room = Room(size)
@@ -86,6 +87,7 @@ def make_connect(conn, data):
                     tetris_room.start()
                     start_signal = {'type': 'start-game'}
                     broadcast_room(int(id), start_signal)
+                    init_fields(int(id))
 
             else:
                 pl = active_room.fields[pos].player.username
@@ -136,6 +138,7 @@ def room_disconnect(conn, data):
         print(Player.objects.all().count())
         print('removing player')
         player_to_remove.delete()
+        tetris_room.delete()
         print(Player.objects.all().count())
 
 def broadcast_room(room_id, data):

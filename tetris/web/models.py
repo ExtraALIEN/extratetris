@@ -71,7 +71,10 @@ class Session(models.Model):
 class TetrisRoomManager(models.Manager):
     def next_id(self):
         if self.all().count() > 0:
-            cur = self.all().order_by('-pk')[0].pk + 1
+            last = self.all().filter(is_guest).order_by('-pk')[0]
+            print('last: ',last.login)
+            number = int(last[5:])
+            return number + 1
         else:
             return 1
 

@@ -1,8 +1,12 @@
-function sendCheck(){
-  conn.send(JSON.stringify({'type': 'check'}));
+console.log('script loaded');
+
+function updateSurface(data){
+  for(let y=data.y; y<data.height; y++)  {
+    for(let x=data.x; y<data.width; x++){
+      let selector = `#field${data.pos} .row[data-y=${y}] .cell[data-x=${x}]`;
+      document.querySelector(selector).classlist.add('color-1');
+    }
+  }
 }
 
-
-console.log(conn);
-let check = document.getElementById('check');
-check.addEventListener('click', sendCheck);
+export {updateSurface}

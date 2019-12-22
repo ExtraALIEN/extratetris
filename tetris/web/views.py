@@ -84,12 +84,16 @@ def enter_room(request, room_number):
     from web.models import TetrisRoom
     room = TetrisRoom.objects.get(room_id=room_number)
     positions = [x for x in range(room.players)]
+    width = [x for x in range(12)]
+    height = [x for x in range(24,-1,-1)]
     scripts = ['enterroom']
     if room.started:
         scripts = ['gamecontrols']
     return render(request, 'web/room.html', {'room': room,
                                              'positions': positions,
-                                             'scripts': scripts})
+                                             'scripts': scripts,
+                                             'width': width,
+                                             'height': height})
 
 
 def delete_room(request, room_number):
