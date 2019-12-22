@@ -105,6 +105,8 @@ def init_room(conn, data):
 
 
 def room_disconnect(conn, data):
+    id = None
+    pos = None
     if data is not False:
         id = int(data['room_id'])
         pos = int(data['pos'])
@@ -124,7 +126,10 @@ def room_disconnect(conn, data):
     dis = {'type': 'disconnect-player',
                    'pos': pos}
     broadcast_room(id, dis)
-
+    if data is False:
+        print(Player.objects.all().count())
+        player_to_remove.delete()
+        print(Player.objects.all().count())
 
 def broadcast_room(room_id, data):
     for conn in status.room_lobby[room_id]:
