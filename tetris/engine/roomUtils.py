@@ -80,13 +80,19 @@ def make_connect(conn, data):
                                    'player': player.username,
                                    'msg' : msg
                                    }
+                conn.send_json(resp)
+                if tetris_room.is_full():
+                    info = {'type':'info',
+                            'msg' : 'room full'
+                                        }
+                    broadcast_room(int(id), info)
 
             else:
                 pl = active_room.fields[pos].player.username
                 msg = 'Another player ' + pl + ' at place # ' + str(pos) + ' room ' + id
                 resp = {'type': 'info',
                                  'msg' : msg}
-            conn.send_json(resp)
+                conn.send_json(resp)
 
 def init_room(conn, data):
     print(conn)
