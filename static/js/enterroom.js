@@ -85,7 +85,7 @@ conn.onmessage = function(event){
     let selector = `#position${pos} .player-name`;
     let span = document.querySelector(selector);
     span.innerHTML = "";
-    dis = document.querySelector('.connected[id^="disconnect"]');
+    let dis = document.querySelector('.connected[id^="disconnect"]');
     let myField = document.querySelector('.tetris-field.connected')
     if (myField && +pos === +myField.dataset.pos){
       myField.classList.remove('connected');

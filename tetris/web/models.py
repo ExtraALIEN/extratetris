@@ -8,8 +8,10 @@ from web.helpers import GAME_TYPES, NUMBER_PLAYERS
 class PlayerManager(models.Manager):
 
     def create_guest(self):
-        guestcounter = self.filter(is_guest=True).count() + 1
-        guest_login = 'guest' + str(guestcounter)
+        last = self.all().filter(is_guest=True).order_by('-pk')[0]
+        print('last: ', last.login)
+        number = int(last.login[5:]) + 1
+        guest_login = 'guest' + str(number)
         guest = Player(is_guest=True,
                       login=guest_login,
                       password='',
@@ -71,10 +73,9 @@ class Session(models.Model):
 class TetrisRoomManager(models.Manager):
     def next_id(self):
         if self.all().count() > 0:
-            last = self.all().filter(is_guest).order_by('-pk')[0]
-            print('last: ',last.login)
-            number = int(last[5:])
-            return number + 1
+
+            return self.all().order_by('-pk')[0].pk + 1
+
         else:
             return 1
 

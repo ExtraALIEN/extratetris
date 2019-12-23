@@ -5,7 +5,6 @@ from engine.ingame import init_fields
 
 def create_room(id, size):
     new_room = Room(size)
-    print('new_room', new_room)
     status.active_rooms[id] = new_room
     status.room_lobby[id] = set()
     print('created engine room # ', str(id))
@@ -15,17 +14,10 @@ def create_room(id, size):
 def find_next_id():
     return TetrisRoom.objects.next_id()
 
-def enter_room(id, conn):
-    status.room_lobby[id].add(conn)
-
-def exit_room(id, conn):
-    status.room_lobby[id].remove(conn)
-
-def detect_player(conn, id):
+def detect_player(conn):
     print('detecting player')
     headers = conn.scope['headers']
     cookies = None
-    player = None
     for x in headers:
         if x[0].decode('utf-8').lower() == 'cookie':
             cookies = x[1].decode('utf-8').split('; ')
@@ -38,25 +30,25 @@ def detect_player(conn, id):
                 player = Session.objects.get(key=key).user
                 return player
             except Session.DoesNotExist:
-                pass
-    if player is None:
-        url = '/room/'+str(id)+'/'
-        guest = Player.objects.create_guest()
-        guest.do_login(url=url)
-        return guest
+                return None
 
+def new_guest(id):
+    url = '/room/'+str(id)+'/'
+    guest = Player.objects.create_guest()
+    guest.do_login(url=url)
+    return guest
 
-def make_connect(conn, data):
+def room_connect(conn, data):
     id = data['room_id']
-    print('active rooms :', status.active_rooms)
     if int(id) not in status.active_rooms:
         msg = 'No room # ' + id
         conn.send_json({'type': 'info', 'msg': msg})
     else:
-        player = detect_player(conn, id=id)
-        print('player= ', player.login)
+        player = detect_player(conn)
+        if player is None:
+            player = new_guest(id)
+        print('player: ', player.login)
         conn.send_json({'type': 'player', 'player': player.username})
-
         if player in status.players:
             msg = 'already connected, room # ' + str(status.players[player]['id'])
             conn.send_json({'type': 'info', 'msg': msg})
@@ -69,7 +61,6 @@ def make_connect(conn, data):
                 status.connections[conn] = {'id': int(id), 'pos': pos}
                 status.players[player] = {'id': int(id), 'pos': pos}
                 tetris_room = TetrisRoom.objects.get(room_id=int(id))
-                print(tetris_room)
                 tetris_room.add_player(player, pos)
                 msg = 'player ' + player.username + 'entered room # ' + id
                 upd = {'type': 'update-players',
@@ -96,8 +87,8 @@ def make_connect(conn, data):
                                  'msg' : msg}
                 conn.send_json(resp)
 
+
 def init_room(conn, data):
-    print(conn)
     id = int(data['room_id'])
     print(id, status.active_rooms)
     room = status.active_rooms[id]
@@ -112,34 +103,43 @@ def init_room(conn, data):
             broadcast_room(id, upd)
 
 
+def room_hard_disconnect(conn):
+    if conn in status.in_room_lobby:
+        id = status.in_room_lobby[conn]
+        exit_room(id, conn)
+    if conn in status.connections:
+        id = status.connections[conn]['id']
+        pos = status.connections[conn]['pos']
+        data = {'room_id': id, 'pos': pos}
+        room_disconnect(conn, data)
+    player = detect_player(conn)
+    print('player exit: ', player.login)
+    if player.is_guest:
+        player.delete()
+
 def room_disconnect(conn, data):
-    id = None
-    pos = None
-    if data is not False:
-        id = int(data['room_id'])
-        pos = int(data['pos'])
-    else:
-        if conn in status.connections:
-            id = status.connections[conn]['id']
-            pos = status.connections[conn]['pos']
-            exit_room(id, conn)
+    id = int(data['room_id'])
+    pos = int(data['pos'])
     active_room = status.active_rooms[id]
     active_room.fields[pos].websocket = None
-    player_to_remove = active_room.fields[pos].player
+    player = active_room.fields[pos].player
     active_room.fields[pos].player = None
     del status.connections[conn]
-    del status.players[player_to_remove]
+    del status.players[player]
     tetris_room = TetrisRoom.objects.get(room_id=int(id))
-    tetris_room.remove_player(player_to_remove, pos)
-    dis = {'type': 'disconnect-player',
-                   'pos': pos}
+    tetris_room.remove_player(player, pos)
+    dis = {'type': 'disconnect-player', 'pos': pos}
     broadcast_room(id, dis)
-    if data is False:
-        print(Player.objects.all().count())
-        print('removing player')
-        player_to_remove.delete()
-        tetris_room.delete()
-        print(Player.objects.all().count())
+
+
+
+def enter_room(id, conn):
+    status.room_lobby[id].add(conn)
+    status.in_room_lobby[conn] = id
+
+def exit_room(id, conn):
+    status.room_lobby[id].remove(conn)
+    del status.in_room_lobby[conn]
 
 def broadcast_room(room_id, data):
     for conn in status.room_lobby[room_id]:
