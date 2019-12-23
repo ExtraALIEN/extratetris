@@ -1,4 +1,4 @@
-import {updateSurface} from './gamecontrols.js';
+import {startFields, getReady} from './gamecontrols.js';
 
 function nodeScriptReplace(node) {
         if ( nodeScriptIs(node) === true ) {
@@ -86,7 +86,7 @@ conn.onmessage = function(event){
     let span = document.querySelector(selector);
     span.innerHTML = "";
     let dis = document.querySelector('.connected[id^="disconnect"]');
-    let myField = document.querySelector('.tetris-field.connected')
+    let myField = document.querySelector('.connect.connected')
     if (myField && +pos === +myField.dataset.pos){
       myField.classList.remove('connected');
       dis.classList.remove('connected');
@@ -100,8 +100,11 @@ conn.onmessage = function(event){
                       document.body.innerHTML = text;
                       nodeScriptReplace(document.getElementsByTagName("body")[0]);
                     });
-  } else if (type === 'surface') {
-    updateSurface(data);
+  } else if (type === 'get-ready'){
+    getReady(conn);
+  }
+    else if (type === 'start-tetris') {
+    startFields(data.fields);
   }
 };
 
@@ -116,7 +119,7 @@ conn.onclose = function(event){
 };
 let player;
 
-let fields = document.querySelectorAll('.tetris-field');
-[...fields].forEach(a=> a.addEventListener('click', sendConnectToRoomSignal));
+let connectButtons = document.querySelectorAll('button[id^="connect"]');
+[...connectButtons].forEach(a=> a.addEventListener('click', sendConnectToRoomSignal));
 let diss = document.querySelectorAll('[id^="disconnect"]');
 [...diss].forEach(a=> a.addEventListener('click', sendDisconnectSignal));

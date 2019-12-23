@@ -5,7 +5,6 @@ class ActivePiece(Piece):
     def __init__(self, current_piece, x, y, field):
         self.shape = current_piece.shape
         self.x = x
-        self.prev_x = x
         self.y = y
         self.field = field
 

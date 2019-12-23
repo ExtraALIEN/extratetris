@@ -87,8 +87,8 @@ def enter_room(request, room_number):
     width = [x for x in range(12)]
     height = [x for x in range(24,-1,-1)]
     scripts = ['enterroom']
-    if room.started:
-        scripts = ['gamecontrols']
+    # if room.started:
+    #     scripts = ['gamecontrols']
     return render(request, 'web/room.html', {'room': room,
                                              'positions': positions,
                                              'scripts': scripts,

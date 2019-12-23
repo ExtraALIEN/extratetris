@@ -11,7 +11,7 @@ class Field:
         self.height = height
         self.surface = buildEmptyFieldList(width, height)
         self.queue = QueuePieces()
-        self.active_piece = None
+        self.active_piece = self.create_piece()
         self.websocket = None
         self.player = None
 
@@ -39,3 +39,11 @@ class Field:
                     self.surface[self.active_piece.y-y][x+self.active_piece.x] \
                         = self.active_piece.shape[y][x]
         self.active_piece = self.create_piece()
+
+    def queue_to_view(self):
+        return [{x: self.queue.pieces[x].shape} for x in range(len(self.queue.pieces))]
+
+    def active_piece_to_view(self):
+        return {'x': self.active_piece.x,
+                'y': self.active_piece.y,
+                'shape': self.active_piece.shape}
