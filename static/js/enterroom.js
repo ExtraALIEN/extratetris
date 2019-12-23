@@ -97,11 +97,14 @@ conn.onmessage = function(event){
     fetch(window.location.href)
                    .then(res => res.text())
                    .then(function(text) {
-                      document.body.innerHTML = text;
-                      nodeScriptReplace(document.getElementsByTagName("body")[0]);
+                      if(!ready){
+                        document.body.innerHTML = text;
+                        nodeScriptReplace(document.getElementsByTagName("body")[0]);
+                      }
                     });
   } else if (type === 'get-ready'){
     getReady(conn);
+    ready = true;
   }
     else if (type === 'start-tetris') {
     startFields(data.fields);
@@ -119,6 +122,7 @@ conn.onclose = function(event){
 };
 let player;
 
+let ready = false;
 let connectButtons = document.querySelectorAll('button[id^="connect"]');
 [...connectButtons].forEach(a=> a.addEventListener('click', sendConnectToRoomSignal));
 let diss = document.querySelectorAll('[id^="disconnect"]');

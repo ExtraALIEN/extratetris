@@ -28,7 +28,7 @@ class Field:
         piece = ActivePiece(piece,
                             field=self,
                             x=self.width//2 - 1,
-                            y=self.height)
+                            y=self.height-1)
         piece.dev_show()
         return piece
 

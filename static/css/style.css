@@ -99,8 +99,10 @@ body > main {
   top: 50%;
 }
 
-
+.cell.color-0{
+  background-color: #e2e2e2;
+}
 
 .cell.color-1{
-  background-color: green;
+  background-color: #1e1b25;
 }
