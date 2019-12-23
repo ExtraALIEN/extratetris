@@ -1,6 +1,7 @@
 console.log('script loaded');
 
-function startFields(fields){
+function startFields(fields, conn){
+  console.log('conn', conn);
   for(let i in fields){
     let data = fields[i];
     let x = Object.keys(data)[0];
@@ -9,8 +10,26 @@ function startFields(fields){
     let disconnectButton = document.getElementById(`disconnect${x}`);
     connectDiv.remove();
     disconnectButton.remove();
+    document.body.addEventListener('keydown', controlField);
     displayCells(fieldElem, 24, 0, data[x].surface);
     displayCells(fieldElem, data[x].active_piece.y, data[x].active_piece.x,data[x].active_piece.shape);
+  }
+
+  function controlField(event){
+    console.log('listener,' , conn);
+    let c = event.code;
+    let msg = {'type': 'control'};
+    if(c === 'KeyA'){
+      msg.command = 'move_left';
+    }
+    else if(c === 'KeyD'){
+      msg.command = 'move_right';
+    }else if(c === 'KeyS'){
+      msg.command = 'move_down';
+    }else if(c === 'KeyW'){
+      msg.command = 'rotate';
+    }
+    conn.send(JSON.stringify(msg));
   }
 
 }
@@ -31,5 +50,7 @@ function displayCells(elem, y, x, data){
     }
   }
 }
+
+
 
 export {startFields, getReady}

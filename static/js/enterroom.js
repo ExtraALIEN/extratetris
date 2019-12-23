@@ -107,7 +107,7 @@ conn.onmessage = function(event){
     ready = true;
   }
     else if (type === 'start-tetris') {
-    startFields(data.fields);
+    startFields(data.fields, conn);
   }
 };
 
