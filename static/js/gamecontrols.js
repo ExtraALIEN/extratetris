@@ -53,4 +53,4 @@ function displayCells(elem, y, x, data){
 
 
 
-export {startFields, getReady}
+export {startFields, getReady};
