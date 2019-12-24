@@ -75,6 +75,12 @@ class Field:
         if self.timer_speed <= 0:
             self.speed += 1
             self.timer_speed += 3
+            self.field_auto_move_down()
         print(self.timer_speed, self.speed)
+
         t = Timer(delay, self.update_timer, [delay])
         t.start()
+
+    def field_auto_move_down(self):
+        from engine.ingame import auto_move_down
+        auto_move_down(self)
