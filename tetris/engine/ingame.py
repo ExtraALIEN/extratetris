@@ -20,7 +20,7 @@ def start(id):
     room = status.active_rooms[id]
     fieldsData = { x : {
                         'surface': room.fields[x].surface[0:-1],
-                        'queue' : room.fields[x].queue_to_view(),
+                        'queue' : room.fields[x].queue.to_view(),
                         'active_piece' : room.fields[x].active_piece_to_view()
                     }
              for x in range(len(room.fields))}

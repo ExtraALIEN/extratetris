@@ -9,3 +9,6 @@ class QueuePieces:
         next_piece = self.pieces.pop(0)
         self.pieces.append(Piece())
         return next_piece
+
+    def to_view(self):
+        return {x: self.pieces[x].shape for x in range(len(self.pieces)}

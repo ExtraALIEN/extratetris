@@ -47,8 +47,6 @@ class Field:
         self.active_piece = self.create_piece()
         return len(terminated_lines) > 0
 
-    def queue_to_view(self):
-        return {x: self.queue.pieces[x].shape for x in range(len(self.queue.pieces))}
 
     def active_piece_to_view(self):
         return {'x': self.active_piece.x,
