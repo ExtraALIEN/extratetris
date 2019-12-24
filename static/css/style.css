@@ -69,6 +69,7 @@ body > main {
   box-sizing: border-box;
   flex-basis: 2.5vh;
   max-width:2.5vh;
+  border: 1px solid #e2e2e2;
 }
 
 .tetris-view .connect{
