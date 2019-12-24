@@ -1,7 +1,7 @@
 from engine.ListMethods import buildEmptyFieldList
 from engine.QueuePieces import QueuePieces
 from engine.ActivePiece import ActivePiece
-
+from threading import Timer
 
 class Field:
 
@@ -14,6 +14,8 @@ class Field:
         self.active_piece = self.create_piece()
         self.websocket = None
         self.player = None
+        self.speed = 0
+        self.timer_speed = 3
 
     def top_points(self):
         def top_point(x):
@@ -66,3 +68,13 @@ class Field:
             self.surface.pop(y)
             self.surface.append([0 for x in range(self.width)])
         return lines
+
+
+    def update_timer(self, delay):
+        self.timer_speed -= delay
+        if self.timer_speed <= 0:
+            self.speed += 1
+            self.timer_speed += 3
+        print(self.timer_speed, self.speed)
+        t = Timer(delay, self.update_timer, [delay])
+        t.start()

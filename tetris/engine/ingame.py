@@ -28,6 +28,7 @@ def start(id):
            'fields': fieldsData
     }
     del status.ready[id]
+    room.start_timers(id)
     broadcast_room(id, msg)
 
 
