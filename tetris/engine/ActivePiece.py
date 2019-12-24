@@ -7,10 +7,9 @@ class ActivePiece(Piece):
         self.y = y
         self.field = field
 
-    def dev_show(self):
-        print(self.shape)
-        print(self.x)
-        print(self.y)
+    def fix_y(self):
+        if sum(self.shape[0]) == 0:
+            self.y += 1
 
     def make_phantom(self):
         current_piece = Piece()
@@ -82,4 +81,3 @@ class ActivePiece(Piece):
         return {self.y-y:
                 {self.x+x: self.shape[y][x] for x in range(len(self.shape[y]))}
                 for y in range(len(self.shape))}
-        

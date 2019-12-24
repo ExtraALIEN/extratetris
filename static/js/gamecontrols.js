@@ -4,13 +4,16 @@ function startFields(fields, conn){
   for(let x in fields){
     console.log(x);
     let data = fields[x];
+    console.log(data);
     let fieldElem = document.getElementById(`field${x}`);
+    let rows = fieldElem.querySelectorAll('.row').length-1;
+    console.log(rows);
     let connectDiv = document.getElementById(`position${x}`);
     let disconnectButton = document.getElementById(`disconnect${x}`);
     connectDiv.remove();
     disconnectButton.remove();
     document.body.addEventListener('keydown', controlField);
-    displayCells(fieldElem, 24, 0, data.surface);
+    displayCells(fieldElem, rows, 0, data.surface);
     displayCells(fieldElem, data.active_piece.y, data.active_piece.x,data.active_piece.shape);
   }
 
@@ -46,7 +49,8 @@ function displayCells(elem, y, x, data){
       let selector = `.row[data-y="${y-yy}"] .cell[data-x="${x+xx}"]`;
       let cell = elem.querySelector(selector);
       let newClass = `color-${data[yy][xx]}`;
-      cell.classList.add(newClass);
+      setClass(cell,newClass);
+
     }
   }
 }
@@ -57,6 +61,7 @@ function updateField(data){
   for (let y in data.changes){
     for(let x in data.changes[y]){
       let selector = `.row[data-y="${y}"] .cell[data-x="${x}"]`;
+
       let cell = field.querySelector(selector);
       let cl = data.changes[y][x];
       setClass(cell, `color-${cl}`);
@@ -65,8 +70,10 @@ function updateField(data){
 }
 
 function setClass(elem, newClass){
-  elem.className = "cell";
-  elem.classList.add(newClass);
+  if(elem) {
+    elem.className = "cell";
+    elem.classList.add(newClass);
+  }
 }
 
 

@@ -15,8 +15,6 @@ def rotate(arr, clockwise):
 
 def diff_obj(prev, cur):
     result = {}
-    print(prev)
-    print(cur)
     for y in prev:
         for x in prev[y]:
             if prev[y][x] != 0:
@@ -39,8 +37,6 @@ def diff_obj(prev, cur):
                     if y not in result:
                         result[y] = {}
                     result[y][x] = cur[y][x]
-
-    print(result)
     return result
 
 

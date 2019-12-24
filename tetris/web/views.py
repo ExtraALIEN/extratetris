@@ -85,7 +85,7 @@ def enter_room(request, room_number):
     room = TetrisRoom.objects.get(room_id=room_number)
     positions = [x for x in range(room.players)]
     width = [x for x in range(12)]
-    height = [x for x in range(24,-1,-1)]
+    height = [x for x in range(25-2,-1,-1)]
     scripts = ['enterroom']
     # if room.started:
     #     scripts = ['gamecontrols']

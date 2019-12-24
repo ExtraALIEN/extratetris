@@ -24,12 +24,14 @@ class Field:
         return [top_point(x) for x in range(self.width)]
 
     def create_piece(self):
+        import random
         piece = self.queue.release_next_piece()
         piece = ActivePiece(piece,
                             field=self,
-                            x=self.width//2 - 1,
-                            y=self.height-1)
-        piece.dev_show()
+                            x=self.width//2 - 1 + random.randint(-2, 2),
+                            y=self.height-2)
+
+        piece.fix_y()
         return piece
 
     def land_piece(self):

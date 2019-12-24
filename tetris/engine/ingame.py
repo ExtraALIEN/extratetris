@@ -19,7 +19,7 @@ def start(id):
     from engine.roomUtils import broadcast_room
     room = status.active_rooms[id]
     fieldsData = { x : {
-                        'surface': room.fields[x].surface,
+                        'surface': room.fields[x].surface[0:-1],
                         'queue' : room.fields[x].queue_to_view(),
                         'active_piece' : room.fields[x].active_piece_to_view()
                     }
@@ -55,3 +55,16 @@ def process_command(conn, data):
            'pos' : pos,
            'changes': changes}
     broadcast_room(id, upd)
+    c = field.active_piece
+    if c is not p:
+        changes = c.to_view()
+        changes_copy = c.to_view()
+        for y in changes_copy:
+            for x in changes_copy[y]:
+                if changes_copy[y][x] == 0:
+                    del changes[y][x]
+
+        upd = {'type': 'field-update',
+                'pos' : pos,
+                'changes': changes}
+        broadcast_room(id, upd)
