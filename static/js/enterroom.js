@@ -35,7 +35,7 @@ conn.onopen = function(event){
 
 conn.onmessage = function(event){
   let data = JSON.parse(event.data);
-  console.log(data);
+  //console.log(data);
   let type = data.type;
   if(type === 'player'){
      player = data.player;

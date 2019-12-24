@@ -54,7 +54,6 @@ function displayCells(elem, y, x, data){
 function updateField(data){
   let pos = data.pos;
   let field = document.getElementById(`field${pos}`);
-  console.log(field);
   for (let y in data.changes){
     for(let x in data.changes[y]){
       let selector = `.row[data-y="${y}"] .cell[data-x="${x}"]`;

@@ -82,3 +82,4 @@ class ActivePiece(Piece):
         return {self.y-y:
                 {self.x+x: self.shape[y][x] for x in range(len(self.shape[y]))}
                 for y in range(len(self.shape))}
+        
