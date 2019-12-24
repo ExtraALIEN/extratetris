@@ -1,5 +1,4 @@
 from engine.Piece import Piece
-import copy
 
 class ActivePiece(Piece):
     def __init__(self, current_piece, x, y, field):
@@ -8,11 +7,20 @@ class ActivePiece(Piece):
         self.y = y
         self.field = field
 
-
     def dev_show(self):
         print(self.shape)
         print(self.x)
         print(self.y)
+
+    def make_phantom(self):
+        current_piece = Piece()
+        current_piece.shape = self.shape
+        phantom = ActivePiece(x=self.x,
+                              y=self.y,
+                              current_piece=current_piece,
+                              field=self.field)
+        return phantom
+
 
     def bottom_points(self):
         def bottom_point(x):
@@ -35,19 +43,19 @@ class ActivePiece(Piece):
         return False
 
     def move_left(self):
-        phantom = copy.deepcopy(self)
+        phantom = self.make_phantom()
         phantom.x -= 1
         if not phantom.blocked():
             self.x = phantom.x
 
     def move_right(self):
-        phantom = copy.deepcopy(self)
+        phantom = self.make_phantom()
         phantom.x += 1
         if not phantom.blocked():
             self.x = phantom.x
 
     def move_down(self):
-        phantom = copy.deepcopy(self)
+        phantom = self.make_phantom()
         phantom.y -= 1
         if not phantom.blocked():
             self.y = phantom.y
@@ -55,7 +63,7 @@ class ActivePiece(Piece):
             self.field.land_piece()
 
     def rotate(self):
-        phantom = copy.deepcopy(self)
+        phantom = self.make_phantom()
         if len(phantom.shape) < len(phantom.shape[0]):    # horizontal
             phantom.y += 1
             if phantom.shape[0][0] > 0:
@@ -69,3 +77,8 @@ class ActivePiece(Piece):
             self.x = phantom.x
             self.y = phantom.y
             super(ActivePiece, self).rotate()
+
+    def to_view(self):
+        return {self.y-y:
+                {self.x+x: self.shape[y][x] for x in range(len(self.shape[y]))}
+                for y in range(len(self.shape))}

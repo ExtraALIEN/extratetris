@@ -1,22 +1,20 @@
 console.log('script loaded');
 
 function startFields(fields, conn){
-  console.log('conn', conn);
-  for(let i in fields){
-    let data = fields[i];
-    let x = Object.keys(data)[0];
+  for(let x in fields){
+    console.log(x);
+    let data = fields[x];
     let fieldElem = document.getElementById(`field${x}`);
     let connectDiv = document.getElementById(`position${x}`);
     let disconnectButton = document.getElementById(`disconnect${x}`);
     connectDiv.remove();
     disconnectButton.remove();
     document.body.addEventListener('keydown', controlField);
-    displayCells(fieldElem, 24, 0, data[x].surface);
-    displayCells(fieldElem, data[x].active_piece.y, data[x].active_piece.x,data[x].active_piece.shape);
+    displayCells(fieldElem, 24, 0, data.surface);
+    displayCells(fieldElem, data.active_piece.y, data.active_piece.x,data.active_piece.shape);
   }
 
   function controlField(event){
-    console.log('listener,' , conn);
     let c = event.code;
     let msg = {'type': 'control'};
     if(c === 'KeyA'){
@@ -29,7 +27,9 @@ function startFields(fields, conn){
     }else if(c === 'KeyW'){
       msg.command = 'rotate';
     }
-    conn.send(JSON.stringify(msg));
+    if (msg.command){
+      conn.send(JSON.stringify(msg));
+    }
   }
 
 }
@@ -51,6 +51,25 @@ function displayCells(elem, y, x, data){
   }
 }
 
+function updateField(data){
+  let pos = data.pos;
+  let field = document.getElementById(`field${pos}`);
+  console.log(field);
+  for (let y in data.changes){
+    for(let x in data.changes[y]){
+      let selector = `.row[data-y="${y}"] .cell[data-x="${x}"]`;
+      let cell = field.querySelector(selector);
+      let cl = data.changes[y][x];
+      setClass(cell, `color-${cl}`);
+    }
+  }
+}
+
+function setClass(elem, newClass){
+  elem.className = "cell";
+  elem.classList.add(newClass);
+}
 
 
-export {startFields, getReady};
+
+export {startFields, getReady, updateField};

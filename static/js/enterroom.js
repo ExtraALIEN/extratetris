@@ -1,4 +1,4 @@
-import {startFields, getReady} from './gamecontrols.js';
+import {startFields, getReady, updateField} from './gamecontrols.js';
 import {nodeScriptReplace} from './nodescript.js';
 
 
@@ -84,6 +84,8 @@ conn.onmessage = function(event){
   }
     else if (type === 'start-tetris') {
     startFields(data.fields, conn);
+  } else if (type === 'field-update'){
+    updateField(data);
   }
 };
 

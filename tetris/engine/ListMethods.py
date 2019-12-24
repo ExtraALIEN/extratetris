@@ -12,3 +12,26 @@ def rotate(arr, clockwise):
         else:
             result.insert(0, s)
     return result
+
+def diff_obj(prev, cur):
+    result = {}
+    for y in cur:
+        if y not in prev:
+            result[y] = cur[y]
+        else:
+            for x in cur[y]:
+                if x not in prev[y] or cur[y][x] != prev[y][x]:
+                    if y not in result:
+                        result[y] = {}
+                    result[y][x] = cur[y][x]
+    for y in prev:
+        if y not in cur:
+            result[y] = {}
+            for x in prev[y]:
+                result[y][x] = 0
+        else:
+            for x in prev[y]:
+                if x not in cur[y]:
+                    result[y][x] = 0
+
+    return result
