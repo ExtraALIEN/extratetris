@@ -56,10 +56,12 @@ class ActivePiece(Piece):
     def move_down(self):
         phantom = self.make_phantom()
         phantom.y -= 1
+        terminated = False
         if not phantom.blocked():
             self.y = phantom.y
         else:
-            self.field.land_piece()
+            terminated = self.field.land_piece()
+        return terminated    
 
     def rotate(self):
         phantom = self.make_phantom()

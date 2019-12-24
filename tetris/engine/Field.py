@@ -40,7 +40,9 @@ class Field:
                 if self.active_piece.shape[y][x] > 0:
                     self.surface[self.active_piece.y-y][x+self.active_piece.x] \
                         = self.active_piece.shape[y][x]
+        terminated_lines = self.check_terminate()
         self.active_piece = self.create_piece()
+        return len(terminated_lines) > 0
 
     def queue_to_view(self):
         return {x: self.queue.pieces[x].shape for x in range(len(self.queue.pieces))}
@@ -49,3 +51,18 @@ class Field:
         return {'x': self.active_piece.x,
                 'y': self.active_piece.y,
                 'shape': self.active_piece.shape}
+
+    def check_terminate(self):
+        lines = []
+        for y in range(self.height-1, -1, -1):
+            full = True
+            for x in self.surface[y]:
+                if x == 0:
+                    full = False
+                    break
+            if full:
+                lines.append(y)
+        for y in lines:
+            self.surface.pop(y)
+            self.surface.append([0 for x in range(self.width)])
+        return lines

@@ -41,12 +41,13 @@ def process_command(conn, data):
     field = room.fields[pos]
     p = field.active_piece
     prev = p.to_view()
+    terminated = False
     if command == 'move_left':
         p.move_left()
     elif command == 'move_right':
         p.move_right()
     elif command == 'move_down':
-        p.move_down()
+        terminated = p.move_down()
     elif command == 'rotate':
         p.rotate()
     cur = p.to_view()
@@ -55,6 +56,14 @@ def process_command(conn, data):
            'pos' : pos,
            'changes': changes}
     broadcast_room(id, upd)
+    if terminated:
+        print('terminated')
+        changes = {y: {x:field.surface[y][x] for x in range(len(field.surface[y]))}  \
+                        for y in range(len(field.surface)-1)}
+        field_upd = {'type': 'field-update',
+                      'changes': changes,
+                      'pos': pos}
+        broadcast_room(id, field_upd)
     c = field.active_piece
     if c is not p:
         changes = c.to_view()
