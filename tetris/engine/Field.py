@@ -15,7 +15,8 @@ class Field:
         self.websocket = None
         self.player = None
         self.speed = 0
-        self.timer_speed = 3
+        self.to_movedown = 25 / (self.speed + 25)
+        self.to_accelerate = 6
 
     def top_points(self):
         def top_point(x):
@@ -71,13 +72,15 @@ class Field:
 
 
     def update_timer(self, delay):
-        self.timer_speed -= delay
-        if self.timer_speed <= 0:
-            self.speed += 1
-            self.timer_speed += 3
+        self.to_movedown -= delay
+        if self.to_movedown <= 0:
             self.field_auto_move_down()
-        print(self.timer_speed, self.speed)
-
+            self.to_movedown += 25 / (self.speed + 25)
+        self.to_accelerate -= delay
+        if self.to_accelerate <= 0:
+            self.speed += 1
+            self.to_accelerate += 6
+            print('speed', self.speed)
         t = Timer(delay, self.update_timer, [delay])
         t.start()
 

@@ -11,6 +11,6 @@ class Room:
 
     def start_timers(self, id):
         print('start timers')
-        delay = 1
+        delay = .04
         for field in self.fields:
             field.update_timer(delay)

@@ -20,14 +20,14 @@ function startFields(fields, conn){
   function controlField(event){
     let c = event.code;
     let msg = {'type': 'control'};
-    if(c === 'KeyA'){
+    if(c === 'KeyA' || c === 'ArrowLeft'){
       msg.command = 'move_left';
     }
-    else if(c === 'KeyD'){
+    else if(c === 'KeyD' || c === 'ArrowRight'){
       msg.command = 'move_right';
-    }else if(c === 'KeyS'){
+    }else if(c === 'KeyS' || c === 'ArrowDown'){
       msg.command = 'move_down';
-    }else if(c === 'KeyW'){
+    }else if(c === 'KeyW' || c === 'ArrowUp'){
       msg.command = 'rotate';
     }
     if (msg.command){
