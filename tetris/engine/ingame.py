@@ -21,7 +21,7 @@ def start(id):
     fieldsData = { x : {
                         'surface': room.fields[x].surface[0:-1],
                         'queue' : room.fields[x].queue.to_view(),
-                        'active_piece' : room.fields[x].active_piece_to_view()
+                        'active_piece' : room.fields[x].active_piece.to_view()
                     }
              for x in range(len(room.fields))}
     msg = {'type': 'start-tetris',
@@ -34,7 +34,6 @@ def start(id):
 
 def process_command(conn, data):
     from engine.roomUtils import broadcast_room
-    print(status.connections)
     command = data['command']
     id = status.connections[conn]['id']
     pos = status.connections[conn]['pos']
@@ -49,6 +48,7 @@ def process_command(conn, data):
         p.move_right()
     elif command == 'move_down':
         terminated = p.move_down()
+        p.field.speed += p.field.speed_boost
     elif command == 'rotate':
         p.rotate()
     cur = p.to_view()

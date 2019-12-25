@@ -14,13 +14,16 @@ class Field:
         self.websocket = None
         self.player = None
         self.speed = 0
+        self.speed_boost = 0.02
         self.to_movedown = 25 / (self.speed + 25)
         self.to_accelerate = 1.2
         self.total_figures = 0
         self.lines = 0
         self.score = 0
         self.time = 0
+        self.distance = 0
         self.active_piece = self.create_piece()
+        self.game_over = False
 
     def top_points(self):
         def top_point(x):
@@ -38,8 +41,9 @@ class Field:
                             field=self,
                             x=self.width//2 - 1 + random.randint(-2, 2),
                             y=self.height-2)
-
         piece.fix_y()
+        if piece.blocked():
+            self.end_game()
         return piece
 
     def land_piece(self):
@@ -51,9 +55,10 @@ class Field:
         terminated_lines = self.check_terminate()
         self.lines += len(terminated_lines)
         self.add_score(terminated_lines)
-        print('pieces: ', self.total_figures, ' lines: ', self.lines, ' score: ', self.score )
-        self.active_piece = self.create_piece()
-        return len(terminated_lines) > 0
+        print('pieces: ', self.total_figures, ' lines: ', self.lines,'dist: ', self.distance, ' score: ', self.score )
+        if not self.game_over:
+            self.active_piece = self.create_piece()
+            return len(terminated_lines) > 0
 
 
     def add_score(self, terminated_lines):
@@ -87,10 +92,6 @@ class Field:
         print('to add: ', to_add )
         self.score += to_add
 
-    def active_piece_to_view(self):
-        return {'x': self.active_piece.x,
-                'y': self.active_piece.y,
-                'shape': self.active_piece.shape}
 
     def check_terminate(self):
         lines = []
@@ -120,8 +121,14 @@ class Field:
             self.to_accelerate += 1.2
             print('speed', self.speed)
         t = Timer(delay, self.update_timer, [delay])
-        t.start()
+        if not self.game_over:
+            t.start()
+        else:
+            print('game over')
 
     def field_auto_move_down(self):
         from engine.ingame import auto_move_down
         auto_move_down(self)
+
+    def end_game(self):
+        self.game_over = True

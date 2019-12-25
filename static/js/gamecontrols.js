@@ -14,7 +14,15 @@ function startFields(fields, conn){
     disconnectButton.remove();
     document.body.addEventListener('keydown', controlField);
     displayCells(fieldElem, rows, 0, data.surface);
-    displayCells(fieldElem, data.active_piece.y, data.active_piece.x,data.active_piece.shape);
+    let changes = Object.assign({}, data.active_piece)
+    for (let y in data.active_piece){
+      for (let x in y){
+        if (data.active_piece[y][x] === 0){
+          delete changes[y][x];
+        }
+      }
+    }
+    updateField({'pos':x, 'changes':changes});
   }
 
   function controlField(event){

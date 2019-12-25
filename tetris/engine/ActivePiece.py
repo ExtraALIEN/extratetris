@@ -7,6 +7,7 @@ class ActivePiece(Piece):
         self.y = y
         self.field = field
 
+
     def fix_y(self):
         if sum(self.shape[0]) == 0:
             self.y += 1
@@ -82,6 +83,7 @@ class ActivePiece(Piece):
         terminated = False
         if not phantom.blocked():
             self.y = phantom.y
+            self.field.distance += 1
         else:
             terminated = self.field.land_piece()
         return terminated
@@ -106,3 +108,8 @@ class ActivePiece(Piece):
         return {self.y-y:
                 {self.x+x: self.shape[y][x] for x in range(len(self.shape[y]))}
                 for y in range(len(self.shape))}
+
+                # def active_piece_to_view(self):
+                #     return {'x': self.active_piece.x,
+                #             'y': self.active_piece.y,
+                #             'shape': self.active_piece.shape}
