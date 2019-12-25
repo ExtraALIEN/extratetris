@@ -11,4 +11,8 @@ class QueuePieces:
         return next_piece
 
     def to_view(self):
-        return {x: self.pieces[x].shape for x in range(len(self.pieces))}
+        return {i:
+                {y:
+                 {x: self.pieces[i].shape[y][x] for x in range(len(self.pieces[i].shape[y]))}
+                 for y in range(len(self.pieces[i].shape))}
+                for i in range(len(self.pieces))}

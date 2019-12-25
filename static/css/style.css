@@ -107,3 +107,49 @@ body > main {
 .cell.color-1{
   background-color: #1e1b25;
 }
+
+.queue{
+  box-sizing: border-box;
+  border: 1px solid grey;
+  width: 6vh;
+  max-width: 6vh;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: stretch;
+
+}
+
+.queue > div {
+  box-sizing: border-box;
+  flex-grow:1;
+  flex-basis: 15%;
+  border: 1px solid grey;
+  display:flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.queue-row{
+
+  flex-grow:1;
+  flex-basis: 1vh;
+  max-height: 1vh;
+  display:flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: stretch;
+
+}
+
+.queue-row .cell{
+  border: none;
+  flex-grow:1;
+  flex-basis: 1vh;
+  max-width:1vh;
+  box-sizing: border-box;
+}

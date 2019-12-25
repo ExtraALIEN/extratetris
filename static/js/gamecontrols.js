@@ -24,6 +24,8 @@ function startFields(fields, conn){
       }
     }
     updateField({'pos':x, 'changes':changes});
+    updateQueue(fieldElem, data.queue);
+
   }
 }
 
@@ -79,6 +81,23 @@ function updateField(data){
     }
   }
 }
+
+function updateQueue(fieldElem, data){
+  for(let i in data){
+    [...fieldElem.querySelectorAll(`[id="queue${i}"] .cell`)].forEach(a=> setClass(a, 'color-0'));
+    for(let y in data[i]){
+      for(let x in data[i][y]){
+        let selector = `[id="queue${i}"] .queue-row[data-y="${y}"] .cell[data-x="${x}"]`;
+        let cell = fieldElem.querySelector(selector);
+        console.log(cell);
+        let cl = data[i][y][x];
+        setClass(cell, `color-${cl}`);
+      }
+    }
+  }
+}
+
+
 
 function setClass(elem, newClass){
   if(elem) {

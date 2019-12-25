@@ -86,6 +86,8 @@ def enter_room(request, room_number):
     positions = [x for x in range(room.players)]
     width = [x for x in range(12)]
     height = [x for x in range(25-2,-1,-1)]
+    queue = [x for x in range(5)]
+    queue_grid = [x for x in range(-1,5)]
     scripts = ['enterroom']
     # if room.started:
     #     scripts = ['gamecontrols']
@@ -93,7 +95,9 @@ def enter_room(request, room_number):
                                              'positions': positions,
                                              'scripts': scripts,
                                              'width': width,
-                                             'height': height})
+                                             'height': height,
+                                             'queue' : queue,
+                                             'queue_grid': queue_grid})
 
 
 def delete_room(request, room_number):

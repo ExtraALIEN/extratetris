@@ -30,6 +30,21 @@
                {% endfor %}
              </div>
            {% endfor %}
+           <div class='queue'>
+             {% for i in queue %}
+                <div id='queue{{i}}'>
+                  {% for y in queue_grid %}
+                    <div data-y={{y}} class='queue-row'>
+                      {% for x in queue_grid %}
+                        <div data-x={{x}} class='cell'>
+
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% endfor %}
+                </div>
+             {% endfor%}
+           </div>
            <div id='position{{pos}}'
                 class='connect'
                 data-pos='{{pos}}'>
