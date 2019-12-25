@@ -54,7 +54,11 @@ class Field:
                         = self.active_piece.shape[y][x]
         terminated_lines = self.check_terminate()
         self.lines += len(terminated_lines)
-        self.add_score(terminated_lines)
+        if sum(self.surface[-1]) > 0:
+            self.end_game()
+        else:
+            self.add_score(terminated_lines)
+
         print('pieces: ', self.total_figures, ' lines: ', self.lines,'dist: ', self.distance, ' score: ', self.score )
         if not self.game_over:
             self.active_piece = self.create_piece()
