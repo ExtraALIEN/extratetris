@@ -79,6 +79,11 @@ def process_command(conn, data):
                     'pos' : pos,
                     'changes': changes}
             broadcast_room(id, upd)
+            queue = field.queue.to_view()
+            queue_upd = {'type': 'queue-update',
+                        'pos' : pos,
+                        'queue': queue}
+            broadcast_room(id, queue_upd)
     else:
         conn.send_json({'type': 'game-over'});
 

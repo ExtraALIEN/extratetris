@@ -24,14 +24,13 @@ function startFields(fields, conn){
       }
     }
     updateField({'pos':x, 'changes':changes});
-    updateQueue(fieldElem, data.queue);
+    updateQueue({'pos':x, 'queue':data.queue});
 
   }
 }
 
 function controlField(event){
   let c = event.code;
-  console.log(c);
   let msg = {'type': 'control'};
   if(c === 'KeyA' || c === 'ArrowLeft'){
     msg.command = 'move_left';
@@ -82,15 +81,17 @@ function updateField(data){
   }
 }
 
-function updateQueue(fieldElem, data){
-  for(let i in data){
-    [...fieldElem.querySelectorAll(`[id="queue${i}"] .cell`)].forEach(a=> setClass(a, 'color-0'));
-    for(let y in data[i]){
-      for(let x in data[i][y]){
+function updateQueue(data){
+  let pos = data.pos;
+  let qElem = document.querySelector(`#field${pos} .queue`);
+  for(let i in data.queue){
+    [...qElem.querySelectorAll(`[id="queue${i}"] .cell`)].forEach(a=> setClass(a, 'color-0'));
+    for(let y in data.queue[i]){
+      for(let x in data.queue[i][y]){
         let selector = `[id="queue${i}"] .queue-row[data-y="${y}"] .cell[data-x="${x}"]`;
-        let cell = fieldElem.querySelector(selector);
+        let cell = qElem.querySelector(selector);
         console.log(cell);
-        let cl = data[i][y][x];
+        let cl = data.queue[i][y][x];
         setClass(cell, `color-${cl}`);
       }
     }
@@ -110,4 +111,4 @@ function removeControls(){
   document.body.removeEventListener('keydown', controlField);
 }
 
-export {startFields, getReady, updateField, removeControls};
+export {startFields, getReady, updateField, removeControls, updateQueue};
