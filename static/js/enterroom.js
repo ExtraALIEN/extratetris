@@ -1,4 +1,4 @@
-import {startFields, getReady, updateField} from './gamecontrols.js';
+import {startFields, getReady, updateField, removeControls} from './gamecontrols.js';
 import {nodeScriptReplace} from './nodescript.js';
 
 
@@ -86,6 +86,8 @@ conn.onmessage = function(event){
     startFields(data.fields, conn);
   } else if (type === 'field-update'){
     updateField(data);
+  } else if (type === 'game-over'){
+    removeControls();
   }
 };
 

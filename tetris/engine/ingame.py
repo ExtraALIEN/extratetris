@@ -79,7 +79,8 @@ def process_command(conn, data):
                     'pos' : pos,
                     'changes': changes}
             broadcast_room(id, upd)
-
+    else:
+        conn.send_json({'type': 'game-over'});
 
 def auto_move_down(field):
     from engine.roomUtils import broadcast_room

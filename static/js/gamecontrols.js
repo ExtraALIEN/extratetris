@@ -12,6 +12,7 @@ function startFields(fields, conn){
     let disconnectButton = document.getElementById(`disconnect${x}`);
     connectDiv.remove();
     disconnectButton.remove();
+    document.body.conn = conn;
     document.body.addEventListener('keydown', controlField);
     displayCells(fieldElem, rows, 0, data.surface);
     let changes = Object.assign({}, data.active_piece)
@@ -24,26 +25,28 @@ function startFields(fields, conn){
     }
     updateField({'pos':x, 'changes':changes});
   }
-
-  function controlField(event){
-    let c = event.code;
-    let msg = {'type': 'control'};
-    if(c === 'KeyA' || c === 'ArrowLeft'){
-      msg.command = 'move_left';
-    }
-    else if(c === 'KeyD' || c === 'ArrowRight'){
-      msg.command = 'move_right';
-    }else if(c === 'KeyS' || c === 'ArrowDown'){
-      msg.command = 'move_down';
-    }else if(c === 'KeyW' || c === 'ArrowUp'){
-      msg.command = 'rotate';
-    }
-    if (msg.command){
-      conn.send(JSON.stringify(msg));
-    }
-  }
-
 }
+
+function controlField(event){
+  let c = event.code;
+  console.log(c);
+  let msg = {'type': 'control'};
+  if(c === 'KeyA' || c === 'ArrowLeft'){
+    msg.command = 'move_left';
+  }
+  else if(c === 'KeyD' || c === 'ArrowRight'){
+    msg.command = 'move_right';
+  }else if(c === 'KeyS' || c === 'ArrowDown'){
+    msg.command = 'move_down';
+  }else if(c === 'KeyW' || c === 'ArrowUp'){
+    msg.command = 'rotate';
+  }
+  if (msg.command){
+    event.target.conn.send(JSON.stringify(msg));
+  }
+}
+
+
 
 function getReady(conn){
   console.log('get ready signal received');
@@ -84,6 +87,8 @@ function setClass(elem, newClass){
   }
 }
 
+function removeControls(){
+  document.body.removeEventListener('keydown', controlField);
+}
 
-
-export {startFields, getReady, updateField};
+export {startFields, getReady, updateField, removeControls};
