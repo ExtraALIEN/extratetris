@@ -23,6 +23,8 @@ class ActivePiece(Piece):
 
     def bottom_points(self):
         def bottom_point(x):
+            if x+self.x >= self.field.width:
+                return -1
             for y in range(len(self.shape)-1, -1, -1):
                 if self.shape[y][x] != 0:
                     return self.y-y
@@ -32,16 +34,21 @@ class ActivePiece(Piece):
     def detect_landing_row(self):
         land_y = None
         points = self.bottom_points()
+        has_zero = False
         for x in points:
             y = points[x]
             if y > 0:
                 if self.field.surface[y-1][x] > 0:
                     if land_y is None:
                         land_y = y
-                    elif y-1 < land_y:
+                    elif y < land_y:
                         land_y = y
             elif y == 0:
-                return 0
+                has_zero = True
+        if land_y is None:
+            land_y = 0
+        if land_y > 0 and has_zero:
+            land_y = 0
         print(land_y, points)
         return land_y
 
