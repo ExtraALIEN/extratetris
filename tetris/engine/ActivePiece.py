@@ -27,7 +27,23 @@ class ActivePiece(Piece):
                 if self.shape[y][x] != 0:
                     return self.y-y
             return self.y
-        return [{x+self.x: bottom_point(x)} for x in range(len(self.shape[0]))]
+        return {x+self.x: bottom_point(x) for x in range(len(self.shape[0]))}
+
+    def detect_landing_row(self):
+        land_y = None
+        points = self.bottom_points()
+        for x in points:
+            y = points[x]
+            if y > 0:
+                if self.field.surface[y-1][x] > 0:
+                    if land_y is None:
+                        land_y = y
+                    elif y-1 < land_y:
+                        land_y = y
+            elif y == 0:
+                return 0
+        print(land_y, points)
+        return land_y
 
     def blocked(self):
         for y in range(len(self.shape)):
@@ -61,7 +77,7 @@ class ActivePiece(Piece):
             self.y = phantom.y
         else:
             terminated = self.field.land_piece()
-        return terminated    
+        return terminated
 
     def rotate(self):
         phantom = self.make_phantom()

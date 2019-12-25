@@ -11,12 +11,16 @@ class Field:
         self.height = height
         self.surface = buildEmptyFieldList(width, height)
         self.queue = QueuePieces()
-        self.active_piece = self.create_piece()
         self.websocket = None
         self.player = None
         self.speed = 0
         self.to_movedown = 25 / (self.speed + 25)
-        self.to_accelerate = 6
+        self.to_accelerate = 1.2
+        self.total_figures = 0
+        self.lines = 0
+        self.score = 0
+        self.time = 0
+        self.active_piece = self.create_piece()
 
     def top_points(self):
         def top_point(x):
@@ -29,6 +33,7 @@ class Field:
     def create_piece(self):
         import random
         piece = self.queue.release_next_piece()
+        self.total_figures += 1
         piece = ActivePiece(piece,
                             field=self,
                             x=self.width//2 - 1 + random.randint(-2, 2),
@@ -44,9 +49,43 @@ class Field:
                     self.surface[self.active_piece.y-y][x+self.active_piece.x] \
                         = self.active_piece.shape[y][x]
         terminated_lines = self.check_terminate()
+        self.lines += len(terminated_lines)
+        self.add_score(terminated_lines)
+        print('pieces: ', self.total_figures, ' lines: ', self.lines, ' score: ', self.score )
         self.active_piece = self.create_piece()
         return len(terminated_lines) > 0
 
+
+    def add_score(self, terminated_lines):
+        import math
+
+        def round_half_up(n):
+            return math.floor(n + 0.5)
+
+        lines = terminated_lines[::-1]
+        base = 0
+        if len(lines) > 0:
+            LINE_SCORES = [100, 300, 600, 1000]
+            combos = []
+            row_numbers = []
+            for x in range(len(lines)):
+                if x == 0:
+                    combos.append(1)
+                    row_numbers.append(lines[x])
+                else:
+                    if lines[x] - 1 == lines[x-1]:
+                        combos[-1] += 1
+                    else:
+                        combos.append(1)
+                        row_numbers.append(lines[x])
+            for x in range(len(row_numbers)):
+                base += LINE_SCORES[combos[x]-1]*(1 + (row_numbers[x] * (7 / 60)))
+        else:
+            land_y = self.active_piece.detect_landing_row()
+            base = 15 * (1 + (land_y * (7 / 60)))
+        to_add = round_half_up(base * (math.sqrt(2)**(self.speed/50)))
+        print('to add: ', to_add )
+        self.score += to_add
 
     def active_piece_to_view(self):
         return {'x': self.active_piece.x,
@@ -70,14 +109,15 @@ class Field:
 
 
     def update_timer(self, delay):
+        self.time += delay
         self.to_movedown -= delay
         if self.to_movedown <= 0:
             self.field_auto_move_down()
             self.to_movedown += 25 / (self.speed + 25)
         self.to_accelerate -= delay
         if self.to_accelerate <= 0:
-            self.speed += 1
-            self.to_accelerate += 6
+            self.speed += .1
+            self.to_accelerate += 1.2
             print('speed', self.speed)
         t = Timer(delay, self.update_timer, [delay])
         t.start()
