@@ -158,26 +158,23 @@ class Field:
 
 
     def update_timer(self, delay):
-        return
         self.time += delay
         self.to_movedown -= delay
         if self.to_movedown <= 0:
-            self.field_auto_move_down()
+            self.auto_move_down()
             self.to_movedown += 25 / (self.speed + 25)
         self.to_accelerate -= delay
         if self.to_accelerate <= 0:
             self.speed += .1
             self.to_accelerate += 1.2
-            print('speed', self.speed)
         t = Timer(delay, self.update_timer, [delay])
         if not self.game_over:
             t.start()
         else:
             print('game over')
 
-    def field_auto_move_down(self):
-        from engine.ingame import auto_move_down
-        auto_move_down(self)
+    def auto_move_down(self):
+        self.move('move_down')
 
     def end_game(self):
         self.game_over = True
