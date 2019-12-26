@@ -1,33 +1,34 @@
 console.log('script loaded');
 
-function startFields(fields, conn){
+function startTetris(fields, conn){
   for(let x in fields){
-    console.log(x);
+    deactivateConnectButtons(x);
+    activateControls(conn);
     let data = fields[x];
-    console.log(data);
     let fieldElem = document.getElementById(`field${x}`);
     let rows = fieldElem.querySelectorAll('.row').length-1;
-    console.log(rows);
-    let connectDiv = document.getElementById(`position${x}`);
-    let disconnectButton = document.getElementById(`disconnect${x}`);
-    connectDiv.remove();
-    disconnectButton.remove();
-    document.body.conn = conn;
-    document.body.addEventListener('keydown', controlField);
-    displayCells(fieldElem, rows, 0, data.surface);
-    let changes = Object.assign({}, data.active_piece)
-    for (let y in data.active_piece){
-      for (let x in y){
-        if (data.active_piece[y][x] === 0){
-          delete changes[y][x];
-        }
-      }
-    }
-    updateField({'pos':x, 'changes':changes});
-    updateQueue({'pos':x, 'queue':data.queue});
-
+    refreshSurface(data.surface);
+    refreshActivePiece(data.active_piece);
+    refreshQueue(data.queue);
   }
 }
+
+function deactivateConnectButtons(x){
+  let connectDiv = document.getElementById(`position${x}`);
+  let disconnectButton = document.getElementById(`disconnect${x}`);
+  connectDiv.remove();
+  disconnectButton.remove();
+}
+
+function activateControls(conn){
+  document.body.conn = conn;
+  document.body.addEventListener('keydown', controlField);
+}
+
+function removeControls(){
+  document.body.removeEventListener('keydown', controlField);
+}
+
 
 function controlField(event){
   let c = event.code;
@@ -55,50 +56,88 @@ function getReady(conn){
 }
 
 
-function displayCells(elem, y, x, data){
-  for(let yy = 0; yy<data.length; yy++){
-    for (let xx = 0; xx<data[0].length; xx++){
-      let selector = `.row[data-y="${y-yy}"] .cell[data-x="${x+xx}"]`;
-      let cell = elem.querySelector(selector);
-      let newClass = `color-${data[yy][xx]}`;
-      setClass(cell,newClass);
-
+function refreshSurface(data){
+    let pos = data.pos;
+    let field = document.getElementById(`field${pos}`);
+    for(let y in data){
+      if(y !== 'pos'){
+        for (let x in data[y]){
+          let selector = `.row[data-y="${y}"] .cell[data-x="${x}"]`;
+          let cell = field.querySelector(selector);
+          let cl = data[y][x];
+          setClass(cell, `color-${cl}`);
+        }
+      }
     }
-  }
 }
 
-function updateField(data){
-  let pos = data.pos;
-  let field = document.getElementById(`field${pos}`);
-  for (let y in data.changes){
-    for(let x in data.changes[y]){
-      let selector = `.row[data-y="${y}"] .cell[data-x="${x}"]`;
-
-      let cell = field.querySelector(selector);
-      let cl = data.changes[y][x];
-      setClass(cell, `color-${cl}`);
-    }
-  }
-}
-
-function updateQueue(data){
+function refreshQueue(data){
   let pos = data.pos;
   let qElem = document.querySelector(`#field${pos} .queue`);
-  for(let i in data.queue){
-    [...qElem.querySelectorAll(`[id="queue${i}"] .cell`)].forEach(a=> setClass(a, 'color-0'));
-    for(let y in data.queue[i]){
-      for(let x in data.queue[i][y]){
-        let selector = `[id="queue${i}"] .queue-row[data-y="${y}"] .cell[data-x="${x}"]`;
-        let cell = qElem.querySelector(selector);
-        console.log(cell);
-        let cl = data.queue[i][y][x];
-        setClass(cell, `color-${cl}`);
+  for(let i in data){
+    if (i!== 'pos'){
+      [...qElem.querySelectorAll(`[id="queue${i}"] .cell`)].forEach(a=> setClass(a, 'color-0'));
+      for(let y in data[i]){
+        for(let x in data[i][y]){
+          let selector = `[id="queue${i}"] .queue-row[data-y="${y}"] .cell[data-x="${x}"]`;
+          let cell = qElem.querySelector(selector);
+          let cl = data[i][y][x];
+          setClass(cell, `color-${cl}`);
+        }
       }
     }
   }
 }
 
+function refreshActivePiece(data){
+  let pos = data.pos;
+  for (let y in data){
+    if(y !== 'pos'){
+      for (let x in data[y]){
+        if (data[y][x] > 0){
+          let selector = `#field${pos} > .row[data-y="${y}"] .cell[data-x="${x}"]`;
+          let cell = document.querySelector(selector);
+          let newClass = `color-${data[y][x]}`;
+          setClass(cell,newClass);
+        }
+      }
+    }
+  }
+}
 
+function updateTetris(data){
+  let pos = data.pos;
+  for (let prop in data){
+    if(prop === 'current_piece'){
+      updateCurrentPiece(pos, data.current_piece)
+    }
+  }
+}
+
+function refreshTetris(data){
+  for (let prop in data){
+    if(prop === 'surface'){
+      refreshSurface(data.surface);
+    } else if (prop === 'new_piece'){
+      refreshActivePiece(data.new_piece);
+    }  else if (prop === 'queue'){
+      refreshQueue(data.queue);
+    }
+  }
+}
+
+function updateCurrentPiece(pos, data){
+  for (let y in data){
+    for(let x in data[y]){
+
+        let selector = `#field${pos} > .row[data-y="${y}"] .cell[data-x="${x}"]`;
+        let cell = document.querySelector(selector);
+        let newClass = `color-${data[y][x]}`;
+        setClass(cell,newClass);
+
+    }
+  }
+}
 
 function setClass(elem, newClass){
   if(elem) {
@@ -107,8 +146,6 @@ function setClass(elem, newClass){
   }
 }
 
-function removeControls(){
-  document.body.removeEventListener('keydown', controlField);
-}
 
-export {startFields, getReady, updateField, removeControls, updateQueue};
+
+export {startTetris, getReady,  removeControls, updateTetris, refreshTetris};

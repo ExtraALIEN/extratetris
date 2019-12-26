@@ -16,27 +16,36 @@ def rotate(arr, clockwise):
 def diff_obj(prev, cur):
     result = {}
     for y in prev:
-        for x in prev[y]:
-            if prev[y][x] != 0:
-                if y not in cur or x not in cur[y]:
-                    if y not in result:
-                        result[y] = {}
-                    result[y][x] = 0
-                elif cur[y][x] != prev[y][x]:
-                    if y not in result:
-                        result[y] = {}
-                    result[y][x] = cur[y][x]
+        if isinstance(y, int):
+            if y not in cur:
+                result[y] = {}
+                for x in prev[y]:
+                    if prev[y][x] > 0:
+                        result[y][x] = 0
+            else:
+                for x in prev[y]:
+                    if x not in cur[y]:
+                        if prev[y][x] > 0:
+                            if y not in result:
+                                result[y] = {}
+                            result[y][x] = 0
     for y in cur:
-        for x in cur[y]:
-            if cur[y][x] != 0:
-                if y not in prev or x not in prev[y]:
-                    if y not in result:
-                        result[y] = {}
-                    result[y][x] = cur[y][x]
-                elif cur[y][x] != prev[y][x]:
-                    if y not in result:
-                        result[y] = {}
-                    result[y][x] = cur[y][x]
+        if isinstance(y, int):
+            if y not in prev:
+                result[y] = {}
+                for x in cur[y]:
+                    if cur[y][x] > 0:
+                        result[y][x] = cur[y][x]
+            else:
+                for x in cur[y]:
+                    if x not in prev[y]:
+                        if y not in result:
+                            result[y] = {}
+                        result[y][x] = cur[y][x]
+                    elif cur[y][x] != prev[y][x]:
+                        if y not in result:
+                            result[y] = {}
+                        result[y][x] = cur[y][x]
     return result
 
 

@@ -105,9 +105,11 @@ class ActivePiece(Piece):
             super(ActivePiece, self).rotate()
 
     def to_view(self):
-        return {self.y-y:
-                {self.x+x: self.shape[y][x] for x in range(len(self.shape[y]))}
-                for y in range(len(self.shape))}
+        obj = {self.y-y:
+               {self.x+x: self.shape[y][x] for x in range(len(self.shape[y])) if self.shape[y][x] > 0}
+               for y in range(len(self.shape))}
+        obj['pos'] = self.field.pos
+        return obj
 
                 # def active_piece_to_view(self):
                 #     return {'x': self.active_piece.x,

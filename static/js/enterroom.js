@@ -1,4 +1,4 @@
-import {startFields, getReady, updateField, removeControls, updateQueue} from './gamecontrols.js';
+import {startTetris, getReady, removeControls, updateTetris, refreshTetris} from './gamecontrols.js';
 import {nodeScriptReplace} from './nodescript.js';
 
 
@@ -22,6 +22,8 @@ function sendDisconnectSignal(){
                         }));
 }
 
+
+
 let conn = new WebSocket('ws://localhost/ws/connect/');
 
 conn.onopen = function(event){
@@ -31,6 +33,7 @@ conn.onopen = function(event){
     'room_id': number
   }));
 }
+
 
 
 conn.onmessage = function(event){
@@ -83,9 +86,11 @@ conn.onmessage = function(event){
     ready = true;
   }
     else if (type === 'start-tetris') {
-    startFields(data.fields, conn);
-  } else if (type === 'field-update'){
-    updateField(data);
+    startTetris(data.fields, conn);
+  } else if (type === 'update-tetris'){
+    updateTetris(data);
+  } else if (type === 'refresh-tetris'){
+    refreshTetris(data);
   } else if (type === 'game-over'){
     removeControls();
   } else if (type === 'queue-update'){

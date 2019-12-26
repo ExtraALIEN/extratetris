@@ -5,12 +5,11 @@ from threading import Timer
 
 class Field:
 
-    def __init__(self, room=None, width=12, height=25, ):
+    def __init__(self, pos, room=None, width=12, height=25, ):
+        self.pos = pos
         self.room = room
         self.width = width
         self.height = height
-        self.surface = buildEmptyFieldList(width, height)
-        self.queue = QueuePieces()
         self.websocket = None
         self.player = None
         self.speed = 0
@@ -22,6 +21,8 @@ class Field:
         self.score = 0
         self.time = 0
         self.distance = 0
+        self.surface = buildEmptyFieldList(width, height)
+        self.queue = QueuePieces(pos=self.pos)
         self.active_piece = self.create_piece()
         self.game_over = False
 
@@ -113,7 +114,51 @@ class Field:
         return lines
 
 
+    def move(self, command):
+        from engine.ListMethods import diff_obj
+        from engine.roomUtils import broadcast_room
+        import engine.status as status
+        id = status.connections[self.websocket]['id']
+        piece = self.active_piece
+        prev = piece.to_view()
+        terminated = False
+        if command == 'move_left':
+            self.active_piece.move_left()
+        elif command == 'move_right':
+            self.active_piece.move_right()
+        elif command == 'move_down':
+            terminated = self.active_piece.move_down()
+        elif command == 'rotate':
+            self.active_piece.rotate()
+        cur = piece.to_view()
+        piece_move = diff_obj(prev, cur)
+        upd =  {'type': 'update-tetris',
+                'pos' : self.pos,
+                'current_piece': piece_move}
+        broadcast_room(id, upd)
+        after_piece = self.active_piece
+        if after_piece is not piece:
+            new_piece = after_piece.to_view()
+            new_piece_copy = after_piece.to_view()
+            for y in new_piece_copy:
+                if isinstance(y, int):
+                    for x in new_piece_copy[y]:
+                        if new_piece_copy[y][x] == 0:
+                            del new_piece[y][x]
+            queue = self.queue.to_view()
+            refresh_field = {'type': 'refresh-tetris',
+                            'pos' : self.pos,
+                            'new_piece': new_piece,
+                            'queue': queue}
+            if terminated:
+                refresh_field['surface'] = self.surface_to_view()
+
+            broadcast_room(id, refresh_field)
+
+
+
     def update_timer(self, delay):
+        return
         self.time += delay
         self.to_movedown -= delay
         if self.to_movedown <= 0:
@@ -136,3 +181,23 @@ class Field:
 
     def end_game(self):
         self.game_over = True
+
+
+    def surface_to_view(self):
+        obj = {y:
+               {x: self.surface[y][x] for x in range(self.width)}
+               for y in range(self.height-1)}
+        obj['pos'] = self.pos
+        return obj
+
+    def to_view(self):
+        return {
+            'speed': self.speed,
+            'lines': self.lines,
+            'score': self.score,
+            'time': self.time,
+            'distance': self.distance,
+            'surface': self.surface_to_view(),
+            'queue': self.queue.to_view(),
+            'active_piece':self.active_piece.to_view()
+        }
