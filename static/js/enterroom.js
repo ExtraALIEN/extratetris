@@ -22,6 +22,12 @@ function sendDisconnectSignal(){
                         }));
 }
 
+function showDisconnect(pos){
+  let selector = `#field${pos} .announce`;
+  console.log(selector);
+  document.querySelector(selector).innerHTML = 'Player disconnected';
+}
+
 
 
 let conn = new WebSocket('ws://localhost/ws/connect/');
@@ -70,6 +76,21 @@ conn.onmessage = function(event){
       myField.classList.remove('connected');
       dis.classList.remove('connected');
     }
+  }else if (type === 'room-deleted'){
+    console.log('room deleted');
+    fetch(window.location.origin)
+            .then(res => res.text())
+            .then(function(text) {
+              console.log('fetched');
+            document.body.innerHTML = text;
+            let info = document.getElementById('info')
+            info.innerHTML = 'room deleted by author';
+            info.classList.add('new-info');
+            nodeScriptReplace(document.getElementsByTagName("body")[0]);
+            }
+            );
+
+
   } else if (type === 'start-game'){
     console.log('start game');
     console.log(window.location.href);
@@ -95,6 +116,8 @@ conn.onmessage = function(event){
     removeControls();
   } else if (type === 'queue-update'){
     updateQueue(data);
+  } else if(type === 'game-disconnect'){
+    showDisconnect(data.pos);
   }
 };
 

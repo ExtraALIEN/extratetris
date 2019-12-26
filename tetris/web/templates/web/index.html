@@ -21,3 +21,9 @@
     {% endfor %}
   </ul>
 {% endblock %}
+
+{% block scripts %}
+  {%for script in scripts %}
+    <script type='module' src='/static/js/{{script}}.js'></script>
+  {% endfor %}
+{% endblock %}

@@ -15,7 +15,7 @@ def index(request):
         text = "Добро пожаловать, " + request.user.username
     rooms = TetrisRoom.objects.all()
 
-    return render(request, 'web/index.html', {'text': text, 'rooms': rooms})
+    return render(request, 'web/index.html', {'text': text, 'rooms': rooms,})
 
 
 def signup(request):

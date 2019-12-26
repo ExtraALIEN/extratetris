@@ -50,7 +50,6 @@ class ActivePiece(Piece):
             land_y = 0
         if land_y > 0 and has_zero:
             land_y = 0
-        print(land_y, points)
         return land_y
 
     def blocked(self):

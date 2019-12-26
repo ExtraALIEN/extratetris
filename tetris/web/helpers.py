@@ -28,6 +28,7 @@ def auto_login(player):
     session.user = player
     session.expires = timezone.now() + timedelta(days=5)
     session.save()
+    print('auto login ', player.login, session.key)
     return session.key
 
 GAME_TYPES = [

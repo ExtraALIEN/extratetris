@@ -129,12 +129,10 @@ function refreshTetris(data){
 function updateCurrentPiece(pos, data){
   for (let y in data){
     for(let x in data[y]){
-
         let selector = `#field${pos} > .row[data-y="${y}"] .cell[data-x="${x}"]`;
         let cell = document.querySelector(selector);
         let newClass = `color-${data[y][x]}`;
         setClass(cell,newClass);
-
     }
   }
 }

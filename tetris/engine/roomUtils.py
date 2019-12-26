@@ -7,15 +7,12 @@ def create_room(id, size):
     new_room = Room(size)
     status.active_rooms[id] = new_room
     status.room_lobby[id] = set()
-    print('created engine room # ', str(id))
-    print('status', status.active_rooms)
 
 
 def find_next_id():
     return TetrisRoom.objects.next_id()
 
 def detect_player(conn):
-    print('detecting player')
     headers = conn.scope['headers']
     cookies = None
     for x in headers:
@@ -35,7 +32,9 @@ def detect_player(conn):
 def new_guest(id):
     url = '/room/'+str(id)+'/'
     guest = Player.objects.create_guest()
+    print('do login')
     guest.do_login(url=url)
+    print('loginned')
     return guest
 
 def room_connect(conn, data):
@@ -104,18 +103,37 @@ def init_room(conn, data):
 
 
 def room_hard_disconnect(conn):
-    if conn in status.in_room_lobby:
-        id = status.in_room_lobby[conn]
-        exit_room(id, conn)
-    if conn in status.connections:
-        id = status.connections[conn]['id']
-        pos = status.connections[conn]['pos']
-        data = {'room_id': id, 'pos': pos}
-        room_disconnect(conn, data)
     player = detect_player(conn)
-    print('player exit: ', player.login)
+    print('login         ', player.login)
+    id = status.in_room_lobby[conn]
+    exit_room(id, conn)
+    pos = None
+    if conn in status.connections:
+        pos = status.connections[conn]['pos']
+
+    tetris_room = TetrisRoom.objects.get(room_id=id)
+    if not tetris_room.started:
+        if player == tetris_room.author:
+            tetris_room.delete()
+            delete = {'type': 'room-deleted'}
+            broadcast_room(id, delete)
+        elif conn in status.connections:
+            pos = status.connections[conn]['pos']
+            data = {'room_id': id, 'pos': pos}
+            room_disconnect(conn, data)
+    else:
+        if pos is not None:   # player was in game
+            room = status.active_rooms[id]
+            print(id, status.active_rooms)
+            room.fields[pos].end_game()
+            dis = {'type': 'game-disconnect'}
+            broadcast_room(id, dis)
+            data = {'room_id': id, 'pos': pos}
+            room_disconnect(conn, data)
+
     if player.is_guest:
         player.delete()
+
 
 def room_disconnect(conn, data):
     id = int(data['room_id'])
@@ -130,6 +148,8 @@ def room_disconnect(conn, data):
     tetris_room.remove_player(player, pos)
     dis = {'type': 'disconnect-player', 'pos': pos}
     broadcast_room(id, dis)
+    if player.is_guest:
+        print('guest disconnected')
 
 
 

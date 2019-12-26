@@ -9,7 +9,6 @@ class PlayerManager(models.Manager):
 
     def create_guest(self):
         last = self.all().filter(is_guest=True).order_by('-pk')[0]
-        print('last: ', last.login)
         number = int(last.login[5:]) + 1
         guest_login = 'guest' + str(number)
         guest = Player(is_guest=True,

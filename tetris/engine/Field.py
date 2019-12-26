@@ -178,6 +178,7 @@ class Field:
 
     def end_game(self):
         self.game_over = True
+        print('                          game over')
 
 
     def surface_to_view(self):
