@@ -14,6 +14,7 @@ def index(request):
     if request.user is not None:
         text = "Добро пожаловать, " + request.user.username
     rooms = TetrisRoom.objects.all()
+    print('roms: ',rooms.count())
 
     return render(request, 'web/index.html', {'text': text, 'rooms': rooms,})
 
@@ -116,12 +117,6 @@ def play_room(request, room_number):
     room.add_player(request.user)
     return HttpResponseRedirect(room.get_url())
 
-
-def exit_room(request, room_number):
-    from web.models import TetrisRoom
-    room = TetrisRoom.objects.get(room_id=room_number)
-    room.remove_player(request.user)
-    return HttpResponseRedirect(room.get_url())
 
 def testpage(request):
     print('test')

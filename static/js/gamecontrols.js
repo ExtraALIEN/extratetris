@@ -115,15 +115,17 @@ function updateTetris(data){
 }
 
 function refreshTetris(data){
-  for (let prop in data){
-    if(prop === 'surface'){
+
+    if (data.surface){
       refreshSurface(data.surface);
-    } else if (prop === 'new_piece'){
+    }
+    if (data.new_piece){
       refreshActivePiece(data.new_piece);
-    }  else if (prop === 'queue'){
+    }
+    if (data.queue){
       refreshQueue(data.queue);
     }
-  }
+
 }
 
 function updateCurrentPiece(pos, data){
