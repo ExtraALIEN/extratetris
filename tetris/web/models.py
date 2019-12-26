@@ -46,6 +46,7 @@ class Player(models.Model):
                             domain='localhost',
                             httponly=True,
                             expires=timezone.now()+timedelta(days=5))
+        print('session ', url, key)
         return response
 
     def do_logout(self, request):

@@ -29,14 +29,6 @@ def detect_player(conn):
             except Session.DoesNotExist:
                 return None
 
-def new_guest(id):
-    url = '/room/'+str(id)+'/'
-    guest = Player.objects.create_guest()
-    print('do login')
-    guest.do_login(url=url)
-    print('loginned')
-    return guest
-
 def room_connect(conn, data):
     id = data['room_id']
     if int(id) not in status.active_rooms:
@@ -44,9 +36,6 @@ def room_connect(conn, data):
         conn.send_json({'type': 'info', 'msg': msg})
     else:
         player = detect_player(conn)
-        if player is None:
-            player = new_guest(id)
-        print('player: ', player.login)
         conn.send_json({'type': 'player', 'player': player.username})
         if player in status.players:
             msg = 'already connected, room # ' + str(status.players[player]['id'])
