@@ -122,11 +122,16 @@ class Field:
         piece = self.active_piece
         prev = piece.to_view()
         terminated = False
+        prev_score = self.score
+        prev_distance = self.distance
         if command == 'move_left':
             self.active_piece.move_left()
         elif command == 'move_right':
             self.active_piece.move_right()
         elif command == 'move_down':
+            terminated = self.active_piece.move_down()
+            self.speed += self.speed_boost
+        elif command == 'auto_move_down':
             terminated = self.active_piece.move_down()
         elif command == 'rotate':
             self.active_piece.rotate()
@@ -134,7 +139,16 @@ class Field:
         piece_move = diff_obj(prev, cur)
         upd =  {'type': 'update-tetris',
                 'pos' : self.pos,
-                'current_piece': piece_move}
+                'current_piece': piece_move,
+                'speed': self.speed,
+                'time': self.time
+                }
+        if self.score != prev_score:
+            upd['score'] = self.score
+        if self.distance != prev_distance:
+            upd['distance'] = self.distance
+        if terminated:
+            upd['lines'] = self.lines
         broadcast_room(id, upd)
         after_piece = self.active_piece
         if after_piece is not piece:
@@ -174,7 +188,7 @@ class Field:
             print('time at field: ', self.time)
 
     def auto_move_down(self):
-        self.move('move_down')
+        self.move('auto_move_down')
 
     def end_game(self, hard_disconnect=False):
         self.game_over = True

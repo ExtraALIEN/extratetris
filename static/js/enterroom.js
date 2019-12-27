@@ -69,7 +69,8 @@ conn.onmessage = function(event){
   } else if (type === 'update-players'){
     let new_player = data.player;
     let pos = data.pos;
-    let selector = `#position${pos} + .announce .player-name`;
+    let selector = `#field${pos} .announce .player-name`;
+    console.log(selector);
     let span = document.querySelector(selector);
     span.innerHTML = new_player;
   } else if (type === 'disconnect-player'){

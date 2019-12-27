@@ -5,12 +5,17 @@ function startTetris(fields, conn){
     deactivateConnectButtons(x);
     if(conn){
       activateControls(conn);
-    }    
+    }
     let data = fields[x];
     let fieldElem = document.getElementById(`field${x}`);
     refreshSurface(data.surface);
     refreshActivePiece(data.active_piece);
     refreshQueue(data.queue);
+    for (let s of ['score', 'lines', 'speed', 'distance', 'time']){
+      {
+        updateStats(x, s, data[s]);
+      }
+    }
   }
 }
 
@@ -109,11 +114,15 @@ function refreshActivePiece(data){
 
 function updateTetris(data){
   let pos = data.pos;
-  for (let prop in data){
-    if(prop === 'current_piece'){
-      updateCurrentPiece(pos, data.current_piece)
+  if(data.current_piece){
+    updateCurrentPiece(pos, data.current_piece);
+  }
+  for (let x of ['score', 'lines', 'speed', 'distance', 'time']){
+    if(data[x]){
+      updateStats(pos, x, data[x]);
     }
   }
+
 }
 
 function refreshTetris(data){
@@ -139,6 +148,14 @@ function updateCurrentPiece(pos, data){
         setClass(cell,newClass);
     }
   }
+}
+
+function updateStats(pos, type, value){
+  let selector = `#field${pos} .stats .${type} .val`;
+  if (value%1 != 0){
+    value = value.toFixed(1);
+  }
+  document.querySelector(selector).innerHTML = value;
 }
 
 function setClass(elem, newClass){

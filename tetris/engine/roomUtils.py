@@ -45,6 +45,13 @@ def init_room(conn, data):
                'fields': room.to_view()
         }
         conn.send_json(msg)
+        for field in room.fields:
+            if field.player is not None:
+                upd = {'type': 'update-players',
+                               'pos': field.pos,
+                               'player': field.player.username
+                                }
+                conn.send_json(upd)
 
 def room_connect(conn, data):
     id = int(data['room_id'])
