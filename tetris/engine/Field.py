@@ -14,6 +14,7 @@ class Field:
         self.player = None
         self.speed = 0
         self.speed_boost = 0.02
+        self.multiplier = 1
         self.to_movedown = 25 / (self.speed + 25)
         self.to_accelerate = 1.2
         self.total_figures = 0
@@ -74,8 +75,10 @@ class Field:
 
         lines = terminated_lines[::-1]
         base = 0
+        mul = 1
         if len(lines) > 0:
             LINE_SCORES = [100, 300, 600, 1000]
+            MUL_INCREASE = [1.05, 1.15, 1.25, 1.35]
             combos = []
             row_numbers = []
             for x in range(len(lines)):
@@ -88,14 +91,20 @@ class Field:
                     else:
                         combos.append(1)
                         row_numbers.append(lines[x])
+            print(combos)
+            for x in combos:
+                mul *= MUL_INCREASE[x-1]
             for x in range(len(row_numbers)):
                 base += LINE_SCORES[combos[x]-1]*(1 + (row_numbers[x] * (7 / 60)))
         else:
+            self.multiplier = 1
             land_y = self.active_piece.detect_landing_row()
             base = 15 * (1 + (land_y * (7 / 60)))
-        to_add = round_half_up(base * (math.sqrt(2)**(self.speed/50)))
-        print('to add: ', to_add )
+        print( 'mul: ', self.multiplier )
+        to_add = round_half_up(base * (math.sqrt(2)**(self.speed/50))*self.multiplier)
+        print('to add: ', to_add)
         self.score += to_add
+        self.multiplier *= mul
 
 
     def check_terminate(self):
