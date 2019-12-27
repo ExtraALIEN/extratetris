@@ -115,6 +115,8 @@ conn.onmessage = function(event){
   }
     else if (type === 'start-tetris') {
     startTetris(data.fields, conn);
+  } else if (type === 'watch-tetris'){
+    startTetris(data.fields);
   } else if (type === 'update-tetris'){
     updateTetris(data);
   } else if (type === 'refresh-tetris'){

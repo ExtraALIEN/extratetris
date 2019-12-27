@@ -3,15 +3,17 @@ console.log('script loaded');
 function startTetris(fields, conn){
   for(let x in fields){
     deactivateConnectButtons(x);
-    activateControls(conn);
+    if(conn){
+      activateControls(conn);
+    }    
     let data = fields[x];
     let fieldElem = document.getElementById(`field${x}`);
-    let rows = fieldElem.querySelectorAll('.row').length-1;
     refreshSurface(data.surface);
     refreshActivePiece(data.active_piece);
     refreshQueue(data.queue);
   }
 }
+
 
 function deactivateConnectButtons(x){
   let connectDiv = document.getElementById(`position${x}`);

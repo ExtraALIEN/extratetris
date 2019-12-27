@@ -31,13 +31,20 @@ def init_room(conn, data):
     id = int(data['room_id'])
     enter_room_lobby(id, conn)
     room = status.active_rooms[id]
-    for field in room.fields:
-        if field.player is not None:
-            upd = {'type': 'update-players',
+    tetris_room = TetrisRoom.objects.get(room_id=id)
+    if not tetris_room.started:
+        for field in room.fields:
+            if field.player is not None:
+                upd = {'type': 'update-players',
                                'pos': field.pos,
                                'player': field.player.username
                                 }
-            broadcast_room(id, upd)
+                broadcast_room(id, upd)
+    else:
+        msg = {'type': 'watch-tetris',
+               'fields': room.to_view()
+        }
+        conn.send_json(msg)
 
 def room_connect(conn, data):
     id = int(data['room_id'])
