@@ -51,7 +51,7 @@ conn.onopen = function(event){
 
 conn.onmessage = function(event){
   let data = JSON.parse(event.data);
-  //console.log(data);
+
   let type = data.type;
   if(type === 'player'){
      player = data.player;
@@ -125,10 +125,13 @@ conn.onmessage = function(event){
   } else if (type === 'game-over'){
     showGameover(data.pos);
     removeControls();
+    console.log(data);
   } else if (type === 'queue-update'){
     updateQueue(data);
   } else if(type === 'game-disconnect'){
     showDisconnect(data.pos);
+  } else{
+      console.log(data);
   }
 };
 

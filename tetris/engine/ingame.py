@@ -22,7 +22,7 @@ def start(id):
            'fields': room.to_view()
     }
     broadcast_room(id, msg)
-    room.start_timers(id)
+    room.start_timers()
     del status.ready[id]
 
 
@@ -41,4 +41,5 @@ def process_command(conn, data):
             field.move(command)
 
     else:
-        conn.send_json({'type': 'game-over', 'pos':pos})
+        stats = field.game_stats_to_view()
+        conn.send_json({'type': 'game-over', 'pos':pos, 'stats': stats})

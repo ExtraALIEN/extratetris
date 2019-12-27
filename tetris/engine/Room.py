@@ -6,11 +6,13 @@ from engine.ingame import process_command
 
 
 class Room:
-    def __init__(self, players):
-        self.fields = [Field(room=self, pos=i) for i in range(players)]
-        self.players = players
+    def __init__(self, id, size):
+        self.id = id
+        self.players = size
+        self.fields = [Field(room=self, pos=i) for i in range(self.players)]
 
-    def start_timers(self, id):
+
+    def start_timers(self):
         delay = .01
         for field in self.fields:
             field.update_timer(delay)
@@ -21,6 +23,9 @@ class Room:
             if not field.game_over:
                 total += 1
         return total
+
+    def finish_game(self):
+        print('finish', self.id)
 
     def to_view(self):
         return {x : self.fields[x].to_view() for x in range(len(self.fields))}

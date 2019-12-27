@@ -18,10 +18,13 @@ class Field:
         self.to_movedown = 25 / (self.speed + 25)
         self.to_accelerate = 1.2
         self.total_figures = 0
+        self.actions = 0
         self.lines = 0
         self.score = 0
         self.time = 0
         self.distance = 0
+        self.time100 = None
+        self.time402 = None
         self.surface = buildEmptyFieldList(width, height)
         self.queue = QueuePieces(pos=self.pos)
         self.active_piece = self.create_piece()
@@ -76,9 +79,11 @@ class Field:
         lines = terminated_lines[::-1]
         base = 0
         mul = 1
+        boost = 0
         if len(lines) > 0:
             LINE_SCORES = [100, 300, 600, 1000]
             MUL_INCREASE = [1.05, 1.15, 1.25, 1.35]
+            SPEED_BOOST = [0.3, 0.8, 1.5, 2.4]
             combos = []
             row_numbers = []
             for x in range(len(lines)):
@@ -94,6 +99,7 @@ class Field:
             print(combos)
             for x in combos:
                 mul *= MUL_INCREASE[x-1]
+                boost += SPEED_BOOST[x-1]
             for x in range(len(row_numbers)):
                 base += LINE_SCORES[combos[x]-1]*(1 + (row_numbers[x] * (7 / 60)))
         else:
@@ -105,6 +111,7 @@ class Field:
         print('to add: ', to_add)
         self.score += to_add
         self.multiplier *= mul
+        self.speed += boost
 
 
     def check_terminate(self):
@@ -135,15 +142,19 @@ class Field:
         prev_distance = self.distance
         if command == 'move_left':
             self.active_piece.move_left()
+            self.actions += 1
         elif command == 'move_right':
             self.active_piece.move_right()
+            self.actions += 1
         elif command == 'move_down':
             terminated = self.active_piece.move_down()
             self.speed += self.speed_boost
+            self.actions += 1
         elif command == 'auto_move_down':
             terminated = self.active_piece.move_down()
         elif command == 'rotate':
             self.active_piece.rotate()
+            self.actions += 1
         cur = piece.to_view()
         piece_move = diff_obj(prev, cur)
         upd =  {'type': 'update-tetris',
@@ -182,6 +193,10 @@ class Field:
 
     def update_timer(self, delay):
         self.time += delay
+        if self.speed >= 100 and self.time100 is None:
+            self.time100 = self.time
+        if self.distance >= 402 and self.time402 is None:
+            self.time402 = self.time
         self.to_movedown -= delay
         if self.to_movedown <= 0:
             self.auto_move_down()
@@ -206,9 +221,23 @@ class Field:
         print('                          game over')
         print('left ', self.room.players_left())
         if self.room.players_left() == 0:
-            pass
+            self.room.finish_game()
 
-
+    def game_stats_to_view(self):
+        stats = {'time' : self.time,
+               'score-min': self.score/(self.time/60),
+               'lines-min': self.lines/(self.time/60),
+               'score-dist': self.score/self.distance,
+               'apm': self.actions/(self.time/60)
+               }
+        if self.lines > 0:
+            stats['pieces-line'] = self.total_figures/self.lines
+            stats['dist-line'] = self.distance/self.lines
+        if self.time100 is not None:
+            stats['time-100'] = self.time100
+        if self.time402 is not None:
+            stats['time-402'] = self.time402
+        return stats
 
     def surface_to_view(self):
         obj = {y:

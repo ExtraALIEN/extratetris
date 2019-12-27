@@ -4,7 +4,7 @@ from web.models import TetrisRoom, Player, Session
 from engine.ingame import init_fields
 
 def create_room(id, size):
-    new_room = Room(size)
+    new_room = Room(id=id, size=size)
     activate_room(id, new_room)
 
 
@@ -118,6 +118,8 @@ def room_hard_disconnect(conn):
             pos = status.players[player]['pos']
             data = {'room_id': id, 'pos': pos}
             room_disconnect(conn, data)
+        if player.is_guest:
+            player.delete()
     else:
         if player_in_game(player):   # player was in game
             room = status.active_rooms[id]
@@ -127,8 +129,7 @@ def room_hard_disconnect(conn):
             broadcast_room(id, dis)
             data = {'room_id': id, 'pos': pos}
             room_disconnect(conn, data)
-    if player.is_guest:
-        player.delete()
+
 
 
 
