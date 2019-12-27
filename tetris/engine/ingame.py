@@ -41,4 +41,4 @@ def process_command(conn, data):
             field.move(command)
 
     else:
-        conn.send_json({'type': 'game-over'})
+        conn.send_json({'type': 'game-over', 'pos':pos})

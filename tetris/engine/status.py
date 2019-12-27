@@ -7,8 +7,4 @@ ready = {} # {room_id: set() websockets entered room}
 
 def all_ready(id):
     room = active_rooms[id]
-    print("room: ", room)
-    total = len(room.fields)
-    print("total: ", total)
-    print("len: ", len(ready[id]))
-    return len(ready[id]) == total
+    return len(ready[id]) == room.players

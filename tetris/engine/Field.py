@@ -171,14 +171,20 @@ class Field:
         if not self.game_over:
             t.start()
         else:
-            print('game over')
+            print('time at field: ', self.time)
 
     def auto_move_down(self):
         self.move('move_down')
 
-    def end_game(self):
+    def end_game(self, hard_disconnect=False):
         self.game_over = True
+        if hard_disconnect:
+            print('                   HARD DISCONNECT')
         print('                          game over')
+        print('left ', self.room.players_left())
+        if self.room.players_left() == 0:
+            pass
+
 
 
     def surface_to_view(self):

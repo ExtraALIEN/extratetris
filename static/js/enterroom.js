@@ -22,8 +22,15 @@ function sendDisconnectSignal(){
                         }));
 }
 
+function showGameover(pos){
+  let selector = `#field${pos} .announce .message`;
+  console.log(selector);
+  document.querySelector(selector).innerHTML = 'GAME OVER';
+}
+
+
 function showDisconnect(pos){
-  let selector = `#field${pos} .announce`;
+  let selector = `#field${pos} .announce .message`;
   console.log(selector);
   document.querySelector(selector).innerHTML = 'Player disconnected';
 }
@@ -62,12 +69,12 @@ conn.onmessage = function(event){
   } else if (type === 'update-players'){
     let new_player = data.player;
     let pos = data.pos;
-    let selector = `#position${pos} .player-name`;
+    let selector = `#position${pos} + .announce .player-name`;
     let span = document.querySelector(selector);
     span.innerHTML = new_player;
   } else if (type === 'disconnect-player'){
     let pos = data.pos;
-    let selector = `#position${pos} .player-name`;
+    let selector = `#position${pos} + .announce .player-name`;
     let span = document.querySelector(selector);
     span.innerHTML = "";
     let dis = document.querySelector('.connected[id^="disconnect"]');
@@ -113,6 +120,7 @@ conn.onmessage = function(event){
   } else if (type === 'refresh-tetris'){
     refreshTetris(data);
   } else if (type === 'game-over'){
+    showGameover(data.pos);
     removeControls();
   } else if (type === 'queue-update'){
     updateQueue(data);
