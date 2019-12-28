@@ -26,6 +26,7 @@ class Room:
 
     def record_game(self):
         tetris_room = TetrisRoom.objects.get(room_id=self.id)
+        print(tetris_room.guests)
         tetris_room.delete()
 
 

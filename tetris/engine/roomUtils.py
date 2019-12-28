@@ -123,18 +123,19 @@ def room_hard_disconnect(conn):
             pos = status.players[player]['pos']
             data = {'room_id': id, 'pos': pos}
             room_disconnect(conn, data)
-        if player.is_guest:
-            player.delete()
+
     else:
-        if player_in_game(player):   # player was in game
+        if player_in_game(player):
             room = status.active_rooms[id]
             pos = status.players[player]['pos']
             room.fields[pos].end_game(hard_disconnect=True)
-            dis = {'type': 'game-disconnect', 'pos': pos}
-            broadcast_room(id, dis)
-            data = {'room_id': id, 'pos': pos}
-            room_disconnect(conn, data)
-
+            if room_lobby_exists(id):
+                dis = {'type': 'game-disconnect', 'pos': pos}
+                broadcast_room(id, dis)
+                data = {'room_id': id, 'pos': pos}
+                room_disconnect(conn, data)
+    if player.is_guest:
+        player.delete()
 
 
 

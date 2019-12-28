@@ -8,9 +8,13 @@ from web.helpers import GAME_TYPES, NUMBER_PLAYERS
 class PlayerManager(models.Manager):
 
     def create_guest(self):
-        last = self.all().filter(is_guest=True).order_by('-pk')[0]
-        number = int(last.login[5:]) + 1
-        guest_login = 'guest' + str(number)
+        guests = self.all().filter(is_guest=True).order_by('-pk')
+        if guests:
+            last = self.all().filter(is_guest=True).order_by('-pk')[0]
+            number = int(last.login[5:]) + 1
+            guest_login = 'guest' + str(number)
+        else:
+            guest_login = 'guest1'
         guest = Player(is_guest=True,
                       login=guest_login,
                       password='',
@@ -84,6 +88,7 @@ class TetrisRoom(models.Model):
     room_id = models.IntegerField(default=0)
     author = models.OneToOneField(Player, on_delete=models.CASCADE, related_name="current_room")
     players = models.IntegerField()
+    guests = models.IntegerField(default=0)
     type = models.CharField(max_length=2, choices=GAME_TYPES)
     active_players = models.ManyToManyField(Player)
     players_at_positions = models.TextField(default="")
@@ -93,6 +98,8 @@ class TetrisRoom(models.Model):
 
     def add_player(self, player, pos):
         self.active_players.add(player)
+        if player.is_guest:
+            self.guests += 1
         pp = json.loads(self.players_at_positions)
         pp[str(pos)] = player.username
         self.players_at_positions = json.dumps(pp)
@@ -101,6 +108,8 @@ class TetrisRoom(models.Model):
 
     def remove_player(self, player, pos):
         self.active_players.remove(player)
+        if player.is_guest:
+            self.guests -= 1
         pp = json.loads(self.players_at_positions)
         pp[str(pos)] = ''
         self.players_at_positions = json.dumps(pp)

@@ -64,7 +64,6 @@ class Field:
         else:
             self.add_score(terminated_lines)
 
-        print('pieces: ', self.total_figures, ' lines: ', self.lines,'dist: ', self.distance, ' score: ', self.score )
         if not self.game_over:
             self.active_piece = self.create_piece()
             return len(terminated_lines) > 0
@@ -96,7 +95,6 @@ class Field:
                     else:
                         combos.append(1)
                         row_numbers.append(lines[x])
-            print(combos)
             for x in combos:
                 mul *= MUL_INCREASE[x-1]
                 boost += SPEED_BOOST[x-1]
@@ -106,9 +104,7 @@ class Field:
             self.multiplier = 1
             land_y = self.active_piece.detect_landing_row()
             base = 15 * (1 + (land_y * (7 / 60)))
-        print( 'mul: ', self.multiplier )
         to_add = round_half_up(base * (math.sqrt(2)**(self.speed/50))*self.multiplier)
-        print('to add: ', to_add)
         self.score += to_add
         self.multiplier *= mul
         self.speed += boost
