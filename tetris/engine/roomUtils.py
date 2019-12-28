@@ -52,6 +52,11 @@ def init_room(conn, data):
                                'player': field.player.username
                                 }
                 conn.send_json(upd)
+            if field.game_over:
+                msg = {'type': 'game-over',
+                       'pos': field.pos,
+                       'stats': field.game_stats_to_view()}
+                conn.send_json(msg)
 
 def room_connect(conn, data):
     id = int(data['room_id'])
@@ -203,3 +208,8 @@ def player_in_game(player):
 def field_avalaible(id, pos):
     room = status.active_rooms[int(id)]
     return room.fields[int(pos)].websocket is None
+
+def clear_room(id):
+    all_exit_fields(id)
+    all_exit_room_lobby(id)
+    deactivate_room(id)

@@ -2,7 +2,7 @@ import asyncio
 import websockets
 from engine.Field import Field
 from engine.ingame import process_command
-
+from web.models import TetrisRoom
 
 
 class Room:
@@ -24,8 +24,17 @@ class Room:
                 total += 1
         return total
 
+    def record_game(self):
+        tetris_room = TetrisRoom.objects.get(room_id=self.id)
+        tetris_room.delete()
+
+
     def finish_game(self):
-        print('finish', self.id)
+        from engine.roomUtils import clear_room
+        self.record_game()
+        print('deleteing room')
+        clear_room(self.id)
+        print('deleted')
 
     def to_view(self):
         return {x : self.fields[x].to_view() for x in range(len(self.fields))}

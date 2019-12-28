@@ -200,7 +200,7 @@ class Field:
         self.to_movedown -= delay
         if self.to_movedown <= 0:
             self.auto_move_down()
-            self.to_movedown += 25 / (self.speed + 25)
+            self.to_movedown += 12 / (self.speed + 12)
         self.to_accelerate -= delay
         if self.to_accelerate <= 0:
             self.speed += .1
@@ -209,7 +209,7 @@ class Field:
         if not self.game_over:
             t.start()
         else:
-            print('time at field: ', self.time)
+            self.broadcast_gameover()
 
     def auto_move_down(self):
         self.move('auto_move_down')
@@ -238,6 +238,13 @@ class Field:
         if self.time402 is not None:
             stats['time-402'] = self.time402
         return stats
+
+    def broadcast_gameover(self):
+        from engine.roomUtils import broadcast_room
+        msg = {'type': 'game-over', 'pos': self.pos, 'stats': self.game_stats_to_view()}
+        print('broadcasting gameover')
+        broadcast_room(self.room.id, msg)
+        print('over')
 
     def surface_to_view(self):
         obj = {y:

@@ -34,6 +34,7 @@ function activateControls(conn){
 
 function removeControls(){
   document.body.removeEventListener('keydown', controlField);
+  console.log('control removed');
 }
 
 

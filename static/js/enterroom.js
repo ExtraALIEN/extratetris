@@ -62,6 +62,8 @@ conn.onmessage = function(event){
     info.classList.add('new-info');
   } else if (type === 'connected'){
     let pos = data.pos;
+    let field = document.getElementById('field'+pos);
+    field.classList.add('current');
     let div = document.getElementById('position'+pos);
     div.classList.add('connected');
     let dis = document.getElementById('disconnect'+pos);
@@ -124,7 +126,11 @@ conn.onmessage = function(event){
     refreshTetris(data);
   } else if (type === 'game-over'){
     showGameover(data.pos);
-    removeControls();
+    let myField = document.querySelector('.tetris-view.current');
+    console.log(myField);
+    if (myField && +data.pos === +myField.dataset.pos){
+      removeControls();
+    }
     console.log(data);
   } else if (type === 'queue-update'){
     updateQueue(data);
@@ -145,7 +151,6 @@ conn.onclose = function(event){
   console.log(event);
 };
 let player;
-
 let ready = false;
 let connectButtons = document.querySelectorAll('button[id^="connect"]');
 [...connectButtons].forEach(a=> a.addEventListener('click', sendConnectToRoomSignal));

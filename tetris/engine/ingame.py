@@ -33,13 +33,9 @@ def process_command(conn, data):
     pos = status.connections[conn]['pos']
     room = status.active_rooms[id]
     field = room.fields[pos]
-    if not field.game_over:
+    if field is not None and not field.game_over:
         # p = field.active_piece
         # prev = p.to_view()
         # terminated = False
         if command in ['move_left', 'move_right', 'move_down', 'rotate']:
             field.move(command)
-
-    else:
-        stats = field.game_stats_to_view()
-        conn.send_json({'type': 'game-over', 'pos':pos, 'stats': stats})
