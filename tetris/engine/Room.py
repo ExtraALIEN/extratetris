@@ -26,13 +26,15 @@ class Room:
 
     def record_game(self):
         tetris_room = TetrisRoom.objects.get(room_id=self.id)
-        print(tetris_room.guests)
+        print('guests: ', tetris_room.guests)
         tetris_room.delete()
 
 
     def finish_game(self):
         from engine.roomUtils import clear_room
+        print('recording room')
         self.record_game()
+        print('recorded')
         print('deleteing room')
         clear_room(self.id)
         print('deleted')

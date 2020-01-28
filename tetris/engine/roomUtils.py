@@ -32,6 +32,11 @@ def init_room(conn, data):
     enter_room_lobby(id, conn)
     room = status.active_rooms[id]
     tetris_room = TetrisRoom.objects.get(room_id=id)
+    player = detect_player(conn)
+    if player == tetris_room.author:
+        connect_data = {'room_id': id, 'pos': 0}
+        room_connect(conn, connect_data)
+
     if not tetris_room.started:
         for field in room.fields:
             if field.player is not None:
@@ -141,6 +146,7 @@ def room_hard_disconnect(conn):
 
 
 def broadcast_room(room_id, data):
+    print(status.room_lobby[room_id])
     for conn in status.room_lobby[room_id]:
         conn.send_json(data)
 

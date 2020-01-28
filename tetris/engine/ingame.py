@@ -34,8 +34,5 @@ def process_command(conn, data):
     room = status.active_rooms[id]
     field = room.fields[pos]
     if field is not None and not field.game_over:
-        # p = field.active_piece
-        # prev = p.to_view()
-        # terminated = False
         if command in ['move_left', 'move_right', 'move_down', 'rotate']:
             field.move(command)

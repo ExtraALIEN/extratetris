@@ -208,9 +208,13 @@ class Field:
             self.broadcast_gameover()
 
     def auto_move_down(self):
+        print(self.game_over)
+        print('automovedown')
         self.move('auto_move_down')
+        print('moved')
 
     def end_game(self, hard_disconnect=False):
+        print('end game')
         self.game_over = True
         if hard_disconnect:
             print('                   HARD DISCONNECT')
@@ -223,12 +227,17 @@ class Field:
         stats = {'time' : self.time,
                'score-min': self.score/(self.time/60),
                'lines-min': self.lines/(self.time/60),
-               'score-dist': self.score/self.distance,
-               'apm': self.actions/(self.time/60)
+               'apm': self.actions/(self.time/60),
+               'score-piece': self.score/self.total_figures
                }
         if self.lines > 0:
             stats['pieces-line'] = self.total_figures/self.lines
             stats['dist-line'] = self.distance/self.lines
+            stats['score-line'] = self.score/self.lines
+        if self.distance > 0:
+            stats['score-dist'] = self.score/self.distance
+        if self.actions > 0:
+            stats['score-action'] = self.score/self.actions
         if self.time100 is not None:
             stats['time-100'] = self.time100
         if self.time402 is not None:
