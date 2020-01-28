@@ -62,8 +62,6 @@ conn.onmessage = function(event){
     info.classList.add('new-info');
   } else if (type === 'connected'){
     let pos = data.pos;
-    let field = document.getElementById('field'+pos);
-    field.classList.add('current');
     let div = document.getElementById('position'+pos);
     div.classList.add('connected');
     let dis = document.getElementById('disconnect'+pos);
@@ -72,20 +70,23 @@ conn.onmessage = function(event){
     let new_player = data.player;
     let pos = data.pos;
     let selector = `#field${pos} .announce .player-name`;
-    console.log(selector);
     let span = document.querySelector(selector);
     span.innerHTML = new_player;
+    let conPos = document.querySelector(`#position${pos}`);
+    conPos.classList.add('connected');
   } else if (type === 'disconnect-player'){
     let pos = data.pos;
     let selector = `#position${pos} + .announce .player-name`;
     let span = document.querySelector(selector);
     span.innerHTML = "";
-    let dis = document.querySelector('.connected[id^="disconnect"]');
-    let myField = document.querySelector('.connect.connected')
-    if (myField && +pos === +myField.dataset.pos){
-      myField.classList.remove('connected');
-      dis.classList.remove('connected');
+    let myDis = document.querySelector('.connected[id^="disconnect"]');
+    let myPos = +myDis.id.replace('disconnect', '');
+    if (+pos == myPos){
+      myDis.classList.remove('connected');
+      document.querySelector(`#position${pos}`).classList.remove('connected');
     }
+
+
   }else if (type === 'room-deleted'){
     console.log('room deleted');
     fetch(window.location.origin)

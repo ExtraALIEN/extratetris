@@ -90,9 +90,12 @@ def enter_room(request, room_number):
     queue = [x for x in range(5)]
     queue_grid = [x for x in range(-1,5)]
     scripts = ['enterroom']
+    is_author = False
     if request.user is None:
         guest = Player.objects.create_guest()
         return guest.do_login(room.get_url())
+    elif request.user == room.author:
+        is_author = True
     # if room.started:
     #     scripts = ['gamecontrols']
     return render(request, 'web/room.html', {'room': room,
@@ -101,7 +104,8 @@ def enter_room(request, room_number):
                                              'width': width,
                                              'height': height,
                                              'queue' : queue,
-                                             'queue_grid': queue_grid})
+                                             'queue_grid': queue_grid,
+                                             'is_author' : is_author})
 
 
 def delete_room(request, room_number):

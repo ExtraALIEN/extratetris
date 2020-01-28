@@ -18,6 +18,11 @@
   display:block;
 }
 
+[id^="disconnect"].author {
+  display:none;
+
+}
+
 body {
   display: flex;
   flex-flow: column nowrap;

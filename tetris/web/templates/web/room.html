@@ -49,8 +49,9 @@
                 </div>
              {% endfor%}
            </div>
+
            <div id='position{{pos}}'
-                class='connect'
+                class='connect {% if is_author %} connected {% endif %} '
                 data-pos='{{pos}}'>
                 <button id='connect{{pos}}' data-pos='{{pos}}'>Занять место</button>
            </div>
@@ -58,8 +59,7 @@
              <span class='message'></span>
              <span class='player-name'></span>
            </div>
-
-           <button id='disconnect{{pos}}' class='disconnect' data-pos='{{pos}}'>Отойти</button>
+           <button id='disconnect{{pos}}' class='disconnect {% if is_author %} author {% endif %}' data-pos='{{pos}}'>Отойти</button>
            <div class="stats">
              <div class="score">
                Score: <span class='val'></span>
