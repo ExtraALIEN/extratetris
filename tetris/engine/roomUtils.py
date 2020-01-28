@@ -94,7 +94,7 @@ def room_connect(conn, data):
                 broadcast_room(int(id), start_signal)
                 init_fields(int(id))
         else:
-            msg = 'Another player ' + ' at place # ' + str(pos) + ' room ' + id
+            msg = 'Another player ' + ' at place # ' + str(pos) + ' room ' + str(id)
             resp = {'type': 'info', 'msg': msg}
             conn.send_json(resp)
 
@@ -146,7 +146,7 @@ def room_hard_disconnect(conn):
 
 
 def broadcast_room(room_id, data):
-    print(status.room_lobby[room_id])
+    # print(status.room_lobby[room_id])
     for conn in status.room_lobby[room_id]:
         conn.send_json(data)
 

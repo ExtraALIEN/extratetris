@@ -41,14 +41,24 @@ class Field:
     def create_piece(self):
         import random
         piece = self.queue.release_next_piece()
-        self.total_figures += 1
         piece = ActivePiece(piece,
                             field=self,
                             x=self.width//2 - 1 + random.randint(-2, 2),
                             y=self.height-2)
         piece.fix_y()
         if piece.blocked():
+            from engine.roomUtils import broadcast_room
+            upd = {'type': 'update-tetris',
+                    'pos' : self.pos,
+                    'current_piece': piece.to_view(),
+                    'speed': self.speed,
+                    'time': self.time,
+                    'score': self.score,
+                    'distance': self.distance
+                    }
+            broadcast_room(self.room.id, upd)
             self.end_game()
+        self.total_figures += 1
         return piece
 
     def land_piece(self):
@@ -151,71 +161,75 @@ class Field:
         elif command == 'rotate':
             self.active_piece.rotate()
             self.actions += 1
-        cur = piece.to_view()
-        piece_move = diff_obj(prev, cur)
-        upd =  {'type': 'update-tetris',
-                'pos' : self.pos,
-                'current_piece': piece_move,
-                'speed': self.speed,
-                'time': self.time
-                }
-        if self.score != prev_score:
-            upd['score'] = self.score
-        if self.distance != prev_distance:
-            upd['distance'] = self.distance
-        if terminated:
-            upd['lines'] = self.lines
-        broadcast_room(id, upd)
-        after_piece = self.active_piece
-        if after_piece is not piece:
-            new_piece = after_piece.to_view()
-            new_piece_copy = after_piece.to_view()
-            for y in new_piece_copy:
-                if isinstance(y, int):
-                    for x in new_piece_copy[y]:
-                        if new_piece_copy[y][x] == 0:
-                            del new_piece[y][x]
-            queue = self.queue.to_view()
-            refresh_field = {'type': 'refresh-tetris',
-                            'pos' : self.pos,
-                            'new_piece': new_piece,
-                            'queue': queue}
+        if not self.game_over:
+            cur = piece.to_view()
+            piece_move = diff_obj(prev, cur)
+            upd =  {'type': 'update-tetris',
+                    'pos' : self.pos,
+                    'current_piece': piece_move,
+                    'speed': self.speed,
+                    'time': self.time
+                    }
+            if self.score != prev_score:
+                upd['score'] = self.score
+            if self.distance != prev_distance:
+                upd['distance'] = self.distance
             if terminated:
-                refresh_field['surface'] = self.surface_to_view()
+                upd['lines'] = self.lines
+            broadcast_room(id, upd)
+            after_piece = self.active_piece
+            if after_piece is not piece:
+                new_piece = after_piece.to_view()
+                new_piece_copy = after_piece.to_view()
+                for y in new_piece_copy:
+                    if isinstance(y, int):
+                        for x in new_piece_copy[y]:
+                            if new_piece_copy[y][x] == 0:
+                                del new_piece[y][x]
+                queue = self.queue.to_view()
+                refresh_field = {'type': 'refresh-tetris',
+                                'pos' : self.pos,
+                                'new_piece': new_piece,
+                                'queue': queue}
+                if terminated:
+                    refresh_field['surface'] = self.surface_to_view()
 
-            broadcast_room(id, refresh_field)
+                broadcast_room(id, refresh_field)
 
 
 
     def update_timer(self, delay):
-        self.time += delay
-        if self.speed >= 100 and self.time100 is None:
-            self.time100 = self.time
-        if self.distance >= 402 and self.time402 is None:
-            self.time402 = self.time
-        self.to_movedown -= delay
-        if self.to_movedown <= 0:
-            self.auto_move_down()
-            self.to_movedown += 12 / (self.speed + 12)
-        self.to_accelerate -= delay
-        if self.to_accelerate <= 0:
-            self.speed += .1
-            self.to_accelerate += 1.2
         t = Timer(delay, self.update_timer, [delay])
         if not self.game_over:
+            self.time += delay
+            if self.speed >= 100 and self.time100 is None:
+                self.time100 = self.time
+            if self.distance >= 402 and self.time402 is None:
+                self.time402 = self.time
+            self.to_movedown -= delay
+            if self.to_movedown <= 0:
+                self.auto_move_down()
+                self.to_movedown += 12 / (self.speed + 12)
+            self.to_accelerate -= delay
+            if self.to_accelerate <= 0:
+                self.speed += .1
+                self.to_accelerate += 1.2
             t.start()
         else:
-            self.broadcast_gameover()
+            t.cancel()
+
 
     def auto_move_down(self):
-        print(self.game_over)
-        print('automovedown')
-        self.move('auto_move_down')
-        print('moved')
+        if not self.game_over:
+            self.move('auto_move_down')
+
 
     def end_game(self, hard_disconnect=False):
+
         print('end game')
         self.game_over = True
+
+        self.broadcast_gameover()
         if hard_disconnect:
             print('                   HARD DISCONNECT')
         print('                          game over')
@@ -225,7 +239,7 @@ class Field:
 
     def game_stats_to_view(self):
         stats = {'time' : self.time,
-               'score-min': self.score/(self.time/60),
+               'score-sec': self.score/self.time,
                'lines-min': self.lines/(self.time/60),
                'apm': self.actions/(self.time/60),
                'score-piece': self.score/self.total_figures
@@ -233,7 +247,6 @@ class Field:
         if self.lines > 0:
             stats['pieces-line'] = self.total_figures/self.lines
             stats['dist-line'] = self.distance/self.lines
-            stats['score-line'] = self.score/self.lines
         if self.distance > 0:
             stats['score-dist'] = self.score/self.distance
         if self.actions > 0:
