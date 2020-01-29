@@ -22,7 +22,7 @@
   <div class='grid'>
     {% for pos in positions %}
       <div id='field{{pos}}'
-           class='tetris-view'
+           class='tetris-view {% if is_author and not pos%} current {% endif %}'
            data-pos='{{pos}}'>
            <!-- <span class='player-name'><span> -->
            {% for y in height %}
@@ -76,6 +76,9 @@
              <div class="time">
                Time: <span class='val'></span>
              </div>
+           </div>
+           <div class='result'>
+             
            </div>
       </div>
 

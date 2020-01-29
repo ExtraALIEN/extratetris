@@ -1,7 +1,8 @@
 function sendInit(event){
   let starter = {
     'command' : 'init_room',
-    'players' : document.getElementById('players').value
+    'players' : document.getElementById('players').value,
+    'game_type' : document.getElementById('game_type').value,
   }
   conn.send(JSON.stringify(starter));
 }
@@ -13,12 +14,7 @@ conn.onmessage = function(event){
   let type = data.type;
 
 };
-function check(event){
-  let finder = {
-    'command' : 'find_id',
-  }
-  conn.send(JSON.stringify(finder));
-}
+
 conn.onopen = function(event){
   console.log('websocket open');
 };
@@ -35,5 +31,3 @@ conn.onclose = function(event){
 
 let btn = document.getElementById('create');
 btn.addEventListener('click', sendInit);
-let chk = document.getElementById('check');
-chk.addEventListener('click', check);

@@ -6,8 +6,9 @@ from web.models import TetrisRoom
 
 
 class Room:
-    def __init__(self, id, size):
+    def __init__(self, id, size, type):
         self.id = id
+        self.type = type
         self.players = size
         self.fields = [Field(room=self, pos=i) for i in range(self.players)]
 
@@ -23,6 +24,7 @@ class Room:
             if not field.game_over:
                 total += 1
         return total
+
 
     def record_game(self):
         tetris_room = TetrisRoom.objects.get(room_id=self.id)

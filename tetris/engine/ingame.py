@@ -29,10 +29,11 @@ def start(id):
 def process_command(conn, data):
     from engine.roomUtils import broadcast_room
     command = data['command']
-    id = status.connections[conn]['id']
-    pos = status.connections[conn]['pos']
-    room = status.active_rooms[id]
-    field = room.fields[pos]
-    if field is not None and not field.game_over:
-        if command in ['move_left', 'move_right', 'move_down', 'rotate']:
-            field.move(command)
+    if conn in status.connections:
+        id = status.connections[conn]['id']
+        pos = status.connections[conn]['pos']
+        room = status.active_rooms[id]
+        field = room.fields[pos]
+        if field is not None and not field.game_over:
+            if command in ['move_left', 'move_right', 'move_down', 'rotate']:
+                field.move(command)

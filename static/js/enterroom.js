@@ -26,6 +26,8 @@ function showGameover(pos){
   let selector = `#field${pos} .announce .message`;
   console.log(selector);
   document.querySelector(selector).innerHTML = 'GAME OVER';
+  let resultTable = `#field${pos} .result`;
+  document.querySelector(resultTable).classList.add('finished');
 }
 
 
@@ -66,6 +68,8 @@ conn.onmessage = function(event){
     div.classList.add('connected');
     let dis = document.getElementById('disconnect'+pos);
     dis.classList.add('connected');
+    let myField = document.getElementById('field'+pos);
+    myField.classList.add('current');
   } else if (type === 'update-players'){
     let new_player = data.player;
     let pos = data.pos;
@@ -73,17 +77,20 @@ conn.onmessage = function(event){
     let span = document.querySelector(selector);
     span.innerHTML = new_player;
     let conPos = document.querySelector(`#position${pos}`);
-    conPos.classList.add('connected');
+    if (conPos){
+      conPos.classList.add('connected');
+    }
   } else if (type === 'disconnect-player'){
     let pos = data.pos;
     let selector = `#position${pos} + .announce .player-name`;
     let span = document.querySelector(selector);
     span.innerHTML = "";
-    let myDis = document.querySelector('.connected[id^="disconnect"]');
+    let myDis = document.querySelector('.current .connected[id^="disconnect"]');
     let myPos = +myDis.id.replace('disconnect', '');
     if (+pos == myPos){
       myDis.classList.remove('connected');
       document.querySelector(`#position${pos}`).classList.remove('connected');
+      document.querySelector('.current').classList.remove('current');
     }
 
 

@@ -3,8 +3,8 @@ from engine.Room import Room
 from web.models import TetrisRoom, Player, Session
 from engine.ingame import init_fields
 
-def create_room(id, size):
-    new_room = Room(id=id, size=size)
+def create_room(id, size, type):
+    new_room = Room(id=id, size=size, type=type)
     activate_room(id, new_room)
 
 
@@ -146,7 +146,6 @@ def room_hard_disconnect(conn):
 
 
 def broadcast_room(room_id, data):
-    # print(status.room_lobby[room_id])
     for conn in status.room_lobby[room_id]:
         conn.send_json(data)
 

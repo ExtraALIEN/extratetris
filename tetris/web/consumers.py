@@ -37,7 +37,7 @@ class CreateRoom(JsonWebsocketConsumer):
 
     def receive_json(self, data):
         if data['command'] == 'init_room':
-            create_room(find_next_id(), int(data['players']))
+            create_room(find_next_id(), int(data['players']), data['game_type'])
 
 
     def disconnect(self, close_code):

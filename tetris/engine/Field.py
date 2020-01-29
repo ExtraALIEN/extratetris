@@ -25,6 +25,7 @@ class Field:
         self.distance = 0
         self.time100 = None
         self.time402 = None
+        self.goal = 0
         self.surface = buildEmptyFieldList(width, height)
         self.queue = QueuePieces(pos=self.pos)
         self.active_piece = self.create_piece()
@@ -228,10 +229,11 @@ class Field:
 
         print('end game')
         self.game_over = True
-
-        self.broadcast_gameover()
+        hard = False
         if hard_disconnect:
             print('                   HARD DISCONNECT')
+            hard = True
+        self.broadcast_gameover(hard)
         print('                          game over')
         print('left ', self.room.players_left())
         if self.room.players_left() == 0:
@@ -242,7 +244,8 @@ class Field:
                'score-sec': self.score/self.time,
                'lines-min': self.lines/(self.time/60),
                'apm': self.actions/(self.time/60),
-               'score-piece': self.score/self.total_figures
+               'score-piece': self.score/self.total_figures,
+               'pieces': self.total_figures,
                }
         if self.lines > 0:
             stats['pieces-line'] = self.total_figures/self.lines
@@ -255,14 +258,26 @@ class Field:
             stats['time-100'] = self.time100
         if self.time402 is not None:
             stats['time-402'] = self.time402
+        TYPE_OF_RESULT = {
+        'CL': self.score,
+        'DM': self.score,
+        'TA': self.score,
+        'SA': self.time,
+        'DR': self.time,
+        'AC': self.time,
+        'CF': self.goal,
+        }
+        stats['result'] = TYPE_OF_RESULT[self.room.type]
         return stats
 
-    def broadcast_gameover(self):
+    def broadcast_gameover(self, hard_disconnect):
         from engine.roomUtils import broadcast_room
-        msg = {'type': 'game-over', 'pos': self.pos, 'stats': self.game_stats_to_view()}
+        msg = {'type': 'game-over',
+               'pos': self.pos,
+               'stats': self.game_stats_to_view(),
+               'disconnect': hard_disconnect}
         print('broadcasting gameover')
         broadcast_room(self.room.id, msg)
-        print('over')
 
     def surface_to_view(self):
         obj = {y:
