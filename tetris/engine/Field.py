@@ -5,31 +5,49 @@ from threading import Timer
 
 class Field:
 
-    def __init__(self, pos, room=None, width=12, height=25, ):
+    def __init__(self, pos, room=None,
+                            width=12,
+                            height=25,
+                            acc_finish=10, #100
+                            drag_finish=400, #4020
+                            timeleft=36, #360
+                            score_finish=1500, #15000
+                            max_lines=6): #60
         self.pos = pos
         self.room = room
         self.width = width
         self.height = height
         self.websocket = None
         self.player = None
+        self.start_player = None
         self.speed = 0
         self.speed_boost = 0.02
+        self.max_speed = 0
         self.multiplier = 1
         self.to_movedown = 25 / (self.speed + 25)
         self.to_accelerate = 1.2
         self.total_figures = 0
         self.actions = 0
         self.lines = 0
+        self.max_lines = max_lines
+        self.time_lines = None
         self.score = 0
         self.time = 0
         self.distance = 0
-        self.time100 = None
-        self.time402 = None
+        self.time_climb = None
+        self.score_finish = score_finish
+        self.score_intermediate = None
+        self.timeleft = timeleft
+        self.time_acc = None
+        self.acc_finish = acc_finish
+        self.time_drag = None
+        self.drag_finish = drag_finish
         self.goal = 0
         self.surface = buildEmptyFieldList(width, height)
         self.queue = QueuePieces(pos=self.pos)
         self.active_piece = self.create_piece()
         self.game_over = False
+        self.result = 0
 
     def top_points(self):
         def top_point(x):
@@ -117,8 +135,19 @@ class Field:
             base = 15 * (1 + (land_y * (7 / 60)))
         to_add = round_half_up(base * (math.sqrt(2)**(self.speed/50))*self.multiplier)
         self.score += to_add
+        if self.score >= self.score_finish and self.time_climb is None:
+            self.time_climb = self.time
+            if self.room.type == 'SA':
+                self.end_game()
+        if self.lines >= self.max_lines and self.time_lines is None:
+            self.time_lines = self.time
+            if self.room.type == 'LI':
+                self.end_game()
+
         self.multiplier *= mul
         self.speed += boost
+        if self.speed > self.max_speed:
+            self.max_speed = self.speed
 
 
     def check_terminate(self):
@@ -156,6 +185,8 @@ class Field:
         elif command == 'move_down':
             terminated = self.active_piece.move_down()
             self.speed += self.speed_boost
+            if self.speed > self.max_speed:
+                self.max_speed = self.speed
             self.actions += 1
         elif command == 'auto_move_down':
             terminated = self.active_piece.move_down()
@@ -203,10 +234,18 @@ class Field:
         t = Timer(delay, self.update_timer, [delay])
         if not self.game_over:
             self.time += delay
-            if self.speed >= 100 and self.time100 is None:
-                self.time100 = self.time
-            if self.distance >= 402 and self.time402 is None:
-                self.time402 = self.time
+            if self.speed >= self.acc_finish and self.time_acc is None:
+                self.time_acc = self.time
+                if self.room.type == 'AC':
+                    self.end_game()
+            if self.distance >= self.drag_finish and self.time_drag is None:
+                self.time_drag = self.time
+                if self.room.type == 'DR':
+                    self.end_game()
+            if self.time >= self.timeleft and self.score_intermediate is None:
+                self.score_intermediate = self.score
+                if self.room.type == 'CO':
+                    self.end_game()
             self.to_movedown -= delay
             if self.to_movedown <= 0:
                 self.auto_move_down()
@@ -214,6 +253,8 @@ class Field:
             self.to_accelerate -= delay
             if self.to_accelerate <= 0:
                 self.speed += .1
+                if self.speed > self.max_speed:
+                    self.max_speed = self.speed
                 self.to_accelerate += 1.2
             t.start()
         else:
@@ -240,12 +281,19 @@ class Field:
             self.room.finish_game()
 
     def game_stats_to_view(self):
+        from web.helpers import TYPE_OF_RESULT
         stats = {'time' : self.time,
+               'score' : self.score,
+               'lines': self.lines,
+               'distance': self.distance,
                'score-sec': self.score/self.time,
                'lines-min': self.lines/(self.time/60),
                'apm': self.actions/(self.time/60),
+               'actions-piece': self.actions/self.total_figures,
                'score-piece': self.score/self.total_figures,
                'pieces': self.total_figures,
+               'pieces-min': self.total_figures/(self.time/60),
+               'max-speed': self.max_speed,
                }
         if self.lines > 0:
             stats['pieces-line'] = self.total_figures/self.lines
@@ -254,20 +302,18 @@ class Field:
             stats['score-dist'] = self.score/self.distance
         if self.actions > 0:
             stats['score-action'] = self.score/self.actions
-        if self.time100 is not None:
-            stats['time-100'] = self.time100
-        if self.time402 is not None:
-            stats['time-402'] = self.time402
-        TYPE_OF_RESULT = {
-        'CL': self.score,
-        'DM': self.score,
-        'TA': self.score,
-        'SA': self.time,
-        'DR': self.time,
-        'AC': self.time,
-        'CF': self.goal,
-        }
-        stats['result'] = TYPE_OF_RESULT[self.room.type]
+        if self.time_acc is not None:
+            stats['time-acc'] = self.time_acc
+        if self.time_drag is not None:
+            stats['time-drag'] = self.time_drag
+        if self.time_climb is not None:
+            stats['time-climb'] = self.time_climb
+        if self.score_intermediate is not None:
+            stats['score-intermediate'] = self.score_intermediate
+
+        x = TYPE_OF_RESULT[self.room.type]
+        self.result = getattr(self,x)
+        stats['result'] = self.result
         return stats
 
     def broadcast_gameover(self, hard_disconnect):

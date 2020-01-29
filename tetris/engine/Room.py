@@ -25,18 +25,25 @@ class Room:
                 total += 1
         return total
 
+    def detect_places(self):
+        print('detecting places')
+        for field in self.fields:
+            print(field.start_player.login, field.result)
+
 
     def record_game(self):
         tetris_room = TetrisRoom.objects.get(room_id=self.id)
+        print('recording room')
         print('guests: ', tetris_room.guests)
+        self.detect_places()
+        print('recorded')
         tetris_room.delete()
 
 
     def finish_game(self):
         from engine.roomUtils import clear_room
-        print('recording room')
         self.record_game()
-        print('recorded')
+
         print('deleteing room')
         clear_room(self.id)
         print('deleted')

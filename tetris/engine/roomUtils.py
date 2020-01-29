@@ -100,11 +100,11 @@ def room_connect(conn, data):
 
 def room_disconnect(conn, data):
     player = detect_player(conn)
-    exit_field(conn)
     id = int(data['room_id'])
     pos = int(data['pos'])
     tetris_room = TetrisRoom.objects.get(room_id=id)
     tetris_room.remove_player(player, pos)
+    exit_field(conn, tetris_room.started)
     if not tetris_room.started:
         dis = {'type': 'disconnect-player', 'pos': pos}
         broadcast_room(id, dis)
@@ -187,10 +187,11 @@ def enter_field(id, pos, conn, player):
     room = status.active_rooms[int(id)]
     room.fields[int(pos)].websocket = conn
     room.fields[int(pos)].player = player
+    room.fields[int(pos)].start_player = player
     status.connections[conn] = {'id': int(id), 'pos': int(pos)}
     status.players[player] = {'id': int(id), 'pos': int(pos)}
 
-def exit_field(conn):
+def exit_field(conn, started=False):
     data = status.connections[conn]
     id = data['id']
     pos = data['pos']
@@ -199,6 +200,8 @@ def exit_field(conn):
     field.websocket = None
     pl = field.player
     field.player = None
+    if not started:
+        field.start_player = None
     del status.connections[conn]
     del status.players[pl]
 

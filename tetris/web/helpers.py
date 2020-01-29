@@ -34,11 +34,14 @@ def auto_login(player):
 GAME_TYPES = [
     ('CL', 'Classic'),
     ('DM', 'Deathmatch'),
-    ('TA', 'Time Attack'),
+    ('SU', 'Survival'),
+    ('LI', 'Lines'),
+    ('CO', 'Countdown'),
     ('SA', 'Score Attack'),
     ('DR', 'Drag Racing'),
     ('AC', 'Accelerate'),
-    ('CF', 'Captue the Flag'),
+    ('CF', 'Capture the Flag'),
+    ('RA', 'Rally')
 ]
 
 
@@ -47,3 +50,16 @@ NUMBER_PLAYERS = [
     (2,2),
     (4,4)
 ]
+
+TYPE_OF_RESULT = {
+'CL': 'score',
+'DM': 'score',
+'SU': 'time',
+'LI': 'time_lines',
+'CO': 'score_intermediate',
+'SA': 'time_climb',
+'DR': 'time_drag',
+'AC': 'time_acc',
+'CF': 'goal',
+'RA': 'goal',
+}
