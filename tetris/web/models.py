@@ -55,7 +55,7 @@ class Player(models.Model):
 
     def do_logout(self, request):
         key = request.COOKIES.get('session_key')
-        Session.objects.delete(key=key)
+        Session.objects.get(key=key).delete()
         return HttpResponseRedirect('/')
 
 

@@ -128,6 +128,8 @@ def room_hard_disconnect(conn):
             pos = status.players[player]['pos']
             data = {'room_id': id, 'pos': pos}
             room_disconnect(conn, data)
+        if player.is_guest:
+            player.delete()
 
     else:
         if player_in_game(player):
@@ -139,9 +141,8 @@ def room_hard_disconnect(conn):
                 broadcast_room(id, dis)
                 data = {'room_id': id, 'pos': pos}
                 room_disconnect(conn, data)
-    if player.is_guest:
-        player.delete()
-
+            if player.is_guest:
+                session = Session.objects.get(user=player).delete()
 
 
 
