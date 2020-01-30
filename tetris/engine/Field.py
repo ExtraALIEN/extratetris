@@ -47,7 +47,7 @@ class Field:
         self.queue = QueuePieces(pos=self.pos)
         self.active_piece = self.create_piece()
         self.game_over = False
-        self.result = 0
+        self.result = None
 
     def top_points(self):
         def top_point(x):
@@ -294,7 +294,7 @@ class Field:
                'pieces': self.total_figures,
                'pieces-min': self.total_figures/(self.time/60),
                'max-speed': self.max_speed,
-               }
+                }
         if self.lines > 0:
             stats['pieces-line'] = self.total_figures/self.lines
             stats['dist-line'] = self.distance/self.lines
@@ -312,13 +312,14 @@ class Field:
             stats['score-intermediate'] = self.score_intermediate
 
         x = TYPE_OF_RESULT[self.room.type]
-        self.result = getattr(self,x)
+        self.result = getattr(self, x)
         stats['result'] = self.result
         return stats
 
     def broadcast_gameover(self, hard_disconnect):
         from engine.roomUtils import broadcast_room
         msg = {'type': 'game-over',
+               'mode': self.room.type,
                'pos': self.pos,
                'stats': self.game_stats_to_view(),
                'disconnect': hard_disconnect}

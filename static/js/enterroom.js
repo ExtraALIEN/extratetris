@@ -55,8 +55,15 @@ function showGameover(data){
   for (let x in data.stats){
     let cell = resultTable.querySelector(`${STATS_SELECTOR[x]} .val`);
     let val = data.stats[x];
-    if (cell.classList.contains('timing')){
+    if (val === null){
+      continue;
+    }
+    else if (cell.classList.contains('timing')){
       val = secondsToMinutes(val, cell.classList.contains('dec'));
+    }
+    else if (cell.parentElement.classList.contains('main-value') &&
+            ['SU', 'LI', 'SA', 'DR', 'AC'].indexOf(data.mode) !== -1){
+      val = secondsToMinutes(val, data.mode !== 'SU');
     }
     else if (val %1 !== 0){
       val = val.toFixed(2);
@@ -65,6 +72,16 @@ function showGameover(data){
   }
 
   resultTable.classList.add('finished');
+}
+
+function fillPlaces(places){
+  for (let x in places){
+    for (let pos of places[x]){
+      console.log(pos,x);
+      let elem = document.querySelector(`#field${pos} .result-place`);
+      elem.innerHTML = x;
+    }
+  }
 }
 
 
@@ -181,6 +198,8 @@ conn.onmessage = function(event){
     updateQueue(data);
   } else if(type === 'game-disconnect'){
     showDisconnect(data.pos);
+  }else if (type ==='places'){
+      fillPlaces(data.places);
   } else{
       console.log(data);
   }
