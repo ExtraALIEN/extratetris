@@ -9,7 +9,7 @@ class Field:
                             width=12,
                             height=25,
                             acc_finish=10, #100
-                            drag_finish=400, #4020
+                            drag_finish=402, #4020
                             timeleft=36, #360
                             score_finish=1500, #15000
                             max_lines=6): #60

@@ -1,4 +1,4 @@
-console.log('script loaded');
+import {secondsToMinutes} from './timing.js';
 
 function startTetris(fields, conn){
   for(let x in fields){
@@ -153,7 +153,10 @@ function updateCurrentPiece(pos, data){
 
 function updateStats(pos, type, value){
   let selector = `#field${pos} .stats .${type} .val`;
-  if (value%1 != 0){
+  if (type === 'time'){
+    value = secondsToMinutes(value);
+  }
+  else if (value%1 != 0){
     value = value.toFixed(1);
   }
   document.querySelector(selector).innerHTML = value;

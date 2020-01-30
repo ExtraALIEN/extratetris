@@ -169,12 +169,42 @@ body > main {
   position: absolute;
   top: 0;
   left: 0;
-  width:100%;
+  width:120%;
   height: 100%;
-  background-color:red;
+  background-color: rgba(256,256,256,0.8);
   display: none;
 }
 
 .result.finished{
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+}
+
+.result.finished .stat{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+
+}
+
+.stat > div {
+  display: flex;
+  flex-direction: row;
+  flex-flow: nowrap;
+  flex-grow: 1;
+  flex-basis: 5%;
+  justify-content: space-between;
+}
+
+.stat span{
+  flex-basis: 70%;
+  flex-grow:7;
+}
+
+.stat span.val{
+  flex-basis: 30%;
+  flex-grow:3;
 }

@@ -1,6 +1,6 @@
 import {startTetris, getReady, removeControls, updateTetris, refreshTetris} from './gamecontrols.js';
 import {nodeScriptReplace} from './nodescript.js';
-
+import {secondsToMinutes} from './timing.js';
 
 function sendConnectToRoomSignal(){
   let number = document.getElementById('room-number').dataset.roomNumber;
@@ -22,12 +22,49 @@ function sendDisconnectSignal(){
                         }));
 }
 
-function showGameover(pos){
-  let selector = `#field${pos} .announce .message`;
-  console.log(selector);
-  document.querySelector(selector).innerHTML = 'GAME OVER';
-  let resultTable = `#field${pos} .result`;
-  document.querySelector(resultTable).classList.add('finished');
+function showGameover(data){
+  let STATS_SELECTOR = {
+    'result' : '.primary .main-value',
+    'score' : '.scores .total',
+    'score-intermediate' : '.scores .intermediate',
+    'score-sec' : '.scores .sec',
+    'score-piece' : '.scores .piece',
+    'score-action' : '.scores .action',
+    'score-dist' : '.scores .dist',
+    'time' : '.time .overall',
+    'time-climb' : '.time .climb',
+    'time-acc' : '.time .acc',
+    'time-drag' : '.time .drag',
+    'lines' : '.lines .total',
+    'lines-min' : '.lines .min',
+    'pieces-line' : '.lines .pieces',
+    'dist-line' : '.lines .dist',
+    'pieces' : '.figures .total',
+    'pieces-min' : '.figures .min',
+    'actions-piece' : '.figures .act',
+    'max-speed': '.other .speed',
+    'distance': '.other .dist',
+    'apm':'.other .apm',
+  };
+  let resultTable = document.querySelector(`#field${data.pos} .result`);
+  for (let elem of [...resultTable.querySelectorAll('.val')]){
+    if (!elem.innerHTML) {
+      elem.innerHTML = '-';
+    }
+  }
+  for (let x in data.stats){
+    let cell = resultTable.querySelector(`${STATS_SELECTOR[x]} .val`);
+    let val = data.stats[x];
+    if (cell.classList.contains('timing')){
+      val = secondsToMinutes(val, cell.classList.contains('dec'));
+    }
+    else if (val %1 !== 0){
+      val = val.toFixed(2);
+    }
+    cell.innerHTML = val;
+  }
+
+  resultTable.classList.add('finished');
 }
 
 
@@ -133,7 +170,7 @@ conn.onmessage = function(event){
   } else if (type === 'refresh-tetris'){
     refreshTetris(data);
   } else if (type === 'game-over'){
-    showGameover(data.pos);
+    showGameover(data);
     let myField = document.querySelector('.tetris-view.current');
     console.log(myField);
     if (myField && +data.pos === +myField.dataset.pos){
