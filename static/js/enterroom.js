@@ -33,6 +33,7 @@ function showGameover(data){
     'score-dist' : '.scores .dist',
     'time' : '.time .overall',
     'time-climb' : '.time .climb',
+    'time-lines' : '.time .lines',
     'time-acc' : '.time .acc',
     'time-drag' : '.time .drag',
     'lines' : '.lines .total',

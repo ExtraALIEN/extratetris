@@ -304,6 +304,8 @@ class Field:
             stats['score-action'] = self.score/self.actions
         if self.time_acc is not None:
             stats['time-acc'] = self.time_acc
+        if self.time_lines is not None:
+            stats['time-lines'] = self.time_lines
         if self.time_drag is not None:
             stats['time-drag'] = self.time_drag
         if self.time_climb is not None:

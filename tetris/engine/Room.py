@@ -27,29 +27,27 @@ class Room:
 
     def detect_places(self):
         from engine.roomUtils import broadcast_room
-        print('detecting places')
         results = {}  # res: [pos,]
         for field in self.fields:
             res = field.result
             pos = field.pos
-            if res not in results:
-                if res is not None:
+            if res is None:
+                if -1 not in results:
+                    results[-1] = []
+                results[-1].append(pos)
+            else:
+                if res not in results:
                     results[res] = []
-                    results[res].append(pos)
-                else:
-                    if -1 not in results:
-                        results[-1] = []
-                    results[-1].append(pos)
-        print(results)
+                results[res].append(pos)
+        # print(results)
         places = sorted(results)
-        print(places)
+        # print(places)
         if self.type in ['CL', 'DM', 'SU', 'CO', 'CF', 'RA']:
             places = list(reversed(places))
         if -1 in places and places[0] == -1:
             tmp = places[0]
             places = places[1:]
             places.append(tmp)
-        print(places)
         place = 0
         final = {}
         for x in places:
@@ -59,22 +57,24 @@ class Room:
                 for p in results[x]:
                     final[place].append(p)
             place += len(final[place]) - 1
-        print('place', place)
         if -1 in places:
             place += 1
             for p in results[-1]:
                 final[place].append(p)
-        print(final)
         msg = {'type': 'places', 'places': final}
         broadcast_room(self.id, msg)
+        return final
 
+    def update_records(self, places):
+        print(places)
 
 
     def record_game(self):
         tetris_room = TetrisRoom.objects.get(room_id=self.id)
-        print('recording room')
         print('guests: ', tetris_room.guests)
-        self.detect_places()
+        final = self.detect_places()
+        print('recording room')
+        self.update_records(final)
         print('recorded')
         tetris_room.delete()
 
