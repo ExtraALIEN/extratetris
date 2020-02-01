@@ -7,7 +7,6 @@ from django.db.utils import IntegrityError
 
 class SignupForm(forms.Form):
     login = forms.CharField(max_length=20)
-    email = forms.EmailField(max_length=30)
     password = forms.CharField(max_length=20, widget=forms.PasswordInput)
 
     def clean(self):

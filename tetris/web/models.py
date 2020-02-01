@@ -18,7 +18,6 @@ class PlayerManager(models.Manager):
         guest = Player(is_guest=True,
                       login=guest_login,
                       password='',
-                      email='guest@extratetris.com',
                       username='anonymous')
         guest.save()
         return guest
@@ -30,15 +29,48 @@ class Player(models.Model):
     login = models.CharField(max_length=20, unique=True)
     password = models.TextField(max_length=20, blank=True, null=True)
     username = models.CharField(max_length=20)
-    email = models.EmailField()
     date_joined = models.DateTimeField(auto_now_add=True)
     rating = models.FloatField(default=1500.0)
-    total_score = models.IntegerField(default=0)
-    experience = models.IntegerField(default=0)
-    max_speed = models.FloatField(default=0)
+    games_count = models.IntegerField(default=0)
+    multiplayer_games_count = models.IntegerField(default=0)
+    games_count_classic = models.IntegerField(default=0)
+    games_count_deathmatch = models.IntegerField(default=0)
+    games_count_survival = models.IntegerField(default=0)
+    games_count_lines = models.IntegerField(default=0)
+    games_count_countdown = models.IntegerField(default=0)
+    games_count_score = models.IntegerField(default=0)
+    games_count_drag = models.IntegerField(default=0)
+    games_count_acc = models.IntegerField(default=0)
+    games_count_ctf = models.IntegerField(default=0)
+    games_count_rally = models.IntegerField(default=0)
+    effective_points = models.FloatField(default=0.0)
+    effective_points_classic = models.FloatField(default=0.0)
+    effective_points_deathmatch = models.FloatField(default=0.0)
+    effective_points_survival = models.FloatField(default=0.0)
+    effective_points_lines = models.FloatField(default=0.0)
+    effective_points_countdown = models.FloatField(default=0.0)
+    effective_points_score = models.FloatField(default=0.0)
+    effective_points_drag = models.FloatField(default=0.0)
+    effective_points_acc = models.FloatField(default=0.0)
+    effective_points_ctf = models.FloatField(default=0.0)
+    effective_points_rally = models.FloatField(default=0.0)
+    score = models.IntegerField(default=0)
+    time = models.FloatField(default=0.0)
+    actions = models.IntegerField(default=0)
+    lines = models.IntegerField(default=0)
+    distance = models.IntegerField(default=0)
+    figures = models.IntegerField(default=0)
+    best_speed = models.FloatField(default=0.0)
+    best_score = models.IntegerField(default=0)
+    best_distance = models.IntegerField(default=0)
+    best_survival_time = models.FloatField(default=0.0)
+    best_lines_count = models.IntegerField(default=0)
+    best_countdown_score = models.IntegerField(default=0)
+    best_time_lines = models.FloatField(null=True, blank=True)
+    best_time_climb = models.FloatField(null=True, blank=True)
+    best_time_drag = models.FloatField(null=True, blank=True)
+    best_time_acc = models.FloatField(null=True, blank=True)
 
-    #games =
-    #wins =
 
 
     def do_login(self, url='/'):
@@ -58,13 +90,29 @@ class Player(models.Model):
         Session.objects.get(key=key).delete()
         return HttpResponseRedirect('/')
 
+    def get_url(self):
+        return '/profile/'+str(self.pk)
+
+    def get_profile_stats(self):
+        return '123test'
+
 
 
 
 class SingleGameRecord(models.Model):
     type = models.CharField(max_length=2, choices=GAME_TYPES)
-    players = models.ManyToManyField(Player, related_name='user_games')
-    winner = models.ForeignKey(Player, on_delete=models.DO_NOTHING, related_name='user_wins')
+    size = models.IntegerField(default=0)
+    started_at = models.DateTimeField(null=True)
+    positions = models.TextField(default="")
+    players = models.ManyToManyField(Player, related_name='recorded_games')
+
+    def save_results(self, results):
+        self.positions = json.dumps(results)
+        self.save()
+
+    def load_results(self):
+        return json.loads(self.positions)
+
 
 
 

@@ -1,8 +1,9 @@
 import asyncio
 import websockets
+from django.utils import timezone
 from engine.Field import Field
 from engine.ingame import process_command
-from web.models import TetrisRoom
+from web.models import TetrisRoom, SingleGameRecord
 
 
 class Room:
@@ -11,10 +12,12 @@ class Room:
         self.type = type
         self.players = size
         self.fields = [Field(room=self, pos=i) for i in range(self.players)]
+        self.start_time = None
 
 
     def start_timers(self):
         delay = .01
+        self.start_time = timezone.now()
         for field in self.fields:
             field.update_timer(delay)
 
@@ -66,17 +69,93 @@ class Room:
         return final
 
     def update_records(self, places):
+        GAME_COUNTS = {
+        'CL': 'classic',
+        'DM': 'deathmatch',
+        'SU': 'survival',
+        'LI': 'lines',
+        'CO': 'countdown',
+        'SA': 'score',
+        'DR': 'drag',
+        'AC': 'acc',
+        'CF': 'ctf',
+        'RA': 'rally',
+        }
+        print('recording room')
+        # print('guests: ', tetris_room.guests)
         print(places)
+        eff_points = {}
+        if self.players > 1:
+            gap = 100 / (self.players - 1)
+            next_eff = 100
+            for x in sorted(places):
+                bank = 0
+                for y in x:
+                    bank += next_eff
+                    next_eff -= gap
+                eff_points[x] = bank/len(x)
+
+        rec = SingleGameRecord(type=self.type, started_at=self.start_time, size=self.players)
+        results = {place:
+                   [self.fields[pos].start_player.username for pos in places[place]]
+                    for place in places}
+        rec.save_results(results)
+        for field in self.fields:
+            player = field.start_player
+            if not player.is_guest:
+                rec.players.add(player)
+                player.games_count += 1
+                prop = 'games_count_' + GAME_COUNTS[self.type]
+                player[prop] += 1
+                player.score += field.score
+                if field.score > player.best_score:
+                    player.best_score = field.score
+                if field.score_intermediate > player.best_countdown_score:
+                    player.best_countdown_score = field.score_intermediate
+                if not player.best_time_lines or field.time_lines < player.best_time_lines:
+                    player.best_time_lines = field.time_lines
+                if not player.best_time_drag or field.time_drag < player.best_time_drag:
+                    player.best_time_drag = field.time_drag
+                if not player.best_time_climb or field.time_climb < player.best_time_climb:
+                    player.best_time_climb = field.time_climb
+                if not player.best_time_acc or field.time_acc < player.best_time_acc:
+                    player.best_time_acc = field.time_acc
+                player.time += field.time
+                if field.time > player.best_survival_time:
+                    player.best_survival_time = field.time
+                player.actions += field.actions
+                player.lines += field.lines
+                if field.lines >= player.best_lines_count:
+                    player.best_lines_count = field.lines
+                player.distance += field.distance
+                if field.distance >= player.best_distance:
+                    player.best_distance = field.distance
+                player.figures += field.total_figures
+
+                if self.players > 1:
+                    player.multiplayer_games_count += 1
+                    eff = 0
+                    for p in places:
+                        if field.pos in p:
+                            eff = eff_points[p]
+                            break
+                    player.effective_points += eff
+                    prop = 'effective_points_' + GAME_COUNTS[self.type]
+                    player[prop] += eff
+                player.save()
+
+
+
+
+
+
+        print('recorded')
 
 
     def record_game(self):
-        tetris_room = TetrisRoom.objects.get(room_id=self.id)
-        print('guests: ', tetris_room.guests)
-        final = self.detect_places()
-        print('recording room')
-        self.update_records(final)
-        print('recorded')
-        tetris_room.delete()
+        final_places = self.detect_places()
+        self.update_records(final_places)
+
 
 
     def finish_game(self):
@@ -85,6 +164,8 @@ class Room:
 
         print('deleteing room')
         clear_room(self.id)
+        tetris_room = TetrisRoom.objects.get(room_id=self.id)
+        tetris_room.delete()
         print('deleted')
 
     def to_view(self):

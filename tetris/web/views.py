@@ -10,13 +10,18 @@ from web.models import TetrisRoom, Player
 
 def index(request):
 
-    text = 'Войдите или зарегистрируйтесь'
-    if request.user is not None:
-        text = "Добро пожаловать, " + request.user.username
     rooms = TetrisRoom.objects.all()
-    print('roms: ',rooms.count())
-
-    return render(request, 'web/index.html', {'text': text, 'rooms': rooms,})
+    guest_mode = True
+    us = ''
+    profile_url = ''
+    if request.user and not request.user.is_guest:
+        guest_mode = False
+        us = request.user.username
+        profile_url = request.user.get_url()
+    return render(request, 'web/index.html', {'guest_mode': guest_mode,
+                                              'rooms': rooms,
+                                              'user': us,
+                                              'profile_url': profile_url})
 
 
 def signup(request):
@@ -58,6 +63,11 @@ def logout(request):
         current_session.delete()
     return HttpResponseRedirect('/')
 
+
+def profile(request, profile_id):
+    user = Player.objects.get(pk=profile_id)
+    text = user.get_profile_stats()
+    return render(request, 'web/profile.html', {'text': text})
 
 def create_game(request):
     if request.method == 'POST':

@@ -8,7 +8,6 @@
     <form action='/signup/' method='POST'>
       {% csrf_token %}
       Username {{form.login}}
-      Email {{form.email}}
       Password {{form.password}}
       <button type="submit" name="submit">Зарегистрироваться</button>
     </form>
