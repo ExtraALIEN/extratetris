@@ -1,5 +1,311 @@
 {% extends "./base_main.html" %}
 
 {% block profile %}
-  {{text}}
+  <div class="stats">
+    <div class="total">
+      <h2>TOTAL</h2>
+        <div class="joined">
+          <span>Дата регистрации</span>
+          <span class="val">{{stats.joined}}</span>
+        </div>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.total}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.total}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.total}}</span>
+        </div>
+        <div class="rating">
+          <span>Рейтинг в играх с соперниками</span>
+          <span class="val">{{stats.rating}}</span>
+        </div>
+        <div class="score">
+          <span>Очков</span>
+          <span class="val">{{stats.total.score}}</span>
+        </div>
+        <div class="lines">
+          <span>Линий</span>
+          <span class="val">{{stats.total.lines}}</span>
+        </div>
+        <div class="distance">
+          <span>Очков</span>
+          <span class="val">{{stats.total.distance}}</span>
+        </div>
+        <div class="hours">
+          <span>Часов в игре</span>
+          <span class="val">{{stats.total.hours}}</span>
+        </div>
+    </div>
+    <div class="classic">
+      <h2>CLASSIC</h2>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.classic}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.classic}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.classic}}</span>
+        </div>
+    </div>
+    <div class="deathmatch">
+      <h2>DEATHMATCH</h2>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.deathmatch}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.deathmatch}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.deathmatch}}</span>
+        </div>
+    </div>
+    <div class="survival">
+      <h2>SURVIVAL</h2>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.survival}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.survival}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.survival}}</span>
+        </div>
+    </div>
+    <div class="lines">
+      <h2>LINES</h2>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.lines}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.lines}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.lines}}</span>
+        </div>
+    </div>
+    <div class="countdown">
+      <h2>COUNTDOWN</h2>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.countdown}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.countdown}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.countdown}}</span>
+        </div>
+    </div>
+    <div class="score">
+      <h2>SCORE ATTACK</h2>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.score}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.score}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.score}}</span>
+        </div>
+    </div>
+    <div class="drag">
+      <h2>DRAG RACING</h2>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.drag}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.drag}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.drag}}</span>
+        </div>
+    </div>
+    <div class="acc">
+      <h2>ACCELERATION</h2>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.acc}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.acc}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.acc}}</span>
+        </div>
+    </div>
+    <div class="ctf">
+      <h2>CAPTURE THE FLAG</h2>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.ctf}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.ctf}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.ctf}}</span>
+        </div>
+    </div>
+    <div class="rally">
+      <h2>RALLY</h2>
+        <div class="games">
+          <span>Всего игр</span>
+          <span class="val">{{stats.games.rally}}</span>
+        </div>
+        <div class="multiplayer-games">
+          <span>Всего игр с соперниками</span>
+          <span class="val">{{stats.multiplayer.rally}}</span>
+        </div>
+        <div class="eff">
+          <span>Эффективность в играх с соперниками</span>
+          <span class="val">{{stats.effective_points.rally}}</span>
+        </div>
+    </div>
+    <div class="best">
+      <h2>BEST</h2>
+        <div class="score">
+          <span>Рекорд очков в 1 игре</span>
+          <span class="val">{{stats.best.score}}</span>
+        </div>
+        <div class="speed">
+          <span>Максимальная скорость</span>
+          <span class="val">{{stats.best.speed}}</span>
+        </div>
+        <div class="lines">
+          <span>Рекорд линий в 1 игре</span>
+          <span class="val">{{stats.best.lines}}</span>
+        </div>
+        <div class="time">
+          <span>Максимальное время выживания</span>
+          <span class="val">{{stats.best.survival_time}}</span>
+        </div>
+        <div class="distance">
+          <span>Максимальный пробег в 1 игре</span>
+          <span class="val">{{stats.best.distance}}</span>
+        </div>
+        <div class="score">
+          <span>Рекорд очков в 1 игре</span>
+          <span class="val">{{stats.best.score}}</span>
+        </div>
+        <div class="time-lines">
+          <span>Рекорд времени уничтожения 60 линий</span>
+          <span class="val">{{stats.best.time_lines}}</span>
+        </div>
+        <div class="time-climb">
+          <span>Рекорд времени набора 15000 очков</span>
+          <span class="val">{{stats.best.time_climb}}</span>
+        </div>
+        <div class="time-drag">
+          <span>Рекорд времени пробега 4020 шагов</span>
+          <span class="val">{{stats.best.time_drag}}</span>
+        </div>
+        <div class="time-acc">
+          <span>Рекорд времени ускорения 0-100</span>
+          <span class="val">{{stats.best.time_acc}}</span>
+        </div>
+        <div class="countdown-score">
+          <span>Рекорд очков за 6 минут</span>
+          <span class="val">{{stats.best.countdown_score}}</span>
+        </div>
+    </div>
+    <div class="average">
+      <h2>AVERAGE</h2>
+        <div class="score-game">
+          <span>Очков за игру</span>
+          <span class="val">{{stats.average.score_game}}</span>
+        </div>
+        <div class="lines-game">
+          <span>Линий за игру</span>
+          <span class="val">{{stats.average.lines_game}}</span>
+        </div>
+        <div class="distance-game">
+          <span>Пробег за игру</span>
+          <span class="val">{{stats.average.distance_game}}</span>
+        </div>
+        <div class="time-game">
+          <span>Длительность игры</span>
+          <span class="val">{{stats.average.time_game}}</span>
+        </div>
+        <div class="score-sec">
+          <span>Очков в секунду</span>
+          <span class="val">{{stats.average.score_sec}}</span>
+        </div>
+        <div class="score-sec">
+          <span>Очков в секунду</span>
+          <span class="val">{{stats.average.score_sec}}</span>
+        </div>
+        <div class="score-figure">
+          <span>Очков за 1 фигуру</span>
+          <span class="val">{{stats.average.score_figure}}</span>
+        </div>
+        <div class="score-distance">
+          <span>Очков за 1 шаг фигуры</span>
+          <span class="val">{{stats.average.score_distance}}</span>
+        </div>
+        <div class="score-actions">
+          <span>Очков за 1 управляющее действие</span>
+          <span class="val">{{stats.average.score_actions}}</span>
+        </div>
+        <div class="lines-min">
+          <span>Линий в минуту</span>
+          <span class="val">{{stats.average.lines_min}}</span>
+        </div>
+        <div class="distance-line">
+          <span>Пробег на 1 линию</span>
+          <span class="val">{{stats.average.distance_line}}</span>
+        </div>
+        <div class="figures-line">
+          <span>Фигур на 1 линию</span>
+          <span class="val">{{stats.average.figures_line}}</span>
+        </div>
+        <div class="actions-min">
+          <span>Управляющих действий в минуту</span>
+          <span class="val">{{stats.average.actions_min}}</span>
+        </div>
+        <div class="actions-figure">
+          <span>Управляющих действий на 1 фигуру</span>
+          <span class="val">{{stats.average.actions_figure}}</span>
+        </div>
+    </div>
+
+  </div>
 {% endblock %}
+
+
+
+
+
+
+        'joined': self.date_joined,
+
+    }

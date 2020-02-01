@@ -63,3 +63,16 @@ TYPE_OF_RESULT = {
 'CF': 'goal',
 'RA': 'goal',
 }
+
+GAME_COUNTS = {
+'CL': 'classic',
+'DM': 'deathmatch',
+'SU': 'survival',
+'LI': 'lines',
+'CO': 'countdown',
+'SA': 'score',
+'DR': 'drag',
+'AC': 'acc',
+'CF': 'ctf',
+'RA': 'rally',
+}

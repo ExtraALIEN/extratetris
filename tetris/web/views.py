@@ -66,8 +66,8 @@ def logout(request):
 
 def profile(request, profile_id):
     user = Player.objects.get(pk=profile_id)
-    text = user.get_profile_stats()
-    return render(request, 'web/profile.html', {'text': text})
+    stats = user.get_profile_stats()
+    return render(request, 'web/profile.html', {'stats': stats})
 
 def create_game(request):
     if request.method == 'POST':

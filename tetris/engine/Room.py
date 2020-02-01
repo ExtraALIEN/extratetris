@@ -4,6 +4,7 @@ from django.utils import timezone
 from engine.Field import Field
 from engine.ingame import process_command
 from web.models import TetrisRoom, SingleGameRecord
+from web.helpers import GAME_COUNTS
 
 
 class Room:
@@ -69,18 +70,7 @@ class Room:
         return final
 
     def update_records(self, places):
-        GAME_COUNTS = {
-        'CL': 'classic',
-        'DM': 'deathmatch',
-        'SU': 'survival',
-        'LI': 'lines',
-        'CO': 'countdown',
-        'SA': 'score',
-        'DR': 'drag',
-        'AC': 'acc',
-        'CF': 'ctf',
-        'RA': 'rally',
-        }
+
         print('recording room')
         # print('guests: ', tetris_room.guests)
         print(places)
@@ -90,7 +80,7 @@ class Room:
             next_eff = 100
             for x in sorted(places):
                 bank = 0
-                for y in x:
+                for y in x:  #
                     bank += next_eff
                     next_eff -= gap
                 eff_points[x] = bank/len(x)
@@ -106,19 +96,20 @@ class Room:
                 rec.players.add(player)
                 player.games_count += 1
                 prop = 'games_count_' + GAME_COUNTS[self.type]
-                player[prop] += 1
+                new_val = getattr(player, prop) + 1
+                setattr(player, prop, new_val)
                 player.score += field.score
                 if field.score > player.best_score:
                     player.best_score = field.score
-                if field.score_intermediate > player.best_countdown_score:
+                if field.score_intermediate and field.score_intermediate > player.best_countdown_score:
                     player.best_countdown_score = field.score_intermediate
-                if not player.best_time_lines or field.time_lines < player.best_time_lines:
+                if not player.best_time_lines or field.time_lines and field.time_lines < player.best_time_lines:
                     player.best_time_lines = field.time_lines
-                if not player.best_time_drag or field.time_drag < player.best_time_drag:
+                if not player.best_time_drag or field.time_drag and field.time_drag < player.best_time_drag:
                     player.best_time_drag = field.time_drag
-                if not player.best_time_climb or field.time_climb < player.best_time_climb:
+                if not player.best_time_climb or field.time_climb and field.time_climb < player.best_time_climb:
                     player.best_time_climb = field.time_climb
-                if not player.best_time_acc or field.time_acc < player.best_time_acc:
+                if not player.best_time_acc or field.time_acc and field.time_acc < player.best_time_acc:
                     player.best_time_acc = field.time_acc
                 player.time += field.time
                 if field.time > player.best_survival_time:
@@ -134,6 +125,9 @@ class Room:
 
                 if self.players > 1:
                     player.multiplayer_games_count += 1
+                    prop = 'multiplayer_games_count_' + GAME_COUNTS[self.type]
+                    new_val = getattr(player, prop) + 1
+                    setattr(player, prop, new_val)
                     eff = 0
                     for p in places:
                         if field.pos in p:
@@ -141,7 +135,8 @@ class Room:
                             break
                     player.effective_points += eff
                     prop = 'effective_points_' + GAME_COUNTS[self.type]
-                    player[prop] += eff
+                    new_val = getattr(player, prop) + eff
+                    setattr(player, prop, new_val)
                 player.save()
 
 

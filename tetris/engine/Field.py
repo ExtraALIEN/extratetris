@@ -8,11 +8,11 @@ class Field:
     def __init__(self, pos, room=None,
                             width=12,
                             height=25,
-                            acc_finish=10, #100
-                            drag_finish=402, #4020
-                            timeleft=36, #360
-                            score_finish=1500, #15000
-                            max_lines=6): #60
+                            acc_finish=100, #100
+                            drag_finish=4020, #4020
+                            timeleft=360, #360
+                            score_finish=15000, #15000
+                            max_lines=60): #60
         self.pos = pos
         self.room = room
         self.width = width

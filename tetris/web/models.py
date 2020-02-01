@@ -43,6 +43,16 @@ class Player(models.Model):
     games_count_acc = models.IntegerField(default=0)
     games_count_ctf = models.IntegerField(default=0)
     games_count_rally = models.IntegerField(default=0)
+    multiplayer_games_count_classic = models.IntegerField(default=0)
+    multiplayer_games_count_deathmatch = models.IntegerField(default=0)
+    multiplayer_games_count_survival = models.IntegerField(default=0)
+    multiplayer_games_count_lines = models.IntegerField(default=0)
+    multiplayer_games_count_countdown = models.IntegerField(default=0)
+    multiplayer_games_count_score = models.IntegerField(default=0)
+    multiplayer_games_count_drag = models.IntegerField(default=0)
+    multiplayer_games_count_acc = models.IntegerField(default=0)
+    multiplayer_games_count_ctf = models.IntegerField(default=0)
+    multiplayer_games_count_rally = models.IntegerField(default=0)
     effective_points = models.FloatField(default=0.0)
     effective_points_classic = models.FloatField(default=0.0)
     effective_points_deathmatch = models.FloatField(default=0.0)
@@ -94,7 +104,90 @@ class Player(models.Model):
         return '/profile/'+str(self.pk)
 
     def get_profile_stats(self):
-        return '123test'
+        stats = {
+            'games': {
+                'total': self.games_count,
+                'classic': self.games_count_classic,
+                'deathmatch': self.games_count_deathmatch,
+                'survival': self.games_count_survival,
+                'lines': self.games_count_lines,
+                'countdown': self.games_count_countdown,
+                'score': self.games_count_score,
+                'drag': self.games_count_drag,
+                'acc': self.games_count_acc,
+                'ctf': self.games_count_ctf,
+                'rally': self.games_count_rally
+            },
+            'multiplayer': {
+                'total': self.multiplayer_games_count,
+                'classic': self.multiplayer_games_count_classic,
+                'deathmatch': self.multiplayer_games_count_deathmatch,
+                'survival': self.multiplayer_games_count_survival,
+                'lines': self.multiplayer_games_count_lines,
+                'countdown': self.multiplayer_games_count_countdown,
+                'score': self.multiplayer_games_count_score,
+                'drag': self.multiplayer_games_count_drag,
+                'acc': self.multiplayer_games_count_acc,
+                'ctf': self.multiplayer_games_count_ctf,
+                'rally': self.multiplayer_games_count_rally
+            },
+            'best': {
+                'speed': self.best_speed,
+                'score': self.best_score,
+                'lines': self.lines,
+                'distance': self.best_distance,
+                'survival_time': self.best_survival_time,
+                'time_lines': self.best_time_lines,
+                'time_climb': self.best_time_climb,
+                'time_drag': self.best_time_drag,
+                'time_acc': self.best_time_acc,
+                'time_lines': self.best_time_lines,
+                'time_climb': self.best_time_climb,
+                'countdown_score': self.best_countdown_score,
+            },
+            'total': {
+                'score': self.score,
+                'hours': self.time/3600,
+                'distance': self.distance,
+                'lines': self.lines,
+            },
+            'joined': self.date_joined,
+            'rating': self.rating,
+        }
+        stats['effective_points'] = {}
+        for x in stats['multiplayer']:
+            if stats['multiplayer'][x] > 0:
+                if x == 'total':
+                    stats['effective_points']['total'] = self.effective_points/self.multiplayer_games_count
+                else:
+                    pts = 'effective_points_'+ x
+                    gms = 'multiplayer_games_count_'+ x
+                    stats['effective_points'][x] = getattr(self, pts)/getattr(self,gms)
+        stats['average'] = {}
+        if self.games_count > 0:
+            stats['average']['score_game'] = self.score/self.games_count
+            stats['average']['lines_game'] = self.lines/self.games_count
+            stats['average']['distance_game'] = self.distance/self.games_count
+            stats['average']['time_game'] = self.time/self.games_count
+        if self.lines > 0:
+            stats['average']['distance_line'] = self.distance/self.lines
+            stats['average']['figures_line'] = self.figures/self.lines
+        if self.figures > 0:
+            stats['average']['actions_figure'] = self.actions/self.figures
+            stats['average']['score_figure'] = self.score/self.figures
+        if self.actions > 0:
+            stats['average']['score_actions'] = self.score/self.actions
+        if self.distance > 0:
+            stats['average']['score_distance'] = self.score/self.distance
+        if self.time > 0:
+            stats['average']['score_sec'] = self.score/self.time
+            stats['average']['lines_min'] = self.lines/(self.time/60)
+            stats['average']['actions_min'] = self.actions/(self.time/60)
+
+
+
+
+        return stats
 
 
 
