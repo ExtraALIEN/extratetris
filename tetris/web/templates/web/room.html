@@ -1,11 +1,11 @@
 {% extends "./base_main.html" %}
 
-{% block game %}
 
 
 
-<section>
-  <h2>Room number:
+{% block room_number %}
+
+ <h2>Room number:
     <span data-room-number='{{room.room_id}}' id='room-number'>{{room.room_id}}</span>
     Type:
     <span data-room-type='{{room.type}}' id='room-type'>{{room.type}}</span>
@@ -15,8 +15,9 @@
   <p>Инициатор игры: {{room.author.username}}</p>
   <a href="{{room.delete_url}}">Отменить игру</a>
   {% endif %}
-</section>
+{% endblock %}
 
+{% block game %}
 
 <section id='game'>
   <div class='grid'>

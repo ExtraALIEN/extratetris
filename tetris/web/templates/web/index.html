@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block login %}
+<div class="login">
 {% if guest_mode %}
  <a href='/signup/'>Регистрация</a>
  <a href='/login/'>Вход</a>
@@ -13,6 +14,7 @@
   <a href={{profile_url}}>Профиль</a>
   <a href='/logout/'>Выход</a>
 {% endif %}
+</div>
 {% endblock %}
 
 {% block lobby %}
