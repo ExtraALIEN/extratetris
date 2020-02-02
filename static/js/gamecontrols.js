@@ -90,7 +90,7 @@ function refreshQueue(data){
           let selector = `[id="queue${i}"] .queue-row[data-y="${y}"] .cell[data-x="${x}"]`;
           let cell = qElem.querySelector(selector);
           let cl = data[i][y][x];
-          setClass(cell, `color-${cl}`);
+          setClass(cell, `color-${cl>0? 10:0}`);
         }
       }
     }

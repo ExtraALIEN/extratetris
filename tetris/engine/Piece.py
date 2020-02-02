@@ -12,13 +12,23 @@ SHAPES = [
 ]
 
 
-def get_shape(number):
-    return SHAPES[number]
+def get_shape(number, color):
+    sh = []
+    for y in SHAPES[number]:
+        new_y = []
+        for x in y:
+            if x == 1:
+                new_y.append(color)
+            else:
+                new_y.append(0)
+        sh.append(new_y)
+    return sh
 
 
 class Piece:
     def __init__(self):
-        self.shape = get_shape(randint(0, len(SHAPES)-1))
+        self.color = randint(1, 8)
+        self.shape = get_shape(randint(0, len(SHAPES)-1), self.color)
         for i in range(randint(0, 4)):
             self.rotate()
 

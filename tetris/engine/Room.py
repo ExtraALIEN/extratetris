@@ -71,19 +71,16 @@ class Room:
 
     def update_records(self, places):
 
-        print('recording room')
-        # print('guests: ', tetris_room.guests)
-        print(places)
         eff_points = {}
         if self.players > 1:
             gap = 100 / (self.players - 1)
             next_eff = 100
             for x in sorted(places):
                 bank = 0
-                for y in x:  #
+                for y in places[x]:  #
                     bank += next_eff
                     next_eff -= gap
-                eff_points[x] = bank/len(x)
+                eff_points[x] = bank/len(places[x])
 
         rec = SingleGameRecord(type=self.type, started_at=self.start_time, size=self.players)
         results = {place:
@@ -114,6 +111,8 @@ class Room:
                 player.time += field.time
                 if field.time > player.best_survival_time:
                     player.best_survival_time = field.time
+                if field.max_speed > player.best_speed:
+                    player.best_speed = field.max_speed
                 player.actions += field.actions
                 player.lines += field.lines
                 if field.lines >= player.best_lines_count:
@@ -130,7 +129,7 @@ class Room:
                     setattr(player, prop, new_val)
                     eff = 0
                     for p in places:
-                        if field.pos in p:
+                        if field.pos in places[p]:
                             eff = eff_points[p]
                             break
                     player.effective_points += eff
@@ -139,12 +138,6 @@ class Room:
                     setattr(player, prop, new_val)
                 player.save()
 
-
-
-
-
-
-        print('recorded')
 
 
     def record_game(self):
@@ -160,7 +153,11 @@ class Room:
         print('deleteing room')
         clear_room(self.id)
         tetris_room = TetrisRoom.objects.get(room_id=self.id)
+        author = tetris_room.author
         tetris_room.delete()
+        if author.is_guest:
+            author.delete()
+            print('guest deleted')
         print('deleted')
 
     def to_view(self):

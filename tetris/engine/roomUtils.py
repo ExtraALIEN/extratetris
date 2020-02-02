@@ -112,6 +112,9 @@ def room_disconnect(conn, data):
 
 
 def room_hard_disconnect(conn):
+    if conn not in status.in_room_lobby:
+        print('romm deleted')
+        return
     player = detect_player(conn)
     id = status.in_room_lobby[conn]
     tetris_room = TetrisRoom.objects.get(room_id=id)
@@ -142,7 +145,11 @@ def room_hard_disconnect(conn):
                 data = {'room_id': id, 'pos': pos}
                 room_disconnect(conn, data)
             if player.is_guest:
-                session = Session.objects.get(user=player).delete()
+                try:
+                    session = Session.objects.get(user=player).delete()
+                except Session.DoesNotExist:
+                    pass
+
 
 
 

@@ -110,8 +110,42 @@ body > main {
 }
 
 .cell.color-1{
+  background-color: #7e1818;
+}
+
+.cell.color-2{
+  background-color: #c97e20;
+}
+
+.cell.color-3{
+  background-color: #b89907;
+}
+
+.cell.color-4{
+  background-color: #98b41a;
+}
+
+.cell.color-5{
+  background-color: #1f661f;
+}
+
+.cell.color-6{
+  background-color: #1f4766;
+}
+
+.cell.color-7{
+  background-color: #322366;
+}
+
+.cell.color-8{
+  background-color: #661b66;
+}
+
+.cell.color-10{
   background-color: #1e1b25;
 }
+
+
 
 .queue{
   box-sizing: border-box;
