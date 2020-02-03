@@ -22,6 +22,9 @@ class Field:
         self.start_player = None
         self.speed = 0
         self.speed_boost = 0.02
+        self.powerup_chance = 0.02
+        self.powerup_boost = 0
+        self.powerup_mul = 1
         self.max_speed = 0
         self.multiplier = 1
         self.to_movedown = 25 / (self.speed + 25)
@@ -59,7 +62,7 @@ class Field:
 
     def create_piece(self):
         import random
-        piece = self.queue.release_next_piece()
+        piece = self.queue.release_next_piece((self.powerup_chance+self.powerup_boost)*self.powerup_mul)
         piece = ActivePiece(piece,
                             field=self,
                             x=self.width//2 - 1 + random.randint(-2, 2),
@@ -108,10 +111,12 @@ class Field:
         base = 0
         mul = 1
         boost = 0
+        powerup_boost = 0
         if len(lines) > 0:
             LINE_SCORES = [100, 300, 600, 1000]
             MUL_INCREASE = [1.05, 1.15, 1.25, 1.35]
             SPEED_BOOST = [0.3, 0.8, 1.5, 2.4]
+            POWERUP_BOOSTS = [0.05, 0.13, 0.22, 0.33]
             combos = []
             row_numbers = []
             for x in range(len(lines)):
@@ -127,6 +132,7 @@ class Field:
             for x in combos:
                 mul *= MUL_INCREASE[x-1]
                 boost += SPEED_BOOST[x-1]
+                powerup_boost += POWERUP_BOOSTS[x-1]
             for x in range(len(row_numbers)):
                 base += LINE_SCORES[combos[x]-1]*(1 + (row_numbers[x] * (7 / 60)))
         else:
@@ -144,10 +150,12 @@ class Field:
             if self.room.type == 'LI':
                 self.end_game()
 
+        self.powerup_boost = powerup_boost*self.multiplier
         self.multiplier *= mul
         self.speed += boost
         if self.speed > self.max_speed:
             self.max_speed = self.speed
+
 
 
     def check_terminate(self):

@@ -11,6 +11,10 @@ SHAPES = [
     [[1, 1, 1], [0, 0, 1], [0, 0, 0]]
 ]
 
+chance = 0
+def add_chance(ch):
+    chance += ch
+    print(chance)
 
 def get_shape(number, color):
     sh = []
@@ -32,5 +36,9 @@ class Piece:
         for i in range(randint(0, 4)):
             self.rotate()
 
+
     def rotate(self, clockwise=True):
         self.shape = list_rotate(self.shape, clockwise)
+
+    def build_powerup(self, powerup_chance=0.02):
+        pass

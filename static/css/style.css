@@ -188,7 +188,6 @@ body > main {
   width: 6.6vh;
   max-width: 6.6vh;
   position: absolute;
-  z-index:10;
   top: -1px;
   left: 100%;
   display: flex;
