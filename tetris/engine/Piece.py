@@ -1,5 +1,5 @@
-from random import randint
-from engine.ListMethods import rotate as list_rotate
+from random import randint, random
+from engine.ListMethods import rotate as list_rotate, sum
 
 SHAPES = [
     [[1, 1, 1, 1]],
@@ -11,10 +11,7 @@ SHAPES = [
     [[1, 1, 1], [0, 0, 1], [0, 0, 0]]
 ]
 
-chance = 0
-def add_chance(ch):
-    chance += ch
-    print(chance)
+POWERUPS = ['chance_up']
 
 def get_shape(number, color):
     sh = []
@@ -40,5 +37,17 @@ class Piece:
     def rotate(self, clockwise=True):
         self.shape = list_rotate(self.shape, clockwise)
 
-    def build_powerup(self, powerup_chance=0.02):
-        pass
+    def build_powerup(self, powerup_chance):
+        num = random()
+        if num < powerup_chance:
+            x = randint(0, len(POWERUPS)-1)
+            powerup_code = (x+1)*100
+            left = randint(0, sum(self.shape)-1)
+            for y in range(len(self.shape)):
+                for x in range(len(self.shape[y])):
+                    if self.shape[y][x] > 0:
+                        if left == 0:
+                            self.shape[y][x] += powerup_code
+                            print(self.shape)
+                            return
+                        left -= 1

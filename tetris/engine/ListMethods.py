@@ -49,27 +49,10 @@ def diff_obj(prev, cur):
     return result
 
 
-
-
-
-    # result = {}
-    # for y in cur:
-    #     if y not in prev:
-    #         result[y] = cur[y]
-    #     else:
-    #         for x in cur[y]:
-    #             if x not in prev[y] or cur[y][x] != prev[y][x]:
-    #                 if y not in result:
-    #                     result[y] = {}
-    #                 result[y][x] = cur[y][x]
-    # for y in prev:
-    #     if y not in cur:
-    #         result[y] = {}
-    #         for x in prev[y]:
-    #             result[y][x] = 0
-    #     else:
-    #         for x in prev[y]:
-    #             if x not in cur[y]:
-    #                 result[y][x] = 0
-    #
-    # return result
+def sum(shape):
+    s = 0
+    for y in shape:
+        for x in y:
+            if x > 0:
+                s += 1
+    return s

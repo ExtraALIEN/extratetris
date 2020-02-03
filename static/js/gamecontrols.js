@@ -72,8 +72,15 @@ function refreshSurface(data){
         for (let x in data[y]){
           let selector = `.row[data-y="${y}"] .cell[data-x="${x}"]`;
           let cell = field.querySelector(selector);
-          let cl = data[y][x];
-          setClass(cell, `color-${cl}`);
+          let total = +data[y][x];
+          let color = total % 100;
+          let powerup = (total - color) / 100;
+          let newClass = `color-${color}`;
+          setClass(cell,newClass);
+          if (powerup){
+            showPowerup(cell, powerup);
+          }
+          
         }
       }
     }
@@ -105,8 +112,14 @@ function refreshActivePiece(data){
         if (data[y][x] > 0){
           let selector = `#field${pos} > .row[data-y="${y}"] .cell[data-x="${x}"]`;
           let cell = document.querySelector(selector);
-          let newClass = `color-${data[y][x]}`;
+          let total = +data[y][x];
+          let color = total % 100;
+          let powerup = (total - color) / 100;
+          let newClass = `color-${color}`;
           setClass(cell,newClass);
+          if (powerup){
+            showPowerup(cell, powerup);
+          }
         }
       }
     }
@@ -145,8 +158,15 @@ function updateCurrentPiece(pos, data){
     for(let x in data[y]){
         let selector = `#field${pos} > .row[data-y="${y}"] .cell[data-x="${x}"]`;
         let cell = document.querySelector(selector);
-        let newClass = `color-${data[y][x]}`;
+        let total = +data[y][x];
+        let color = total % 100;
+        let powerup = (total - color) / 100;
+        let newClass = `color-${color}`;
         setClass(cell,newClass);
+        if (powerup){
+          showPowerup(cell, powerup);
+        }
+
     }
   }
 }
@@ -167,6 +187,11 @@ function setClass(elem, newClass){
     elem.className = "cell";
     elem.classList.add(newClass);
   }
+}
+
+function showPowerup(cell, powerup){
+  cell.classList.add(`powerup-${powerup}`);
+
 }
 
 

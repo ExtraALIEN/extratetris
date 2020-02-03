@@ -93,6 +93,7 @@ body > main {
 }
 
 .tetris-view .cell{
+  position: relative;
   box-sizing: border-box;
   flex-basis: 2.75vh;
   max-width:2.75vh;
@@ -179,6 +180,21 @@ body > main {
 
 .cell.color-10{
   background-color: #1e1b25;
+}
+
+.cell[class*="powerup"]::before{
+  display:block;
+  content: "";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background-size: 100% 100%;
+}
+
+.cell.powerup-1::before{
+  background-image: url("http://localhost/static/svg/1.svg");
 }
 
 

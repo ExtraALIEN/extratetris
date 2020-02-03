@@ -24,7 +24,7 @@ class Field:
         self.speed_boost = 0.02
         self.powerup_chance = 0.02
         self.powerup_boost = 0
-        self.powerup_mul = 1
+        self.powerup_mul = 100
         self.max_speed = 0
         self.multiplier = 1
         self.to_movedown = 25 / (self.speed + 25)
