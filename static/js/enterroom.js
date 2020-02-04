@@ -1,4 +1,4 @@
-import {startTetris, getReady, removeControls, updateTetris, refreshTetris} from './gamecontrols.js';
+import {startTetris, getReady, removeControls, updateTetris, refreshTetris, updatePowerup} from './gamecontrols.js';
 import {nodeScriptReplace} from './nodescript.js';
 import {secondsToMinutes} from './timing.js';
 
@@ -199,8 +199,10 @@ conn.onmessage = function(event){
     updateQueue(data);
   } else if(type === 'game-disconnect'){
     showDisconnect(data.pos);
-  }else if (type ==='places'){
+  } else if (type ==='places'){
       fillPlaces(data.places);
+  } else if (type === 'powerup'){
+    updatePowerup(data);
   } else{
       console.log(data);
   }

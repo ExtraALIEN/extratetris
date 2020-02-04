@@ -194,7 +194,11 @@ body > main {
 }
 
 .cell.powerup-1::before{
-  background-image: url("http://localhost/static/svg/1.svg");
+  background-image: url("http://localhost/static/pic/1.png");
+}
+
+.cell.powerup-2::before{
+  background-image: url("http://localhost/static/pic/2.png");
 }
 
 
@@ -252,6 +256,66 @@ body > main {
 .stats{
   box-sizing: border-box;
   border: 1px solid black;
+}
+
+.powerups{
+  padding: 10px;
+  display:flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  align-content:space-around;
+}
+
+.powerups .place{
+  box-sizing:border-box;
+  flex-basis: 5vh;
+  height: 5vh;
+  border: 1px solid gray;
+  background-size: 100% 100%;
+  background-color: #ffffff;
+  transition: background-color 3s linear;
+}
+
+.powerups .place.active{
+  border: 3px solid #18af15;
+}
+
+.powerups.place[class*="powerup"]{
+  background-color: #f6dddd;
+}
+
+.powerups .powerup-1{
+  background-image: url("http://localhost/static/pic/1.png");
+}
+
+.powerups .powerup-2{
+  background-image: url("http://localhost/static/pic/2.png");
+}
+
+.powerups .time-12{
+  transition-delay: 3s;
+  background-color: #f6c2c2;
+}
+
+.powerups .time-9{
+  transition-delay: 2s;
+  background-color: #f97f7f;
+}
+
+.powerups .time-6{
+  transition-delay: 1.5s;
+  background-color: #fa1919;
+}
+
+@keyframes blink{
+  0% {opacity:1;}
+  50%  {opacity: 0;}
+  100% {opacity:1;}
+}
+
+.powerups .time-3{
+  background-color: #f7c7c7;
+  animation: blink 0.25s infinite alternate;
 }
 
 .result {

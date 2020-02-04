@@ -24,7 +24,10 @@ class Field:
         self.speed_boost = 0.02
         self.powerup_chance = 0.02
         self.powerup_boost = 0
-        self.powerup_mul = 100
+        self.powerup_mul = 10
+        self.powerups = [None, None, None]
+        self.powerups_time = [0, 0, 0]
+        self.powerups_lifetime = 15
         self.max_speed = 0
         self.multiplier = 1
         self.to_movedown = 25 / (self.speed + 25)
@@ -156,6 +159,34 @@ class Field:
         if self.speed > self.max_speed:
             self.max_speed = self.speed
 
+    def save_powerup(self, powerup_code):
+        for x in range(3):
+            if self.powerups[x] is None:
+                self.powerups[x] = powerup_code // 100
+                self.powerups_time[x] = self.powerups_lifetime
+                self.room.announce_powerup(self.pos, x, powerup=(powerup_code // 100), time=self.powerups_time[x])
+                return
+
+    def send_powerup_time(self, x, control_time):
+        self.room.announce_powerup(self.pos, x, time=control_time)
+
+    def remove_powerup(self, x):
+        self.powerups[x] = None
+        self.powerups_time[x] = 0
+        self.room.announce_powerup(self.pos, x)
+
+    def check_powerup(self, line):
+        for x in line:
+            if x > 100:
+                self.save_powerup(x)
+
+    def use_powerup(self, place, target):
+        pos = place - 1
+        if self.powerups[pos] is not None:
+            powerup_code = self.powerups[pos]
+            self.remove_powerup(pos)
+            self.actions += self.room.execute_powerup(powerup_code-1, target-1)
+
 
 
     def check_terminate(self):
@@ -168,6 +199,8 @@ class Field:
                     break
             if full:
                 lines.append(y)
+                self.check_powerup(self.surface[y])
+
         for y in lines:
             self.surface.pop(y)
             self.surface.append([0 for x in range(self.width)])
@@ -258,6 +291,19 @@ class Field:
             if self.to_movedown <= 0:
                 self.auto_move_down()
                 self.to_movedown += 12 / (self.speed + 12)
+            for x in range(3):
+                if self.powerups_time[x] > 0:
+                    self.powerups_time[x] -= delay
+                    if self.powerups[x] is not None:
+                        if self.powerups_time[x] <= 0:
+                            self.remove_powerup(x)
+                        else:
+                            for i in [3,6,9,12]:
+                                if i-delay/2 < self.powerups_time[x] < i+delay/2:
+                                    self.send_powerup_time(x, i)
+                                    break
+
+
             self.to_accelerate -= delay
             if self.to_accelerate <= 0:
                 self.speed += .1

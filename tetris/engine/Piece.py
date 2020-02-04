@@ -1,17 +1,6 @@
 from random import randint, random
 from engine.ListMethods import rotate as list_rotate, sum
-
-SHAPES = [
-    [[1, 1, 1, 1]],
-    [[1, 1, 1], [0, 1, 0], [0, 0, 0]],
-    [[1, 1, 0], [0, 1, 1]],
-    [[0, 1, 1], [1, 1, 0]],
-    [[1, 1], [1, 1]],
-    [[1, 1, 1], [1, 0, 0], [0, 0, 0]],
-    [[1, 1, 1], [0, 0, 1], [0, 0, 0]]
-]
-
-POWERUPS = ['chance_up']
+from web.helpers import SHAPES, POWERUPS
 
 def get_shape(number, color):
     sh = []
@@ -48,6 +37,5 @@ class Piece:
                     if self.shape[y][x] > 0:
                         if left == 0:
                             self.shape[y][x] += powerup_code
-                            print(self.shape)
                             return
                         left -= 1

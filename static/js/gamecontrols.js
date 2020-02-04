@@ -8,6 +8,9 @@ function startTetris(fields, conn){
     }
     let data = fields[x];
     let fieldElem = document.getElementById(`field${x}`);
+    if (fieldElem.classList.contains('current')){
+      fieldElem.querySelector('.powerups .place').classList.add('active');
+    }
     refreshSurface(data.surface);
     refreshActivePiece(data.active_piece);
     refreshQueue(data.queue);
@@ -37,6 +40,43 @@ function removeControls(){
   console.log('control removed');
 }
 
+function changePowerup(next){
+  let activePowerup = document.querySelector('.current .powerups .active');
+  let num = +activePowerup.dataset.pos;
+  let newNum;
+  activePowerup.classList.remove('active');
+  if(next){
+    newNum = num < 3 ? num + 1 : 1;
+  }
+  else{
+    newNum = num > 1 ? num - 1 : 3;
+  }
+  document.querySelector(`.current .powerups .place[data-pos="${newNum}"]`).classList.add('active');
+}
+
+const TIMES = ['00', 3,6,9,12];
+
+function updatePowerup(data){
+  let selector = `#field${data.pos} .powerups .place[data-pos="${data.num}"]`;
+  let place = document.querySelector(selector);
+  if (data.powerup){
+    place.classList.add(`powerup-${data.powerup}`);
+
+  } else if (data.time){
+    for (let t of TIMES){
+      place.classList.remove(`time-${t}`);
+    }
+    place.classList.add(`time-${data.time}`);
+  } else {
+    for (let t of TIMES){
+      place.classList.remove(`time-${t}`);
+    }
+    for (let i=1; i<12;i++){
+      place.classList.remove(`powerup-${i}`);
+    }
+    place.classList.add(`time-00`);
+  }
+}
 
 function controlField(event){
   let c = event.code;
@@ -50,6 +90,26 @@ function controlField(event){
     msg.command = 'move_down';
   }else if(c === 'KeyW' || c === 'ArrowUp'){
     msg.command = 'rotate';
+  } else if (c === 'Numpad0' || c === 'KeyQ'){
+    changePowerup(false);
+  } else if (c === 'KeyE' || c === 'NumpadDecimal'){
+    changePowerup(true);
+  } else if (c === 'Digit1' || c === 'Numpad1'){
+    msg.command = 'use_powerup';
+    msg.place = document.querySelector('.powerups .active').dataset.pos;
+    msg.target_field = 1;
+  } else if (c === 'Digit2' || c === 'Numpad2'){
+    msg.command = 'use_powerup';
+    msg.place = document.querySelector('.powerups .active').dataset.pos;
+    msg.target_field = 2;
+  } else if (c === 'Digit3' || c === 'Numpad3'){
+    msg.command = 'use_powerup';
+    msg.place = document.querySelector('.powerups .active').dataset.pos;
+    msg.target_field = 3;
+  } else if (c === 'Digit4' || c === 'Numpad4'){
+    msg.command = 'use_powerup';
+    msg.place = document.querySelector('.powerups .active').dataset.pos;
+    msg.target_field = 4;
   }
   if (msg.command){
     event.target.conn.send(JSON.stringify(msg));
@@ -80,7 +140,7 @@ function refreshSurface(data){
           if (powerup){
             showPowerup(cell, powerup);
           }
-          
+
         }
       }
     }
@@ -191,9 +251,8 @@ function setClass(elem, newClass){
 
 function showPowerup(cell, powerup){
   cell.classList.add(`powerup-${powerup}`);
-
 }
 
 
 
-export {startTetris, getReady,  removeControls, updateTetris, refreshTetris};
+export {startTetris, getReady,  removeControls, updateTetris, refreshTetris, updatePowerup};

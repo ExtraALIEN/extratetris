@@ -37,3 +37,5 @@ def process_command(conn, data):
         if field is not None and not field.game_over:
             if command in ['move_left', 'move_right', 'move_down', 'rotate']:
                 field.move(command)
+            elif command == 'use_powerup':
+                field.use_powerup(int(data['place']), int(data['target_field']))

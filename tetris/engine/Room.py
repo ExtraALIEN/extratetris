@@ -4,7 +4,7 @@ from django.utils import timezone
 from engine.Field import Field
 from engine.ingame import process_command
 from web.models import TetrisRoom, SingleGameRecord
-from web.helpers import GAME_COUNTS
+from web.helpers import GAME_COUNTS, POWERUPS
 
 
 class Room:
@@ -70,7 +70,6 @@ class Room:
         return final
 
     def update_records(self, places):
-
         eff_points = {}
         if self.players > 1:
             gap = 100 / (self.players - 1)
@@ -159,6 +158,25 @@ class Room:
             author.delete()
             print('guest deleted')
         print('deleted')
+
+    def announce_powerup(self, pos, num, powerup=None, time=None):
+        from engine.roomUtils import broadcast_room
+        msg = {'type': 'powerup', 'pos' : pos, 'num': num + 1, 'powerup': powerup, 'time': time}
+        broadcast_room(self.id, msg)
+
+    def fields_in_game(self):
+        res = []
+        for field in self.fields:
+            if not field.game_over:
+                res.append(field.pos)
+        return res
+
+    def execute_powerup(self, code, target):
+        if target not in self.fields_in_game() or self.fields[target].game_over:
+            return 0
+        print(POWERUPS[code])
+        return 1
+
 
     def to_view(self):
         return {x : self.fields[x].to_view() for x in range(len(self.fields))}
