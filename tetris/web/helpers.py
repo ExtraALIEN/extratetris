@@ -87,4 +87,14 @@ SHAPES = [
     [[1, 1, 1], [0, 0, 1], [0, 0, 0]]
 ]
 
-POWERUPS = ['chance_up', 'chance_down']
+POWERUPS = ['chance_up',
+            'chance_down',
+            'speed_up',
+            'speed_down',
+            'line_add_1',
+            'line_add_2',
+            'line_add_3',
+            'line_remove_1',
+            'line_remove_2',
+            'line_remove_3',
+            ]

@@ -104,6 +104,21 @@ class Field:
             return len(terminated_lines) > 0
 
 
+    def change_speed(self, delta):
+        self.speed += delta
+        if self.speed > self.max_speed:
+            self.max_speed = self.speed
+        elif self.speed < 0:
+            self.speed = 0.1
+
+    def add_line(self):
+        pass
+
+    def remove_line(self):
+        self.surface.pop(0)
+        self.surface.append([0 for x in range(self.width)])
+
+
     def add_score(self, terminated_lines):
         import math
 
@@ -155,9 +170,7 @@ class Field:
 
         self.powerup_boost = powerup_boost*self.multiplier
         self.multiplier *= mul
-        self.speed += boost
-        if self.speed > self.max_speed:
-            self.max_speed = self.speed
+        self.change_speed(boost)
 
     def save_powerup(self, powerup_code):
         for x in range(3):
@@ -184,8 +197,10 @@ class Field:
         pos = place - 1
         if self.powerups[pos] is not None:
             powerup_code = self.powerups[pos]
-            self.remove_powerup(pos)
-            self.actions += self.room.execute_powerup(powerup_code-1, target-1)
+            result = self.room.execute_powerup(powerup_code-1, target-1)
+            if result == 1:
+                self.remove_powerup(pos)
+                self.actions += 1
 
 
 
@@ -225,9 +240,7 @@ class Field:
             self.actions += 1
         elif command == 'move_down':
             terminated = self.active_piece.move_down()
-            self.speed += self.speed_boost
-            if self.speed > self.max_speed:
-                self.max_speed = self.speed
+            self.change_speed(self.speed_boost)
             self.actions += 1
         elif command == 'auto_move_down':
             terminated = self.active_piece.move_down()
@@ -296,7 +309,7 @@ class Field:
                     self.powerups_time[x] -= delay
                     if self.powerups[x] is not None:
                         if self.powerups_time[x] <= 0:
-                            self.remove_powerup(x)
+                            self.use_powerup(x+1, self.pos+1)
                         else:
                             for i in [3,6,9,12]:
                                 if i-delay/2 < self.powerups_time[x] < i+delay/2:

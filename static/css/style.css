@@ -201,6 +201,39 @@ body > main {
   background-image: url("http://localhost/static/pic/2.png");
 }
 
+.cell.powerup-3::before{
+  background-image: url("http://localhost/static/pic/3.png");
+}
+
+.cell.powerup-4::before{
+  background-image: url("http://localhost/static/pic/4.png");
+}
+
+.cell.powerup-5::before{
+  background-image: url("http://localhost/static/pic/5.png");
+}
+
+.cell.powerup-6::before{
+  background-image: url("http://localhost/static/pic/6.png");
+}
+
+.cell.powerup-7::before{
+  background-image: url("http://localhost/static/pic/7.png");
+}
+
+.cell.powerup-8::before{
+  background-image: url("http://localhost/static/pic/8.png");
+}
+.cell.powerup-9::before{
+  background-image: url("http://localhost/static/pic/9.png");
+}
+
+.cell.powerup-10::before{
+  background-image: url("http://localhost/static/pic/10.png");
+}
+
+
+
 
 
 .queue{
@@ -291,6 +324,39 @@ body > main {
 .powerups .powerup-2{
   background-image: url("http://localhost/static/pic/2.png");
 }
+
+.powerups .powerup-3{
+  background-image: url("http://localhost/static/pic/3.png");
+}
+
+.powerups .powerup-4{
+  background-image: url("http://localhost/static/pic/4.png");
+}
+
+.powerups .powerup-5{
+  background-image: url("http://localhost/static/pic/5.png");
+}
+
+.powerups .powerup-6{
+  background-image: url("http://localhost/static/pic/6.png");
+}
+
+.powerups .powerup-7{
+  background-image: url("http://localhost/static/pic/7.png");
+}
+
+.powerups .powerup-8{
+  background-image: url("http://localhost/static/pic/8.png");
+}
+
+.powerups .powerup-9{
+  background-image: url("http://localhost/static/pic/9.png");
+}
+
+.powerups .powerup-10{
+  background-image: url("http://localhost/static/pic/10.png");
+}
+
 
 .powerups .time-12{
   transition-delay: 3s;
