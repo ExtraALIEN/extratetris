@@ -198,14 +198,29 @@ class Room:
                     }
         elif powerup == 'line_add_1':
             tg.add_line()
+            msg = {'type': 'refresh-tetris',
+                            'pos' : tg.pos,
+                            'surface': tg.surface_to_view(),
+                            'new_piece': tg.active_piece.to_view()
+                    }
 
         elif powerup == 'line_add_2':
             for i in range(2):
                 tg.add_line()
+                msg = {'type': 'refresh-tetris',
+                                'pos' : tg.pos,
+                                'surface': tg.surface_to_view(),
+                                'new_piece': tg.active_piece.to_view()
+                        }
 
         elif powerup == 'line_add_3':
             for i in range(3):
                 tg.add_line()
+                msg = {'type': 'refresh-tetris',
+                                'pos' : tg.pos,
+                                'surface': tg.surface_to_view(),
+                                'new_piece': tg.active_piece.to_view()
+                        }
 
         elif powerup == 'line_remove_1':
             tg.remove_line()
