@@ -2,7 +2,7 @@ from engine.ListMethods import buildEmptyFieldList
 from engine.QueuePieces import QueuePieces
 from engine.ActivePiece import ActivePiece
 from threading import Timer
-from random import randint, shuffle
+from random import randint, shuffle, choices, random
 
 class Field:
 
@@ -58,9 +58,9 @@ class Field:
 
     def top_points(self):
         def top_point(x):
-            for y in range(self.height):
+            for y in range(self.height-1, -1, -1):
                 if self.surface[y][x] > 0:
-                    return y
+                    return y+1
             return 0
         return [top_point(x) for x in range(self.width)]
 
@@ -110,26 +110,30 @@ class Field:
         if self.speed > self.max_speed:
             self.max_speed = self.speed
         elif self.speed < 0:
-            self.speed = 0.1
+            self.speed = 0.02
 
     def add_line(self):
-        filled = randint(self.width/2, self.width)
+        filled = randint(self.width/2, self.width-1)
         cells = [x for x in range(self.width)]
         shuffle(cells)
         line = [0 for x in range(self.width)]
         for x in cells[:filled]:
             line[x] = randint(1, 8)
-        self.surface.insert(0, line)
         self.surface.pop(-1)
+        self.surface.insert(0, line)
         if self.active_piece.blocked():
-            self.land_piece()
+            self.active_piece.y += 1
+            if self.active_piece.blocked():
+                self.land_piece()
 
 
     def remove_line(self):
         self.surface.pop(0)
         self.surface.append([0 for x in range(self.width)])
         if self.active_piece.blocked():
-            self.land_piece()
+            self.active_piece.y -= 1
+            if self.active_piece.blocked():
+                self.land_piece()
 
 
     def add_score(self, terminated_lines):
@@ -221,7 +225,37 @@ class Field:
                     self.actions += 1
 
     def put_thunder(self):
-        print(self.top_points())
+        top = self.top_points()
+        xs = [x for x in range(self.width)]
+        weights = [x**6 for x in top]
+        x = choices(xs, weights=weights)[0]
+        prob = 1
+        y = top[x] - 1
+        reduced = False
+        while not reduced:
+            if random() < prob:
+                self.surface[y][x] = 0
+                y -= 1
+                if y < 0:
+                    reduced = True
+                elif self.surface[y][x] == 0:
+                    prob -= 0.02
+                else:
+                    prob -= 0.08
+                    if random() < 0.25:
+                        if x == 0:
+                            x += 1
+                        elif x == self.width-1:
+                            x -= 1
+                        elif random() < 0.5:
+                            x += 1
+                        else:
+                            x -= 1
+
+            else:
+                reduced = True
+
+
 
 
     def check_terminate(self):

@@ -231,6 +231,11 @@ class Room:
                 x *= 0.8
         elif powerup == 'thunder':
             tg.put_thunder()
+            msg = {'type': 'refresh-tetris',
+                   'pos' : tg.pos,
+                   'surface': tg.surface_to_view(),
+                   'new_piece': tg.active_piece.to_view()
+                  }
         if msg is not None:
             broadcast_room(self.id, msg)
         return 1
