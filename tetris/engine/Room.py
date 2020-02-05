@@ -171,7 +171,7 @@ class Room:
                 res.append(field.pos)
         return res
 
-    def execute_powerup(self, code, target):
+    def execute_powerup(self, code, target, starter=None):
         from engine.roomUtils import broadcast_room
         if target not in self.fields_in_game() or self.fields[target].game_over:
             return 0
@@ -196,55 +196,41 @@ class Room:
                     'speed': tg.speed,
                     'time': tg.time
                     }
-        elif powerup == 'line_add_1':
-            tg.add_line()
-            msg = {'type': 'refresh-tetris',
-                            'pos' : tg.pos,
-                            'surface': tg.surface_to_view(),
-                            'new_piece': tg.active_piece.to_view()
-                    }
-
-        elif powerup == 'line_add_2':
-            for i in range(2):
+        elif powerup.startswith('line_add'):
+            i = int(powerup[-1])
+            for x in range(i):
                 tg.add_line()
-                msg = {'type': 'refresh-tetris',
-                                'pos' : tg.pos,
-                                'surface': tg.surface_to_view(),
-                                'new_piece': tg.active_piece.to_view()
-                        }
-
-        elif powerup == 'line_add_3':
-            for i in range(3):
-                tg.add_line()
-                msg = {'type': 'refresh-tetris',
-                                'pos' : tg.pos,
-                                'surface': tg.surface_to_view(),
-                                'new_piece': tg.active_piece.to_view()
-                        }
-
-        elif powerup == 'line_remove_1':
-            tg.remove_line()
             msg = {'type': 'refresh-tetris',
-                            'pos' : tg.pos,
-                            'surface': tg.surface_to_view(),
-                            'new_piece': tg.active_piece.to_view()
-                    }
-        elif powerup == 'line_remove_2':
-            for i in range(2):
+                   'pos' : tg.pos,
+                   'surface': tg.surface_to_view(),
+                   'new_piece': tg.active_piece.to_view()
+                  }
+        elif powerup.startswith('line_remove'):
+            i = int(powerup[-1])
+            for x in range(i):
                 tg.remove_line()
             msg = {'type': 'refresh-tetris',
-                            'pos' : tg.pos,
-                            'surface': tg.surface_to_view(),
-                            'new_piece': tg.active_piece.to_view()
-                    }
-        elif powerup == 'line_remove_3':
-            for i in range(3):
-                tg.remove_line()
+                   'pos' : tg.pos,
+                   'surface': tg.surface_to_view(),
+                   'new_piece': tg.active_piece.to_view()
+                  }
+        elif powerup == 'copy_figure':
+            piece = tg.active_piece
+            tg.queue.fill(piece.color, piece.shape_number)
             msg = {'type': 'refresh-tetris',
                             'pos' : tg.pos,
-                            'surface': tg.surface_to_view(),
-                            'new_piece': tg.active_piece.to_view()
+                            'queue': tg.queue.to_view(),
                     }
+        elif powerup == 'duration_up':
+            tg.powerups_lifetime /= 0.8
+            for x in tg.powerups_time:
+                x /= 0.8
+        elif powerup == 'duration_down':
+            tg.powerups_lifetime *= 0.8
+            for x in tg.powerups_time:
+                x *= 0.8
+        elif powerup == 'thunder':
+            tg.put_thunder()
         if msg is not None:
             broadcast_room(self.id, msg)
         return 1

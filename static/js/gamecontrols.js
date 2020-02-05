@@ -54,7 +54,6 @@ function changePowerup(next){
   document.querySelector(`.current .powerups .place[data-pos="${newNum}"]`).classList.add('active');
 }
 
-const TIMES = ['00', 3,6,9,12];
 
 function updatePowerup(data){
   let selector = `#field${data.pos} .powerups .place[data-pos="${data.num}"]`;
@@ -63,16 +62,20 @@ function updatePowerup(data){
     place.classList.add(`powerup-${data.powerup}`);
 
   } else if (data.time){
-    for (let t of TIMES){
-      place.classList.remove(`time-${t}`);
+    for (let x of [...place.classList]){
+      if (x.startsWith('time-')){
+        place.classList.remove(x);
+      }
     }
     place.classList.add(`time-${data.time}`);
   } else {
-    for (let t of TIMES){
-      place.classList.remove(`time-${t}`);
-    }
-    for (let i=1; i<12;i++){
-      place.classList.remove(`powerup-${i}`);
+    for (let x of [...place.classList]){
+      if (x.startsWith('time-')){
+        place.classList.remove(x);
+      }
+      else if (x.startsWith('powerup-')){
+        place.classList.remove(x);
+      }
     }
     place.classList.add(`time-00`);
   }

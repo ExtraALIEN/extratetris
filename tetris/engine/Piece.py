@@ -16,9 +16,10 @@ def get_shape(number, color):
 
 
 class Piece:
-    def __init__(self):
-        self.color = randint(1, 8)
-        self.shape = get_shape(randint(0, len(SHAPES)-1), self.color)
+    def __init__(self, color=10, shape_number=0):
+        self.color = color
+        self.shape_number = shape_number
+        self.shape = get_shape(self.shape_number, self.color)
         for i in range(randint(0, 4)):
             self.rotate()
 

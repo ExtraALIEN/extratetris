@@ -104,7 +104,7 @@ class Field:
             self.active_piece = self.create_piece()
             return len(terminated_lines) > 0
 
-    
+
     def change_speed(self, delta):
         self.speed += delta
         if self.speed > self.max_speed:
@@ -192,6 +192,7 @@ class Field:
                 self.powerups_time[x] = self.powerups_lifetime
                 self.room.announce_powerup(self.pos, x, powerup=(powerup_code // 100), time=self.powerups_time[x])
                 return
+        self.room.execute_powerup((powerup_code//100)-1, self.pos)
 
     def send_powerup_time(self, x, control_time):
         self.room.announce_powerup(self.pos, x, time=control_time)
@@ -202,23 +203,30 @@ class Field:
         self.room.announce_powerup(self.pos, x)
 
     def check_powerup(self, line):
+        powerups = []
         for x in line:
             if x > 100:
-                self.save_powerup(x)
+                powerups.append(x)
+        if len(powerups) > 0:
+            return powerups
 
-    def use_powerup(self, place, target):
+    def use_powerup(self, place, target, manual=False):
         pos = place - 1
         if self.powerups[pos] is not None:
             powerup_code = self.powerups[pos]
-            result = self.room.execute_powerup(powerup_code-1, target-1)
+            result = self.room.execute_powerup(powerup_code-1, target-1, starter=self)
             if result == 1:
                 self.remove_powerup(pos)
-                self.actions += 1
+                if manual:
+                    self.actions += 1
 
+    def put_thunder(self):
+        print(self.top_points())
 
 
     def check_terminate(self):
         lines = []
+        powerups = []
         for y in range(self.height-1, -1, -1):
             full = True
             for x in self.surface[y]:
@@ -227,11 +235,16 @@ class Field:
                     break
             if full:
                 lines.append(y)
-                self.check_powerup(self.surface[y])
-
+                added_powerups = self.check_powerup(self.surface[y])
+                if added_powerups is not None:
+                    powerups.extend(added_powerups)
         for y in lines:
             self.surface.pop(y)
             self.surface.append([0 for x in range(self.width)])
+        if len(powerups) > 0:
+            shuffle(powerups)
+            for x in powerups:
+                self.save_powerup(x)
         return lines
 
 

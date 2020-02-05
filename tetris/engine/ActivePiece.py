@@ -2,7 +2,9 @@ from engine.Piece import Piece
 
 class ActivePiece(Piece):
     def __init__(self, current_piece, x, y, field):
+        self.color = current_piece.color
         self.shape = current_piece.shape
+        self.shape_number = current_piece.shape_number
         self.x = x
         self.y = y
         self.field = field

@@ -97,4 +97,8 @@ POWERUPS = ['chance_up',
             'line_remove_1',
             'line_remove_2',
             'line_remove_3',
+            'copy_figure',
+            'duration_up',
+            'duration_down',
+            'thunder',
             ]

@@ -232,6 +232,22 @@ body > main {
   background-image: url("http://localhost/static/pic/10.png");
 }
 
+.cell.powerup-11::before{
+  background-image: url("http://localhost/static/pic/11.png");
+}
+
+.cell.powerup-12::before{
+  background-image: url("http://localhost/static/pic/12.png");
+}
+
+.cell.powerup-13::before{
+  background-image: url("http://localhost/static/pic/13.png");
+}
+
+.cell.powerup-14::before{
+  background-image: url("http://localhost/static/pic/14.png");
+}
+
 
 
 
@@ -355,6 +371,22 @@ body > main {
 
 .powerups .powerup-10{
   background-image: url("http://localhost/static/pic/10.png");
+}
+
+.powerups .powerup-11{
+  background-image: url("http://localhost/static/pic/11.png");
+}
+
+.powerups .powerup-12{
+  background-image: url("http://localhost/static/pic/12.png");
+}
+
+.powerups .powerup-13{
+  background-image: url("http://localhost/static/pic/13.png");
+}
+
+.powerups .powerup-14{
+  background-image: url("http://localhost/static/pic/14.png");
 }
 
 
