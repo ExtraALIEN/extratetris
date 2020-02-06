@@ -177,6 +177,14 @@ class Room:
             return 0
         powerup = POWERUPS[code]
         tg = self.fields[target]
+        if tg.shield_time > 0:
+            if powerup == 'shield':
+                tg.shield_time += 45
+            else:
+                tg.shield_time -= 15
+                if tg.shield_time < 0:
+                    tg.shield_time = 0
+            return 1
         msg = None
         if powerup == 'chance_up':
             tg.powerup_mul /= 0.75
@@ -231,6 +239,15 @@ class Room:
                 x *= 0.8
         elif powerup == 'thunder':
             tg.put_thunder()
+            msg = {'type': 'refresh-tetris',
+                   'pos' : tg.pos,
+                   'surface': tg.surface_to_view(),
+                   'new_piece': tg.active_piece.to_view()
+                  }
+        elif powerup == 'shield':
+            tg.shield_time += 45
+        elif powerup == 'bomb':
+            tg.put_bomb()
             msg = {'type': 'refresh-tetris',
                    'pos' : tg.pos,
                    'surface': tg.surface_to_view(),

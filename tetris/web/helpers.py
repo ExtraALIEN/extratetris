@@ -101,4 +101,6 @@ POWERUPS = ['chance_up',
             'duration_up',
             'duration_down',
             'thunder',
+            'shield',
+            'bomb',
             ]

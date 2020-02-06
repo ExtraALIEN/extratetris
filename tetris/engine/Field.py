@@ -29,6 +29,7 @@ class Field:
         self.powerups = [None, None, None]
         self.powerups_time = [0, 0, 0]
         self.powerups_lifetime = 15
+        self.shield_time = 0
         self.max_speed = 0
         self.multiplier = 1
         self.to_movedown = 25 / (self.speed + 25)
@@ -123,17 +124,18 @@ class Field:
         self.surface.insert(0, line)
         if self.active_piece.blocked():
             self.active_piece.y += 1
-            if self.active_piece.blocked():
-                self.land_piece()
 
 
     def remove_line(self):
         self.surface.pop(0)
         self.surface.append([0 for x in range(self.width)])
         if self.active_piece.blocked():
+            down = self.active_piece.bottom_points()
+            for x in down:
+                if down[x] == 0:
+                    self.land_piece()
+                    return
             self.active_piece.y -= 1
-            if self.active_piece.blocked():
-                self.land_piece()
 
 
     def add_score(self, terminated_lines):
@@ -230,10 +232,10 @@ class Field:
         weights = [x**6 for x in top]
         x = choices(xs, weights=weights)[0]
         prob = 1
-        y = top[x] - 1
+        y = top[x]
         reduced = False
         while not reduced:
-            if random() < prob:
+            if random() < prob or random() < prob or random() < prob:
                 self.surface[y][x] = 0
                 y -= 1
                 if y < 0:
@@ -254,6 +256,49 @@ class Field:
 
             else:
                 reduced = True
+
+    def put_bomb(self):
+        top = self.top_points()
+        wing = 2
+        center = randint(0, self.width-1)
+        left_wing = wing
+        right_wing = wing
+        if center < wing:
+            left_wing = center
+            right_wing = 2 * wing - left_wing
+        elif center > self.width-1-wing:
+            right_wing = self.width-1-center
+            left_wing = 2 * wing - right_wing
+        top_y = top[center]
+        bottom_y = top_y - 4
+        if bottom_y < 0:
+            bottom_y = 0
+        top_side = {}
+        for x in range(self.width):
+            if not (center - left_wing <= x <= center + right_wing):
+                 top_side[x] = top[x]
+        bank = []
+        width = [0, 0, 1, 2]
+        w = 0
+        for y in range(top_y, bottom_y, -1):
+            print
+            for x in range(center - left_wing + width[w], center + right_wing + 1 - width[w]):
+                if self.surface[y][x] > 0:
+                     bank.append(self.surface[y][x])
+                     self.surface[y][x] = 0
+            w += 1
+        lands = [3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8]
+        c = 0
+        while len(bank) > 0:
+            x = center + lands[c]
+            if x in top_side:
+                self.surface[top_side[x]][x] = bank.pop(0)
+                top_side[x] += 1
+                if self.active_piece.blocked():
+                    self.land_piece()
+            c += 1
+            if c == len(lands):
+                c = 0
 
 
 
@@ -375,7 +420,8 @@ class Field:
                                 if i-delay/2 < self.powerups_time[x] < i+delay/2:
                                     self.send_powerup_time(x, i)
                                     break
-
+            if self.shield_time > 0:
+                self.shield_time -= delay
 
             self.to_accelerate -= delay
             if self.to_accelerate <= 0:

@@ -248,6 +248,15 @@ body > main {
   background-image: url("http://localhost/static/pic/14.png");
 }
 
+.cell.powerup-15::before{
+  background-image: url("http://localhost/static/pic/15.png");
+}
+
+.cell.powerup-16::before{
+  background-image: url("http://localhost/static/pic/16.png");
+}
+
+
 
 
 
@@ -387,6 +396,14 @@ body > main {
 
 .powerups .powerup-14{
   background-image: url("http://localhost/static/pic/14.png");
+}
+
+.powerups .powerup-15{
+  background-image: url("http://localhost/static/pic/15.png");
+}
+
+.powerups .powerup-16{
+  background-image: url("http://localhost/static/pic/16.png");
 }
 
 
