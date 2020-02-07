@@ -205,7 +205,7 @@ conn.onmessage = function(event){
     updatePowerup(data);
   }  else if (type === 'blind'){
     blind(data);
-  } else if (type === 'remove-blind'){
+  }  else if (type === 'remove-blind'){
     removeBlind(data);
   }
 

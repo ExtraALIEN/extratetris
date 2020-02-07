@@ -268,6 +268,18 @@ body > main {
   background-image: url("http://localhost/static/pic/18.png");
 }
 
+.cell.powerup-19::before{
+  background-image: url("http://localhost/static/pic/19.png");
+}
+
+.cell.powerup-20::before{
+  background-image: url("http://localhost/static/pic/20.png");
+}
+
+.cell.powerup-21::before{
+  background-image: url("http://localhost/static/pic/21.png");
+}
+
 @keyframes floating{
   0% {background-position: 0% 0%;}
   100% {background-position: 80px -80px;}
@@ -311,8 +323,20 @@ body > main {
   align-items: stretch;
 }
 
+
 .queue > div:last-child{
   border-bottom:  1px solid grey;
+}
+
+.queue.blind > div{
+  background-image: url("http://localhost/static/pic/blind.png");
+  border: none;
+  background-size: 80px 80px;
+  animation: floating 1s infinite linear;
+}
+
+.queue.blind .cell{
+  background-color: transparent;
 }
 
 .queue-row{
@@ -437,6 +461,18 @@ body > main {
   background-image: url("http://localhost/static/pic/18.png");
 }
 
+.powerups .powerup-19{
+  background-image: url("http://localhost/static/pic/19.png");
+}
+
+.powerups .powerup-20{
+  background-image: url("http://localhost/static/pic/20.png");
+}
+
+.powerups .powerup-21{
+  background-image: url("http://localhost/static/pic/21.png");
+}
+
 .powerups .time-12{
   transition-delay: 3s;
   background-color: #f6c2c2;
@@ -465,6 +501,7 @@ body > main {
 
 .result {
   position: absolute;
+  z-index:20;
   top: 0;
   left: 0;
   width:133%;

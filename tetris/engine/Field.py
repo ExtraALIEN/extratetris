@@ -2,7 +2,7 @@ from engine.ListMethods import buildEmptyFieldList
 from engine.QueuePieces import QueuePieces
 from engine.ActivePiece import ActivePiece
 from threading import Timer
-from random import randint, shuffle, choices, random
+from random import randint, shuffle, choice, choices, random
 
 class Field:
 
@@ -24,6 +24,10 @@ class Field:
         self.speed = 0
         self.speed_boost = 0.02
         self.blind_time = [0 for x in range(self.width)]
+        self.blind_queue = 0
+        self.drink_time = 0
+        self.weak_time = 0
+        self.lost_actions = 0
         self.powerup_chance = 0.02
         self.powerup_boost = 0
         self.powerup_mul = 10
@@ -152,6 +156,15 @@ class Field:
     def remove_blind(self, x):
         self.blind_time[x] = 0
         self.room.unblind(self.pos, x)
+
+    def set_blind_queue(self):
+        result = self.blind_queue == 0
+        self.blind_queue += 20
+        return result
+
+    def remove_blind_queue(self):
+        self.blind_queue = 0
+        self.room.unblind(self.pos, 'queue')
 
     def add_score(self, terminated_lines):
         import math
@@ -293,9 +306,9 @@ class Field:
             if not (center - left_wing <= x <= center + right_wing):
                  top_side[x] = top[x]
         bank = []
-        width = [0, 0, 1, 2]
+        width = [0, 0, 1, 1, 2]
         w = 0
-        for y in range(top_y, bottom_y, -1):
+        for y in range(top_y, bottom_y -1, -1):
             print
             for x in range(center - left_wing + width[w], center + right_wing + 1 - width[w]):
                 if self.surface[y][x] > 0:
@@ -342,7 +355,7 @@ class Field:
         return lines
 
 
-    def move(self, command):
+    def move(self, command, drink=False):
         from engine.ListMethods import diff_obj
         from engine.roomUtils import broadcast_room
         import engine.status as status
@@ -354,19 +367,23 @@ class Field:
         prev_distance = self.distance
         if command == 'move_left':
             self.active_piece.move_left()
-            self.actions += 1
+            if not drink:
+             self.actions += 1
         elif command == 'move_right':
             self.active_piece.move_right()
-            self.actions += 1
+            if not drink:
+                self.actions += 1
         elif command == 'move_down':
             terminated = self.active_piece.move_down()
             self.change_speed(self.speed_boost)
-            self.actions += 1
+            if not drink:
+                self.actions += 1
         elif command == 'auto_move_down':
             terminated = self.active_piece.move_down()
         elif command == 'rotate':
             self.active_piece.rotate()
-            self.actions += 1
+            if not drink:
+                self.actions += 1
         if not self.game_over:
             cur = piece.to_view()
             piece_move = diff_obj(prev, cur)
@@ -429,6 +446,10 @@ class Field:
                     self.blind_time[x] -= delay
                     if self.blind_time[x] <= 0:
                         self.remove_blind(x)
+            if self.blind_queue > 0:
+                self.blind_queue -= delay
+                if self.blind_queue <= 0:
+                    self.remove_blind_queue()
             for x in range(3):
                 if self.powerups_time[x] > 0:
                     self.powerups_time[x] -= delay
@@ -442,7 +463,17 @@ class Field:
                                     break
             if self.shield_time > 0:
                 self.shield_time -= delay
-
+            if self.drink_time > 0:
+                self.drink_time -= delay
+                if random() < delay*3:
+                    command = choice(['move_left', 'move_right', 'move_down', 'rotate'])
+                    self.move(command, drink=True)
+                if self.drink_time <= 0:
+                    self.drink_time = 0
+            if self.weak_time > 0:
+                self.weak_time -= delay
+                if self.weak_time <= 0:
+                    self.weak_time = 0
             self.to_accelerate -= delay
             if self.to_accelerate <= 0:
                 self.speed += .1

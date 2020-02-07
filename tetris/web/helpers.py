@@ -104,5 +104,9 @@ POWERUPS = ['chance_up',
             'shield',
             'bomb',
             'trash',
-            'blind'
+            'blind',
+            'blind_queue',
+            'drink',
+            'weak_signal',
+
             ]

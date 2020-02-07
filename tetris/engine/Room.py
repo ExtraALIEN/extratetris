@@ -170,6 +170,8 @@ class Room:
                 'pos': pos,
                 'x': x
         }
+        if x == 'queue':
+            del msg['x']
         broadcast_room(self.id, msg)
 
     def fields_in_game(self):
@@ -269,6 +271,16 @@ class Room:
                    'pos': tg.pos,
                    'cols': tg.set_blind()
                    }
+        elif powerup == 'blind_queue':
+            if tg.set_blind_queue():
+                msg = {'type': 'blind',
+                       'pos': tg.pos,
+                      }
+        elif powerup == 'drink':
+            tg.drink_time += 20
+        elif powerup == 'weak_signal':
+            tg.weak_time += 20
+            tg.lost_acitons += randint(0,4)
         if msg is not None:
             broadcast_room(self.id, msg)
         return 1

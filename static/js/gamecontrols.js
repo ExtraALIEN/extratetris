@@ -127,20 +127,33 @@ function getReady(conn){
 }
 
 function blind(data){
+  console.log('blind', data)
   let field = document.querySelector(`#field${data.pos}`);
-  for (let x of data.cols){
-    let selector = `.row .cell[data-x="${x}"]`;
-    for (let elem of field.querySelectorAll(selector)){
-      elem.classList.add('blind');
+  console.log(field);
+  if (data.cols){
+    for (let x of data.cols){
+      let selector = `.row .cell[data-x="${x}"]`;
+      for (let elem of field.querySelectorAll(selector)){
+        elem.classList.add('blind');
 
+      }
     }
+  }
+  else{
+    let queue = field.querySelector('.queue');
+    queue.classList.add('blind');
   }
 }
 
 function removeBlind(data){
-  let selector = `#field${data.pos} .row .cell[data-x="${data.x}"]`;
-  for (let elem of [...document.querySelectorAll(selector)]){
-    elem.classList.remove('blind');
+  let field = document.querySelector(`#field${data.pos}`);
+  if (data.x !== undefined){
+    for (let elem of [...field.querySelectorAll(`.row .cell[data-x="${data.x}"]`)]){
+      elem.classList.remove('blind');
+    }
+  } else {
+      let queue = field.querySelector('.queue');
+    queue.classList.remove('blind');
   }
 }
 
