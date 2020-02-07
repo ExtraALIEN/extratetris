@@ -1,4 +1,4 @@
-import {startTetris, getReady, removeControls, updateTetris, refreshTetris, updatePowerup} from './gamecontrols.js';
+import {startTetris, getReady, removeControls, updateTetris, refreshTetris, updatePowerup, blind, removeBlind} from './gamecontrols.js';
 import {nodeScriptReplace} from './nodescript.js';
 import {secondsToMinutes} from './timing.js';
 
@@ -203,7 +203,13 @@ conn.onmessage = function(event){
       fillPlaces(data.places);
   } else if (type === 'powerup'){
     updatePowerup(data);
-  } else{
+  }  else if (type === 'blind'){
+    blind(data);
+  } else if (type === 'remove-blind'){
+    removeBlind(data);
+  }
+
+  else{
       console.log(data);
   }
 };

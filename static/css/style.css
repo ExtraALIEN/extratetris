@@ -193,6 +193,10 @@ body > main {
   background-size: 100% 100%;
 }
 
+.cell.blind[class*="powerup"]::before{
+  display:none;
+}
+
 .cell.powerup-1::before{
   background-image: url("http://localhost/static/pic/1.png");
 }
@@ -256,7 +260,26 @@ body > main {
   background-image: url("http://localhost/static/pic/16.png");
 }
 
+.cell.powerup-17::before{
+  background-image: url("http://localhost/static/pic/17.png");
+}
 
+.cell.powerup-18::before{
+  background-image: url("http://localhost/static/pic/18.png");
+}
+
+@keyframes floating{
+  0% {background-position: 0% 0%;}
+  100% {background-position: 80px -80px;}
+}
+
+.cell.blind{
+  z-index: 10;
+  background-image: url("http://localhost/static/pic/blind.png");
+  border: none;
+  background-size: 80px 80px;
+  animation: floating 1s infinite linear;
+}
 
 
 
@@ -406,6 +429,13 @@ body > main {
   background-image: url("http://localhost/static/pic/16.png");
 }
 
+.powerups .powerup-17{
+  background-image: url("http://localhost/static/pic/17.png");
+}
+
+.powerups .powerup-18{
+  background-image: url("http://localhost/static/pic/18.png");
+}
 
 .powerups .time-12{
   transition-delay: 3s;

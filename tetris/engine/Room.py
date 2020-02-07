@@ -164,6 +164,14 @@ class Room:
         msg = {'type': 'powerup', 'pos' : pos, 'num': num + 1, 'powerup': powerup, 'time': time}
         broadcast_room(self.id, msg)
 
+    def unblind(self, pos, x):
+        from engine.roomUtils import broadcast_room
+        msg = { 'type': 'remove-blind',
+                'pos': pos,
+                'x': x
+        }
+        broadcast_room(self.id, msg)
+
     def fields_in_game(self):
         res = []
         for field in self.fields:
@@ -253,6 +261,14 @@ class Room:
                    'surface': tg.surface_to_view(),
                    'new_piece': tg.active_piece.to_view()
                   }
+        elif powerup == 'trash':
+            for x in range(3):
+                tg.remove_powerup(x)
+        elif powerup == 'blind':
+            msg = {'type': 'blind',
+                   'pos': tg.pos,
+                   'cols': tg.set_blind()
+                   }
         if msg is not None:
             broadcast_room(self.id, msg)
         return 1

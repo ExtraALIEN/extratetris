@@ -23,6 +23,7 @@ class Field:
         self.start_player = None
         self.speed = 0
         self.speed_boost = 0.02
+        self.blind_time = [0 for x in range(self.width)]
         self.powerup_chance = 0.02
         self.powerup_boost = 0
         self.powerup_mul = 10
@@ -137,6 +138,20 @@ class Field:
                     return
             self.active_piece.y -= 1
 
+
+    def set_blind(self):
+        to_blind = []
+        cols = [x for x in range(self.width)]
+        shuffle(cols)
+        for x in cols[:self.width//3]:
+            if self.blind_time[x] == 0:
+                to_blind.append(x)
+            self.blind_time[x] += 10
+        return to_blind
+
+    def remove_blind(self, x):
+        self.blind_time[x] = 0
+        self.room.unblind(self.pos, x)
 
     def add_score(self, terminated_lines):
         import math
@@ -409,6 +424,11 @@ class Field:
             if self.to_movedown <= 0:
                 self.auto_move_down()
                 self.to_movedown += 12 / (self.speed + 12)
+            for x in range(self.width):
+                if self.blind_time[x] > 0:
+                    self.blind_time[x] -= delay
+                    if self.blind_time[x] <= 0:
+                        self.remove_blind(x)
             for x in range(3):
                 if self.powerups_time[x] > 0:
                     self.powerups_time[x] -= delay
