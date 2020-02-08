@@ -111,6 +111,15 @@ class Field:
             return len(terminated_lines) > 0
 
 
+    def pass_signal(self):
+        if self.lost_actions > 0:
+            self.lost_actions -= 1
+            return False
+        if self.weak_time > 0:
+            self.lost_actions = randint(0, 4)
+        return True
+
+
     def change_speed(self, delta):
         self.speed += delta
         if self.speed > self.max_speed:
@@ -261,9 +270,14 @@ class Field:
         x = choices(xs, weights=weights)[0]
         prob = 1
         y = top[x]
+        print(top)
+        print(x, y)
         reduced = False
         while not reduced:
-            if random() < prob or random() < prob or random() < prob:
+            a = random()
+            b = random()
+            c = random()
+            if a < prob or b < prob or c < prob:
                 self.surface[y][x] = 0
                 y -= 1
                 if y < 0:
@@ -271,7 +285,7 @@ class Field:
                 elif self.surface[y][x] == 0:
                     prob -= 0.02
                 else:
-                    prob -= 0.08
+                    prob -= 0.06
                     if random() < 0.25:
                         if x == 0:
                             x += 1
@@ -283,6 +297,10 @@ class Field:
                             x -= 1
 
             else:
+                print(a)
+                print(b)
+                print(c)
+                print(prob)
                 reduced = True
 
     def put_bomb(self):
@@ -474,6 +492,7 @@ class Field:
                 self.weak_time -= delay
                 if self.weak_time <= 0:
                     self.weak_time = 0
+                    self.lost_actions = 0
             self.to_accelerate -= delay
             if self.to_accelerate <= 0:
                 self.speed += .1

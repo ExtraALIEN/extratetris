@@ -5,6 +5,7 @@ from engine.Field import Field
 from engine.ingame import process_command
 from web.models import TetrisRoom, SingleGameRecord
 from web.helpers import GAME_COUNTS, POWERUPS
+from random import randint
 
 
 class Room:
@@ -280,7 +281,8 @@ class Room:
             tg.drink_time += 20
         elif powerup == 'weak_signal':
             tg.weak_time += 20
-            tg.lost_acitons += randint(0,4)
+            if tg.lost_actions == 0:
+                tg.lost_actions = randint(0, 4)
         if msg is not None:
             broadcast_room(self.id, msg)
         return 1

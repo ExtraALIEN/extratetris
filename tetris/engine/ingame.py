@@ -34,7 +34,7 @@ def process_command(conn, data):
         pos = status.connections[conn]['pos']
         room = status.active_rooms[id]
         field = room.fields[pos]
-        if field is not None and not field.game_over:
+        if field is not None and not field.game_over and field.pass_signal():
             if command in ['move_left', 'move_right', 'move_down', 'rotate']:
                 field.move(command)
             elif command == 'use_powerup':
