@@ -1,4 +1,4 @@
-import {startTetris, getReady, removeControls, updateTetris, refreshTetris, updatePowerup, updateFlag, blind, removeBlind} from './gamecontrols.js';
+import {startTetris, getReady, removeControls, updateTetris, refreshTetris, updatePowerup, updateGoals, updateFlag, blind, removeBlind} from './gamecontrols.js';
 import {nodeScriptReplace} from './nodescript.js';
 import {secondsToMinutes} from './timing.js';
 
@@ -209,6 +209,8 @@ conn.onmessage = function(event){
     removeBlind(data);
   } else if (type === 'flag'){
     updateFlag(data);
+  } else if (type === 'goal'){
+    updateGoals(data.goals);
   }
 
   else{

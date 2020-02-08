@@ -323,6 +323,16 @@ body > main {
 
 }
 
+.goals {
+  box-sizing: border-box;
+  padding: 2vh;
+  width: 6.6vh;
+  max-width: 6.6vh;
+  position: absolute;
+  top: 33vh;
+  left: 100%;
+}
+
 .queue > div {
   box-sizing: border-box;
   flex-grow:1;

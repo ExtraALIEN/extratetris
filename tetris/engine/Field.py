@@ -104,7 +104,10 @@ class Field:
                     self.surface[self.active_piece.y-y][x+self.active_piece.x] \
                         = self.active_piece.shape[y][x]
         terminated_lines = self.check_terminate()
-        self.lines += len(terminated_lines)
+        li = len(terminated_lines)
+        self.lines += li
+        if li > 0 and self.room.type == 'RA':
+            self.room.update_lines(self.pos, li)
         if sum(self.surface[-1]) > 0:
             self.end_game()
         else:
@@ -112,7 +115,7 @@ class Field:
 
         if not self.game_over:
             self.active_piece = self.create_piece()
-            return len(terminated_lines) > 0
+            return li > 0
 
 
     def pass_signal(self):

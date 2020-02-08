@@ -18,6 +18,10 @@ class Room:
         self.players = size
         self.fields = [Field(room=self, pos=i) for i in range(self.players)]
         self.start_time = None
+        self.lines = 0
+        self.next_positive = 5
+        self.next_negative = 9
+        self.next_negative2 = 11
 
 
     def start_timers(self):
@@ -27,6 +31,8 @@ class Room:
             field.update_timer(delay)
         if self.type in ['CF', 'HF']:
             self.reset_flag()
+        elif self.type == 'RA':
+            self.announce_goals()
 
     def players_left(self):
         total = 0
@@ -34,6 +40,33 @@ class Room:
             if not field.game_over:
                 total += 1
         return total
+
+    def update_lines(self, pos, lines):
+        self.lines += lines
+        announce = False
+        if self.lines >= self.next_positive:
+            self.fields[pos].goal += 2
+            if self.next_positive % 10 == 0:
+                self.fields[pos].goal += 1
+            if self.next_positive % 25 == 0:
+                self.fields[pos].goal += 1
+            if self.next_positive % 50 == 0:
+                self.fields[pos].goal += 1
+            self.next_positive += 5
+            announce = True
+        if self.lines >= self.next_negative:
+            self.fields[pos].goal -= 1
+            self.next_negative += 5
+            announce = True
+        if self.lines >= self.next_negative2:
+            self.fields[pos].goal -= 1
+            if (self.next_negative2 - 1) % 20 == 0:
+                self.fields[pos].goal -= 2
+            self.next_negative2 += 5
+            announce = True
+        if announce:
+            self.announce_goals()
+
 
     def detect_places(self):
         from engine.roomUtils import broadcast_room
@@ -171,9 +204,16 @@ class Room:
         broadcast_room(self.id, msg)
 
     def reset_flag(self):
+        self.announce_goals()
         for field in self.fields:
             if self.flag:
                 field.set_flag(5)
+
+    def announce_goals(self):
+        from engine.roomUtils import broadcast_room
+        goals = [field.goal for field in self.fields]
+        msg = {'type': 'goal', 'goals': goals}
+        broadcast_room(self.id, msg)
 
     def announce_flag(self, pos, y):
         from engine.roomUtils import broadcast_room
@@ -309,9 +349,9 @@ class Room:
                        'pos': tg.pos,
                       }
         elif powerup == 'drink':
-            tg.drink_time += 20
+            tg.drink_time += 15
         elif powerup == 'weak_signal':
-            tg.weak_time += 20
+            tg.weak_time += 15
             if tg.lost_actions == 0:
                 tg.lost_actions = randint(0, 4)
         if msg is not None:

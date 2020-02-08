@@ -286,6 +286,12 @@ function updateFlag(data){
   document.querySelector(row).classList.add('flag');
 }
 
+function updateGoals(arr){
+  for (let x in arr){
+    document.querySelector(`#field${x} .goals`).innerHTML = arr[x];
+  }
+}
+
 function setColor(elem, newColor){
   if(elem) {
     for (let x of [...elem.classList]){
@@ -306,4 +312,4 @@ function showPowerup(cell, powerup){
 
 
 
-export {startTetris, getReady,  removeControls, updateTetris, refreshTetris, updatePowerup, updateFlag, blind, removeBlind};
+export {startTetris, getReady,  removeControls, updateTetris, refreshTetris, updatePowerup, updateGoals, updateFlag, blind, removeBlind};
