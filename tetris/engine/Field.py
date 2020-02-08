@@ -13,7 +13,8 @@ class Field:
                             drag_finish=4020, #4020
                             timeleft=360, #360
                             score_finish=15000, #15000
-                            max_lines=60): #60
+                            max_lines=60,
+                            ): #60
         self.pos = pos
         self.room = room
         self.width = width
@@ -23,6 +24,9 @@ class Field:
         self.start_player = None
         self.speed = 0
         self.speed_boost = 0.02
+        self.flag_height = None
+        self.flag_hold = False
+        self.hold_time = 0
         self.blind_time = [0 for x in range(self.width)]
         self.blind_queue = 0
         self.drink_time = 0
@@ -138,6 +142,8 @@ class Field:
         self.surface.insert(0, line)
         if self.active_piece.blocked():
             self.active_piece.y += 1
+            if self.active_piece.y >= self.height:
+                self.end_game()
 
 
     def remove_line(self):
@@ -174,6 +180,10 @@ class Field:
     def remove_blind_queue(self):
         self.blind_queue = 0
         self.room.unblind(self.pos, 'queue')
+
+    def set_flag(self, y):
+        self.flag_height = y
+        self.room.announce_flag(self.pos, y)
 
     def add_score(self, terminated_lines):
         import math
@@ -274,10 +284,7 @@ class Field:
         print(x, y)
         reduced = False
         while not reduced:
-            a = random()
-            b = random()
-            c = random()
-            if a < prob or b < prob or c < prob:
+            if random() < prob or random() < prob or random() < prob:
                 self.surface[y][x] = 0
                 y -= 1
                 if y < 0:
@@ -297,10 +304,6 @@ class Field:
                             x -= 1
 
             else:
-                print(a)
-                print(b)
-                print(c)
-                print(prob)
                 reduced = True
 
     def put_bomb(self):
@@ -348,10 +351,10 @@ class Field:
 
 
 
-
     def check_terminate(self):
         lines = []
         powerups = []
+        flag_catched = False
         for y in range(self.height-1, -1, -1):
             full = True
             for x in self.surface[y]:
@@ -360,6 +363,8 @@ class Field:
                     break
             if full:
                 lines.append(y)
+                if self.room.flag and self.flag_height == y:
+                    flag_catched = True
                 added_powerups = self.check_powerup(self.surface[y])
                 if added_powerups is not None:
                     powerups.extend(added_powerups)
@@ -370,6 +375,13 @@ class Field:
             shuffle(powerups)
             for x in powerups:
                 self.save_powerup(x)
+        if flag_catched:
+            self.room.give_flag(self.pos)
+            if self.flag_height > 0:
+                self.room.move_flag(self.pos)
+            else:
+                self.goal += 1
+                self.room.reset_flag()
         return lines
 
 
@@ -488,6 +500,8 @@ class Field:
                     self.move(command, drink=True)
                 if self.drink_time <= 0:
                     self.drink_time = 0
+            if self.flag_hold:
+                self.hold_time += delay
             if self.weak_time > 0:
                 self.weak_time -= delay
                 if self.weak_time <= 0:

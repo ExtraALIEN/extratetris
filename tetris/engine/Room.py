@@ -12,6 +12,9 @@ class Room:
     def __init__(self, id, size, type):
         self.id = id
         self.type = type
+        self.flag = False
+        if self.type in ['CF', 'HF']:
+            self.flag = True
         self.players = size
         self.fields = [Field(room=self, pos=i) for i in range(self.players)]
         self.start_time = None
@@ -22,6 +25,8 @@ class Room:
         self.start_time = timezone.now()
         for field in self.fields:
             field.update_timer(delay)
+        if self.type in ['CF', 'HF']:
+            self.reset_flag()
 
     def players_left(self):
         total = 0
@@ -164,6 +169,32 @@ class Room:
         from engine.roomUtils import broadcast_room
         msg = {'type': 'powerup', 'pos' : pos, 'num': num + 1, 'powerup': powerup, 'time': time}
         broadcast_room(self.id, msg)
+
+    def reset_flag(self):
+        for field in self.fields:
+            if self.flag:
+                field.set_flag(5)
+
+    def announce_flag(self, pos, y):
+        from engine.roomUtils import broadcast_room
+        msg = {'type': 'flag', 'pos' : pos, 'y': y}
+        broadcast_room(self.id, msg)
+
+    def move_flag(self, pos):
+        y = self.fields[pos].flag_height
+        for field in self.fields:
+            if field.pos != pos:
+                field.set_flag(y+1)
+            else:
+                field.set_flag(y-1)
+
+    def give_flag(self, pos):
+        for field in self.fields:
+            if field.pos == pos:
+                field.flag_hold = True
+            else:
+                field.flag_hold = False
+
 
     def unblind(self, pos, x):
         from engine.roomUtils import broadcast_room

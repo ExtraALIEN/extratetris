@@ -276,6 +276,16 @@ function updateStats(pos, type, value){
   document.querySelector(selector).innerHTML = value;
 }
 
+function updateFlag(data){
+  let flagElement = document.querySelector(`#field${data.pos} .flag`);
+  if (flagElement){
+    flagElement.classList.remove('flag');
+  }
+  let y = data.y;
+  let row = `#field${data.pos} .row[data-y="${y}"]`;
+  document.querySelector(row).classList.add('flag');
+}
+
 function setColor(elem, newColor){
   if(elem) {
     for (let x of [...elem.classList]){
@@ -296,4 +306,4 @@ function showPowerup(cell, powerup){
 
 
 
-export {startTetris, getReady,  removeControls, updateTetris, refreshTetris, updatePowerup, blind, removeBlind};
+export {startTetris, getReady,  removeControls, updateTetris, refreshTetris, updatePowerup, updateFlag, blind, removeBlind};

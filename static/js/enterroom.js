@@ -1,4 +1,4 @@
-import {startTetris, getReady, removeControls, updateTetris, refreshTetris, updatePowerup, blind, removeBlind} from './gamecontrols.js';
+import {startTetris, getReady, removeControls, updateTetris, refreshTetris, updatePowerup, updateFlag, blind, removeBlind} from './gamecontrols.js';
 import {nodeScriptReplace} from './nodescript.js';
 import {secondsToMinutes} from './timing.js';
 
@@ -63,7 +63,7 @@ function showGameover(data){
       val = secondsToMinutes(val, cell.classList.contains('dec'));
     }
     else if (cell.parentElement.classList.contains('main-value') &&
-            ['SU', 'LI', 'SA', 'DR', 'AC'].indexOf(data.mode) !== -1){
+            ['SU', 'LI', 'SA', 'DR', 'AC', 'HF'].indexOf(data.mode) !== -1){
       val = secondsToMinutes(val, data.mode !== 'SU');
     }
     else if (val %1 !== 0){
@@ -207,6 +207,8 @@ conn.onmessage = function(event){
     blind(data);
   }  else if (type === 'remove-blind'){
     removeBlind(data);
+  } else if (type === 'flag'){
+    updateFlag(data);
   }
 
   else{

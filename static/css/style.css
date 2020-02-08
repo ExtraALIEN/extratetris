@@ -82,6 +82,7 @@ body > main {
 }
 
 .tetris-view .row{
+  position: relative;
   flex-grow: 1;
   flex-shrink: 0;
   flex-basis: 2.75vh;
@@ -112,6 +113,18 @@ body > main {
 
 .tetris-view > .row:last-child .cell{
   border-bottom:1px solid #e2e2e2;
+}
+
+.tetris-view > .row.flag::before{
+  display:block;
+  position: absolute;
+  content: '';
+  width: 8.33333%;
+  top:0;
+  bottom:0;
+  left: -8.33333%;
+  background-image: url("http://localhost/static/pic/flag.png");
+  background-size: 100% 100%;
 }
 
 .tetris-view .connect{

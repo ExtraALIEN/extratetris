@@ -40,7 +40,8 @@ GAME_TYPES = [
     ('SA', 'Score Attack'),
     ('DR', 'Drag Racing'),
     ('AC', 'Accelerate'),
-    ('CF', 'Capture the Flag'),
+    ('CF', 'Capture Flag'),
+    ('HF', 'Hold Flag'),
     ('RA', 'Rally')
 ]
 
@@ -61,6 +62,7 @@ TYPE_OF_RESULT = {
 'DR': 'time_drag',
 'AC': 'time_acc',
 'CF': 'goal',
+'HF': 'hold_time',
 'RA': 'goal',
 }
 
@@ -74,6 +76,7 @@ GAME_COUNTS = {
 'DR': 'drag',
 'AC': 'acc',
 'CF': 'ctf',
+'HF': 'hold',
 'RA': 'rally',
 }
 
