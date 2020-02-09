@@ -292,6 +292,13 @@ function updateGoals(arr){
   }
 }
 
+function updateRoomLines(num){
+  for (let x of [...document.querySelectorAll('.room-lines')]){
+    x.classList.add('visible');
+    x. innerHTML = ' / ' + num;
+  }
+}
+
 function setColor(elem, newColor){
   if(elem) {
     for (let x of [...elem.classList]){
@@ -312,4 +319,4 @@ function showPowerup(cell, powerup){
 
 
 
-export {startTetris, getReady,  removeControls, updateTetris, refreshTetris, updatePowerup, updateGoals, updateFlag, blind, removeBlind};
+export {startTetris, getReady,  removeControls, updateTetris, refreshTetris, updateRoomLines,  updatePowerup, updateGoals, updateFlag, blind, removeBlind};

@@ -33,6 +33,7 @@ class Room:
             self.reset_flag()
         elif self.type == 'RA':
             self.announce_goals()
+            self.announce_lines()
 
     def players_left(self):
         total = 0
@@ -64,6 +65,7 @@ class Room:
                 self.fields[pos].goal -= 2
             self.next_negative2 += 5
             announce = True
+        self.announce_lines()
         if announce:
             self.announce_goals()
 
@@ -75,9 +77,9 @@ class Room:
             res = field.result
             pos = field.pos
             if res is None:
-                if -1 not in results:
-                    results[-1] = []
-                results[-1].append(pos)
+                if -9000 not in results:
+                    results[-9000] = []
+                results[-9000].append(pos)
             else:
                 if res not in results:
                     results[res] = []
@@ -87,7 +89,7 @@ class Room:
         # print(places)
         if self.type in ['CL', 'DM', 'SU', 'CO', 'CF', 'RA']:
             places = list(reversed(places))
-        if -1 in places and places[0] == -1:
+        if -9000 in places and places[0] == -9000:
             tmp = places[0]
             places = places[1:]
             places.append(tmp)
@@ -96,13 +98,13 @@ class Room:
         for x in places:
             place += 1
             final[place] = []
-            if x != -1:
+            if x != -9000:
                 for p in results[x]:
                     final[place].append(p)
             place += len(final[place]) - 1
-        if -1 in places:
+        if -9000 in places:
             place += 1
-            for p in results[-1]:
+            for p in results[-9000]:
                 final[place].append(p)
         msg = {'type': 'places', 'places': final}
         broadcast_room(self.id, msg)
@@ -218,6 +220,11 @@ class Room:
     def announce_flag(self, pos, y):
         from engine.roomUtils import broadcast_room
         msg = {'type': 'flag', 'pos' : pos, 'y': y}
+        broadcast_room(self.id, msg)
+
+    def announce_lines(self):
+        from engine.roomUtils import broadcast_room
+        msg = {'type': 'room-lines', 'lines' : self.lines}
         broadcast_room(self.id, msg)
 
     def move_flag(self, pos):

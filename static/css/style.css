@@ -346,6 +346,13 @@ body > main {
   align-items: stretch;
 }
 
+.room-lines{
+  display: none;
+}
+
+.room-lines.visible{
+  display: inline;
+}
 
 .queue > div:last-child{
   border-bottom:  1px solid grey;

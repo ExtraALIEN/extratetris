@@ -1,4 +1,4 @@
-import {startTetris, getReady, removeControls, updateTetris, refreshTetris, updatePowerup, updateGoals, updateFlag, blind, removeBlind} from './gamecontrols.js';
+import {startTetris, getReady, removeControls, updateTetris, refreshTetris, updateRoomLines ,updatePowerup, updateGoals, updateFlag, blind, removeBlind} from './gamecontrols.js';
 import {nodeScriptReplace} from './nodescript.js';
 import {secondsToMinutes} from './timing.js';
 
@@ -187,6 +187,9 @@ conn.onmessage = function(event){
     updateTetris(data);
   } else if (type === 'refresh-tetris'){
     refreshTetris(data);
+  }
+  else if (type === 'room-lines'){
+    updateRoomLines(data.lines);
   } else if (type === 'game-over'){
     showGameover(data);
     let myField = document.querySelector('.tetris-view.current');
