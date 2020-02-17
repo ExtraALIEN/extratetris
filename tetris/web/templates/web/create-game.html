@@ -4,14 +4,34 @@
   <h2>Создать игру</h2>
   <form action='/create-game/' method='POST'>
   {% csrf_token %}
-  {% for field in form %}
-    <label for='{{field.id_for_label}}'>{{field.label}}</label>
-    {{field}}
-  {% endfor %}
+
+    <h3>Количество игроков</h3>
+    <div class='radio-block'>
+    {% for radio in form.players %}
+      <div class='radio-option'>
+      {{ radio.tag }}
+      <label for={{radio.id_for_label}}><span>{{ radio.choice_label }}</span></label>
+      </div>
+    {% endfor %}
+    </div>
+    <h3>тип игры</h3>
+    <div class='radio-block'>
+    {% for radio in form.game_type %}
+      <div class='radio-option'>
+      {{ radio.tag }}
+      <label for={{radio.id_for_label}}><span>{{ radio.choice_label }}</span></label>
+      </div>
+    {% endfor %}
+    </div>
+    <div id='game-description' class='game-description'>
+      <div class='short'></div>
+      <div class='text'>Здесь появится описание выбранного типа игры</div>
+    </div>
+
   <button id='create' type='submit'>Создать игру</button>
 
   </form>
-    
+
 {% endblock %}
 
 {% block scripts %}

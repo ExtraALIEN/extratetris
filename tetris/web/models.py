@@ -2,7 +2,7 @@ import json
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from web.helpers import GAME_TYPES, NUMBER_PLAYERS
+from web.helpers import GAME_TYPES
 
 
 class PlayerManager(models.Manager):

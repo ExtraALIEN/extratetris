@@ -20,8 +20,8 @@ class Room:
         self.start_time = None
         self.lines = 0
         self.next_positive = 5
-        self.next_negative = 9
-        self.next_negative2 = 11
+        self.next_negative = 11
+        self.next_negative2 = 14
 
 
     def start_timers(self):
@@ -51,7 +51,7 @@ class Room:
                 self.fields[pos].goal += 1
             if self.next_positive % 25 == 0:
                 self.fields[pos].goal += 1
-            if self.next_positive % 50 == 0:
+            if self.next_positive % 100 == 0:
                 self.fields[pos].goal += 1
             self.next_positive += 5
             announce = True
@@ -61,8 +61,12 @@ class Room:
             announce = True
         if self.lines >= self.next_negative2:
             self.fields[pos].goal -= 1
-            if (self.next_negative2 - 1) % 20 == 0:
-                self.fields[pos].goal -= 2
+            if (self.next_negative2 + 1) % 10 == 0:
+                self.fields[pos].goal -= 1
+            if (self.next_negative2 + 1) % 25 == 0:
+                self.fields[pos].goal -= 1
+            if (self.next_negative2 + 1) % 100 == 0:
+                self.fields[pos].goal -= 1
             self.next_negative2 += 5
             announce = True
         self.announce_lines()

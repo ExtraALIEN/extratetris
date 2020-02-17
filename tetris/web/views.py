@@ -71,9 +71,9 @@ def profile(request, profile_id):
 
 def create_game(request):
     if request.method == 'POST':
+        print(request.POST)
         form = CreateGameForm(request.POST)
         if form.is_valid():
-            print('user:', request.user)
             if request.user is None:
                 guest = Player.objects.create_guest()
                 new_room = form.save(guest)
@@ -85,7 +85,7 @@ def create_game(request):
                 return HttpResponseRedirect(url)
 
     else:
-        form = CreateGameForm(auto_id='%s')
+        form = CreateGameForm(auto_id='id_%s')
         scripts = ['createroom']
     return render(request, 'web/create-game.html', {'form': form,
                                                     'scripts': scripts})

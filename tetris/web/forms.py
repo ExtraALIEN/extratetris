@@ -1,6 +1,6 @@
 from django import forms
 from web.models import Player, TetrisRoom
-from web.helpers import GAME_TYPES, NUMBER_PLAYERS
+from web.helpers import GAME_TYPES, MAX_PLAYERS
 import json
 from django.db.utils import IntegrityError
 
@@ -36,9 +36,9 @@ class LoginForm(forms.Form):
 
 
 class CreateGameForm(forms.Form):
-
-    players = forms.ChoiceField(choices=NUMBER_PLAYERS)
-    game_type = forms.ChoiceField(choices=GAME_TYPES)
+    possible_players = [(x,x) for x in range(1, MAX_PLAYERS+1)]
+    players = forms.ChoiceField(choices=possible_players, widget=forms.RadioSelect)
+    game_type = forms.ChoiceField(choices=GAME_TYPES, widget=forms.RadioSelect)
 
 
     def save(self, author):

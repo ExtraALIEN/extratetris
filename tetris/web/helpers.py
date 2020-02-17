@@ -46,11 +46,7 @@ GAME_TYPES = [
 ]
 
 
-NUMBER_PLAYERS = [
-    (1,1),
-    (2,2),
-    (4,4)
-]
+MAX_PLAYERS = 4
 
 TYPE_OF_RESULT = {
 'CL': 'score',
