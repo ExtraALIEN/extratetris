@@ -265,6 +265,15 @@ function updateCurrentPiece(pos, data){
   }
 }
 
+
+function addLeadingZeroes(num, digits){
+  num = num + '';
+  while(num.length < digits){
+    num = '0' + num;
+  }
+  return num;
+}
+
 function updateStats(pos, type, value){
   let selector = `#field${pos} .stats .${type} .val`;
   if (type === 'time'){
@@ -272,6 +281,25 @@ function updateStats(pos, type, value){
   }
   else if (value%1 != 0){
     value = value.toFixed(1);
+    if (type === 'speed'){
+      let deg = ((360/320) * value).toFixed(0);
+      let arrow = document.querySelector(`#field${pos} .arrow`);
+      arrow.style.transform = `rotate(${deg}deg)`;
+      value = value - value % 1;
+    }
+  }
+  if (['score', 'distance'].indexOf(type) !== -1){
+    value = addLeadingZeroes(value, 7);
+  }
+  if (type === 'lines'){
+      value = addLeadingZeroes(value, 3);
+  }
+  if (type === 'distance'){
+    let last = `#field${pos} .stats .${type} .last`;
+    value = "" + value;
+    let d = value.slice(-1);
+    document.querySelector(last).innerHTML = d;
+    value = value.slice(0,-1);
   }
   document.querySelector(selector).innerHTML = value;
 }
@@ -295,7 +323,7 @@ function updateGoals(arr){
 function updateRoomLines(num){
   for (let x of [...document.querySelectorAll('.room-lines')]){
     x.classList.add('visible');
-    x. innerHTML = ' / ' + num;
+    x.innerHTML = addLeadingZeroes(num, 3);
   }
 }
 

@@ -14,6 +14,13 @@ function showDescription(event){
   text.innerHTML = DESCRIPTIONS[sh];
 }
 
+function checkFilled(event){
+  if (document.querySelector('[name="players"]:checked') &&
+      document.querySelector('[name="game_type"]:checked') ){
+        btn.classList.add('filled');
+      }
+}
+
 let conn = new WebSocket('ws://localhost/ws/create/');
 
 conn.onmessage = function(event){
@@ -90,6 +97,7 @@ const DESCRIPTIONS = {
 
 let btn = document.getElementById('create');
 btn.addEventListener('click', sendInit);
+let inputs = document.querySelectorAll('input');
 let typeButtons = document.querySelectorAll('input[name="game_type"]');
 let desc = document.getElementById('game-description');
 let short = desc.querySelector('.short');
@@ -97,3 +105,7 @@ let text = desc.querySelector('.text');
 for (let x of [...typeButtons]){
   x.addEventListener('change', showDescription);
 }
+for (let x of [...inputs]){
+  x.addEventListener('change', checkFilled);
+}
+checkFilled();

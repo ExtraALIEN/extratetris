@@ -12,6 +12,37 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'Digital-7 Mono';
+    src: url('/static/fonts/Digital-7MonoItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'FZ DIGITAL 9';
+    src: url('/static/fonts/FZ-DIGITAL9.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Digital-7 Mono';
+    src: url('/static/fonts/Digital-7Mono.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Interstate Mono-Lgt';
+    src: url('/static/fonts/InterstateMono-Lgt.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
+
 
 
 .info {
@@ -28,19 +59,65 @@
 h1, h2, h3 {
   text-align: center;
   margin: 1rem auto;
+
 }
 
 h1 {
   font-size: 3rem;
+  font-family: 'Digital-7 Mono';
+  font-style: italic;
+  color: #43b933;
 }
 
 h2 {
   font-size: 2rem;
+  font-weight: bold;
 }
 
 h3 {
   font-size: 1.7rem;
+  font-weight: bold;
+  color: #43b933;
 }
+
+@keyframes flick{
+  0%{
+    text-shadow: 0 0 0 #29b91e,0 0 0 #55b64d ;
+  }
+
+  100%{
+    text-shadow: 0 0 20px #29b91e,0 0 40px #55b64d ;
+  }
+}
+
+
+a {
+  transition: .3s;
+  color: #43b933;
+}
+
+a:link{
+  text-decoration: none;
+  color: #d8ffd5;
+}
+
+a:visited{
+  color: #d8ffd5;
+}
+
+a:hover{
+  color: #d8ffd5;
+}
+
+a:active{
+  color: #fe2121;
+}
+
+
+a.flick:hover{
+  animation: flick 1.5s infinite alternate ease-out;
+}
+
 
 
 
@@ -114,7 +191,7 @@ body > main {
 .tetris-view{
   box-sizing: border-box;
   position: relative;
-  border: 1px solid grey;
+  border: 1px solid #a13702;
   flex-grow: 1;
   flex-shrink:0;
   flex-basis: 20%;
@@ -142,7 +219,7 @@ body > main {
   box-sizing: border-box;
   flex-basis: 2.75vh;
   max-width:2.75vh;
-  border: 1px solid #d0edcc;
+  border: 1px solid #000000;
   border-right:none;
   border-bottom:none;
 
@@ -152,12 +229,9 @@ body > main {
 
 
 .tetris-view .cell:last-child{
-  border-right:1px solid #d0edcc;
+  border-right: 1px solid #000000;
 }
 
-.tetris-view > .row:last-child .cell{
-  border-bottom:1px solid #d0edcc;
-}
 
 .tetris-view > .row.flag::before{
   display:block;
@@ -200,7 +274,8 @@ body > main {
 }
 
 .cell.color-0{
-  background-color: #d0edcc;
+  /* background-color: #d0edcc; */
+  background-color: #000000;
 }
 
 .cell.color-1{
@@ -236,7 +311,8 @@ body > main {
 }
 
 .cell.color-10{
-  background-color: #1e1b25;
+  background-color: #f05407;
+  box-shadow: inset 0 0 2px 1px #000000;
 }
 
 .cell[class*="powerup"]::before{
@@ -351,7 +427,17 @@ body > main {
 }
 
 
+.announce{
+  margin-top: 1px;
+  border-top: 1px solid #a13702;
+  border-bottom: 1px solid #a13702;
+  text-align: center;
+}
 
+.announce .player-name{
+  font-family: 'Digital-7 Mono';
+  vertical-align: 5%;
+}
 
 .queue{
   box-sizing: border-box;
@@ -359,7 +445,7 @@ body > main {
   max-width: 6.6vh;
   position: absolute;
   top: -1px;
-  left: 100%;
+  left: calc(100% + 1px);
   display: flex;
   flex-flow: column nowrap;
   justify-content: space-around;
@@ -367,23 +453,14 @@ body > main {
 
 }
 
-.goals {
-  box-sizing: border-box;
-  padding: 2vh;
-  width: 6.6vh;
-  max-width: 6.6vh;
-  position: absolute;
-  top: 33vh;
-  left: 100%;
-}
 
 .queue > div {
   box-sizing: border-box;
   flex-grow:1;
   flex-basis: 15%;
-  border-top: 1px solid grey;
-  border-right: 1px solid grey;
-  border-left: 1px solid grey;
+  border-top: 1px solid #a13702;
+  border-right: 1px solid #a13702;
+  border-left: 1px solid #000000;
   display:flex;
   flex-flow: column nowrap;
   justify-content: center;
@@ -399,7 +476,7 @@ body > main {
 }
 
 .queue > div:last-child{
-  border-bottom:  1px solid grey;
+  border-bottom:  1px solid #a13702;
 }
 
 .queue.blind > div{
@@ -433,9 +510,155 @@ body > main {
 
 
 .stats{
+  position: relative;
   box-sizing: border-box;
-  border: 1px solid black;
+  height: 7rem;
+  padding: 5px;
+  box-shadow: inset 0 0 10vh 0 rgba(22, 71, 58, 0.6);
+  border-bottom: 1px solid #a13702;
 }
+
+.stats .score{
+  position: absolute;
+  font-family: 'FZ DIGITAL 9';
+  font-size: 1.5rem;
+  width: 7ch;
+  top: .5rem;
+  right: 1vh;
+  color: #ff4b09;
+  text-shadow: 0 0 2px #000000;
+}
+
+.stats .distance{
+  font-family: 'Interstate Mono-Lgt';
+  letter-spacing: 1.75px;
+  width: 8ch;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  border: 1px solid #404b3f;
+  padding-top: 2px;
+  border-left: none;
+  border-top: none;
+  box-shadow: inset 0 0 15px 0 #000000;
+  position: absolute;
+  bottom: .5rem;
+  left: 1vh;
+}
+
+.stats .distance .val{
+  background-image: linear-gradient( 180deg,
+    #171616 0%,
+    #35523e 48%,
+    #294b37 50%,
+    #181d1a 54%,
+     #141414 100% );
+  flex-grow: 6;
+  flex-basis: 10%;
+
+
+}
+
+
+.stats .distance .last{
+  background-color: #6c190b;
+  background-image: linear-gradient( 360deg,
+  #6c190b 0%,
+    #6e6363 48%,
+     #6c190b 100% );
+  flex-grow: 1;
+  flex-basis: 10%;
+
+}
+
+.stats .time{
+  font-family: 'Digital-7 Mono';
+  font-style : italic;
+  color: #16a6cc;
+  position: absolute;
+  bottom: .75rem;
+  left: 50%;
+  transform:translateX(-25%);
+  font-size: 1.5rem;
+}
+
+.stats .lines{
+  font-family: 'FZ DIGITAL 9';
+  color: #01910b;
+  text-shadow: 0 0 2px #000000;
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 3ch;
+  position: absolute;
+  bottom: .5rem;
+  right: 1vh;
+}
+
+.stats .lines .val{
+  flex-grow:1;
+}
+
+.stats .lines .room-lines{
+  flex-grow:1;
+  color: #b5861d;
+}
+
+
+.stats .goals {
+  position: absolute;
+  font-family: 'FZ DIGITAL 9';
+  font-size: 1.5rem;
+  top: 2.25rem;
+  right: 1vh;
+  color: #d90808;
+}
+
+.stats .speed {
+  position: absolute;
+  top: .5rem;
+  left: 2rem;
+  width: 4rem;
+  height: 4rem;
+
+}
+
+.stats .speed .meter{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/static/pic/dash.png');
+  background-size: 100% 100%;
+}
+
+.stats .speed .arrow{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/static/pic/arrow.png');
+  background-size: 100% 100%;
+  transform-origin: 50% 50%;
+  transition: .2s;
+}
+
+
+
+.stats .speed .val{
+  position: absolute;
+  font-family: 'Digital-7 Mono';
+  font-size: 2rem;
+  color: #c2cb18;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+
 
 .powerups{
   padding: 10px;
@@ -449,7 +672,7 @@ body > main {
   box-sizing:border-box;
   flex-basis: 5vh;
   height: 5vh;
-  border: 1px solid gray;
+  border: 1px solid #a13702;
   background-size: 100% 100%;
   background-color: #000000;
   transition: background-color 3s linear;
@@ -648,6 +871,7 @@ body > main {
 }
 
 .radio-option input + label {
+  font-family: 'Digital-7 Mono';
   box-sizing: border-box;
   cursor: pointer;
   flex-basis: 100%;
@@ -685,8 +909,9 @@ body > main {
 }
 
 .radio-option input:checked + label {
-  background-color: #000000;
 
+  background-color: #000000;
+  padding-bottom: .3rem;
   font-size: 1.7rem;
   animation: glow .7s infinite alternate ease-in-out;
 }
@@ -710,8 +935,10 @@ body > main {
 }
 
 .game-description .short{
+  font-family: 'Digital-7 Mono';
   flex-basis: 10%;
   font-size: 3rem;
+  padding-bottom: .5rem;
   font-weight: bold;
   text-align: center;
   text-shadow: -1px 1px 0 #0d160c,
@@ -734,7 +961,7 @@ body > main {
   width: 40vh;
   height: 15vh;
   border: 10px solid #b61515;
-  background-color: #507c4b;
+  background-color: #714d4d;
   color: #670c0c;
   font-size: 3rem;
   text-transform: uppercase;
@@ -757,4 +984,15 @@ body > main {
   background-color: #000000;
   border-color: #ec1521;
   color:  #ec1521;
+}
+
+#create.filled{
+  border-color: #43b933;
+  background-color: #7fb877;
+  color: #43b933;
+}
+
+#create.filled:hover{
+  animation: glow .7s infinite alternate ease-in-out;
+  background-color: #000000;
 }

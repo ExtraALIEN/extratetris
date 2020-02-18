@@ -7,12 +7,12 @@
 {% block login %}
 <div class="login">
 {% if guest_mode %}
- <a href='/signup/'>Регистрация</a>
- <a href='/login/'>Вход</a>
+ <a class='flick' href='/signup/'>Регистрация</a>
+ <a class='flick' href='/login/'>Вход</a>
 {% else %}
   Добро пожаловать, {{user}}
-  <a href={{profile_url}}>Профиль</a>
-  <a href='/logout/'>Выход</a>
+  <a class='flick' href={{profile_url}}>Профиль</a>
+  <a class='flick' href='/logout/'>Выход</a>
 {% endif %}
 </div>
 {% endblock %}
@@ -25,7 +25,7 @@
       <li>
         Тип игры:<b>{{room.type}}</b>
         Игроков: {{room.count_players}}
-        <a href={{room.get_url}}>Подойти</a>
+        <a class='flick' href={{room.get_url}}>Подойти</a>
       </li>
     {% endfor %}
   </ul>

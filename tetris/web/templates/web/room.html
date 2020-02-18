@@ -50,8 +50,6 @@
                 </div>
              {% endfor%}
            </div>
-           <div class='goals'>
-           </div>
            <div id='position{{pos}}'
                 class='connect {% if is_author %} connected {% endif %} '
                 data-pos='{{pos}}'>
@@ -64,19 +62,23 @@
            <button id='disconnect{{pos}}' class='disconnect {% if is_author %} author {% endif %}' data-pos='{{pos}}'>Отойти</button>
            <div class="stats">
              <div class="score">
-               Score: <span class='val'></span>
+               <span class='val'></span>
              </div>
              <div class="lines">
-               Lines: <span class='val'></span><span class="room-lines"></span>
+               <span class='val'></span><span class="room-lines"></span>
              </div>
              <div class="speed">
-               Speed: <span class='val'></span>
+                <div class='meter'></div>
+                <div class='arrow'></div>
+                <span class='val'></span>
              </div>
              <div class="distance">
-               Distance: <span class='val'></span>
+                <span class='val'></span><span class='last'></span>
+             </div>
+             <div class='goals'>
              </div>
              <div class="time">
-               Time: <span class='val'></span>
+               <span class='val'></span>
              </div>
            </div>
            <div class="powerups">
