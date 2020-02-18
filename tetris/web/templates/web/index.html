@@ -10,25 +10,17 @@
   <a class='flick' href='/login/'>Вход</a>
   <a class='flick' href='/signup/'>Регистрация</a>
 {% else %}
-  Добро пожаловать, {{user}}
-  <a class='flick' href={{profile_url}}>Профиль</a>
+  <a class='flick' href={{profile_url}}>{{user}}</a>
   <a class='flick' href='/logout/'>Выход</a>
 {% endif %}
 </div>
 {% endblock %}
 
 {% block lobby %}
-  <a href='/create-game/'>Создать игру</a>
-  <h2>Текущие игры</h2>
-  <ul>
-    {% for room in rooms %}
-      <li>
-        Тип игры:<b>{{room.type}}</b>
-        Игроков: {{room.count_players}}
-        <a class='flick' href={{room.get_url}}>Подойти</a>
-      </li>
-    {% endfor %}
-  </ul>
+  <div class='index'>
+    <a class='flick' href='/create-game/'>Создать игру</a>
+    <a class='flick' href='/lobby/'>Присоединиться к игре</a>
+  </div>
 {% endblock %}
 
 {% block scripts %}

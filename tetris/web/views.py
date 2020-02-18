@@ -10,7 +10,7 @@ from web.models import TetrisRoom, Player
 
 def index(request):
 
-    rooms = TetrisRoom.objects.all()
+
     guest_mode = True
     us = ''
     profile_url = ''
@@ -19,9 +19,13 @@ def index(request):
         us = request.user.username
         profile_url = request.user.get_url()
     return render(request, 'web/index.html', {'guest_mode': guest_mode,
-                                              'rooms': rooms,
                                               'user': us,
                                               'profile_url': profile_url})
+
+def lobby(request):
+    rooms = TetrisRoom.objects.all()
+    return render(request, 'web/lobby.html', {'rooms': rooms,
+                                              })
 
 
 def signup(request):
