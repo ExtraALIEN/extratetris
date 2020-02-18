@@ -82,10 +82,12 @@ h3 {
 
 @keyframes flick{
   0%{
+    color: #43b933;
     text-shadow: 0 0 0 #29b91e,0 0 0 #55b64d ;
   }
 
   100%{
+    color: #44d530;
     text-shadow: 0 0 20px #29b91e,0 0 40px #55b64d ;
   }
 }
@@ -94,6 +96,7 @@ h3 {
 a {
   transition: .3s;
   color: #43b933;
+  cursor:pointer;
 }
 
 a:link{
@@ -113,6 +116,10 @@ a:active{
   color: #fe2121;
 }
 
+
+a.flick{
+  color: #43b933;
+}
 
 a.flick:hover{
   animation: flick 1.5s infinite alternate ease-out;
@@ -148,6 +155,7 @@ body {
 
 button {
   font-family: 'Monitorca';
+  cursor: pointer;
 }
 
 body > header, body > footer {
@@ -180,6 +188,56 @@ body > main {
   flex-grow: 1;
 }
 
+
+.big-form{
+  flex-basis: 100%;
+  height:100%;
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.big-form .field-input{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  margin: 3vh auto;
+}
+
+.big-form label{
+  font-family: 'Digital-7 Mono';
+  font-size: 2.5rem;
+  padding: 2vh;
+}
+
+.big-form input{
+  font-family: 'Monitorca';
+  font-size: 3rem;
+  background-color: #cbe4c8;
+  border: 5px solid #09861a;
+  width: 20ch;
+  height: 3rem;
+}
+
+.big-form button {
+  margin: 3vh auto;
+  width: 40vh;
+  height: 15vh;
+  font-size: 3rem;
+  font-family: 'Monitorca';
+  background-color: #000000;
+  border: 10px solid #43b933;
+  color: #43b933;
+}
+
+.big-form button:hover{
+  animation: flick 1.5s infinite alternate ease-out;
+  box-shadow: 0 0 20px 0 #2bd132;
+}
 
 .grid{
   display: flex;

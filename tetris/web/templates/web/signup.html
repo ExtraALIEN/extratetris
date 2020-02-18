@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <form action='/signup/' method='POST'>
+{% extends './base_main.html' %}
+{% block big_login %}
+    <h2>Создание нового игрока</h2>
+    <form class="big-form" action='/signup/' method='POST'>
       {% csrf_token %}
-      Username {{form.login}}
-      Password {{form.password}}
-      <button type="submit" name="submit">Зарегистрироваться</button>
+      <div class='field-input'>
+      <label for='{{form.login.id_for_label}}'>Username</label>
+      {{form.login}}
+      </div>
+      <div class='field-input'>
+      <label for='{{form.password.id_for_label}}'>Password</label>
+      {{form.password}}
+      </div>
+      <button type="submit" name="submit">Создать</button>
     </form>
     {{form.errors}}
-  </body>
-</html>
+{% endblock %}

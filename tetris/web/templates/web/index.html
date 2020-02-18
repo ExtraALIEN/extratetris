@@ -7,8 +7,8 @@
 {% block login %}
 <div class="login">
 {% if guest_mode %}
- <a class='flick' href='/signup/'>Регистрация</a>
- <a class='flick' href='/login/'>Вход</a>
+  <a class='flick' href='/login/'>Вход</a>
+  <a class='flick' href='/signup/'>Регистрация</a>
 {% else %}
   Добро пожаловать, {{user}}
   <a class='flick' href={{profile_url}}>Профиль</a>
