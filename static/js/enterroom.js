@@ -131,6 +131,8 @@ conn.onmessage = function(event){
     let selector = `#field${pos} .announce .player-name`;
     let span = document.querySelector(selector);
     span.innerHTML = new_player;
+    let dash = document.querySelector(`#field${pos} .stats`);
+    dash.classList.add('ready');
     let conPos = document.querySelector(`#position${pos}`);
     if (conPos){
       conPos.classList.add('connected');
@@ -142,6 +144,8 @@ conn.onmessage = function(event){
     span.innerHTML = "";
     let myDis = document.querySelector('.current .connected[id^="disconnect"]');
     let myPos = +myDis.id.replace('disconnect', '');
+    let dash = document.querySelector(`#field${pos} .stats`);
+    dash.classList.remove('ready');
     if (+pos == myPos){
       myDis.classList.remove('connected');
       document.querySelector(`#position${pos}`).classList.remove('connected');

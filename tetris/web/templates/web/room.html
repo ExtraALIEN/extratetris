@@ -4,17 +4,18 @@
 
 
 {% block room_number %}
-
- <h2>Room number:
-    <span data-room-number='{{room.room_id}}' id='room-number'>{{room.room_id}}</span>
-    Type:
-    <span data-room-type='{{room.type}}' id='room-type'>{{room.type}}</span>
-  </h2>
-  {% if room.started %}
-  <p data-room-players='{{room.players}}' id='room-players'>>Ожидание игроков...{{room.count_players}}</p>
-  <p>Инициатор игры: {{room.author.username}}</p>
-  <a href="{{room.delete_url}}">Отменить игру</a>
-  {% endif %}
+  <div class='room-number'>
+   <h2>Room number:
+      <span data-room-number='{{room.room_id}}' id='room-number'>{{room.room_id}}</span>
+      Type:
+      <span data-room-type='{{room.type}}' id='room-type'>{{room.type}}</span>
+    </h2>
+    {% if room.started %}
+    <p data-room-players='{{room.players}}' id='room-players'>>Ожидание игроков...{{room.count_players}}</p>
+    <p>Инициатор игры: {{room.author.username}}</p>
+    <a href="{{room.delete_url}}">Отменить игру</a>
+    {% endif %}
+  </div>
 {% endblock %}
 
 {% block game %}
@@ -62,23 +63,23 @@
            <button id='disconnect{{pos}}' class='disconnect {% if is_author %} author {% endif %}' data-pos='{{pos}}'>Отойти</button>
            <div class="stats">
              <div class="score">
-               <span class='val'></span>
+               <span class='val'>0000000</span>
              </div>
              <div class="lines">
-               <span class='val'></span><span class="room-lines"></span>
+               <span class='val'>000</span><span class="room-lines"></span>
              </div>
              <div class="speed">
                 <div class='meter'></div>
                 <div class='arrow'></div>
-                <span class='val'></span>
+                <span class='val'>0</span>
              </div>
              <div class="distance">
-                <span class='val'></span><span class='last'></span>
+                <span class='val'>000000</span><span class='last'>0</span>
              </div>
              <div class='goals'>
              </div>
              <div class="time">
-               <span class='val'></span>
+               <span class='val'>00:00.0</span>
              </div>
            </div>
            <div class="powerups">

@@ -196,6 +196,7 @@ body > main {
 .index{
   display:flex;
   height: 100%;
+  min-height: 80vh;
   flex-direction:row;
   flex-wrap: nowrap;
   justify-content: space-around;
@@ -272,6 +273,12 @@ body > main {
 .big-form button:hover{
   animation: flick 1.5s infinite alternate ease-out;
   box-shadow: 0 0 20px 0 #2bd132;
+}
+
+.room-number{
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
 }
 
 .grid{
@@ -525,11 +532,14 @@ body > main {
   border-top: 1px solid #a13702;
   border-bottom: 1px solid #a13702;
   text-align: center;
+  height: 1.5rem;
+
 }
 
 .announce .player-name{
   font-family: 'Digital-7 Mono';
   vertical-align: 5%;
+
 }
 
 .queue{
@@ -607,8 +617,11 @@ body > main {
   box-sizing: border-box;
   height: 7rem;
   padding: 5px;
-  box-shadow: inset 0 0 10vh 0 rgba(22, 71, 58, 0.6);
   border-bottom: 1px solid #a13702;
+}
+
+.stats.ready{
+  box-shadow: inset 0 0 10vh 0 rgba(22, 71, 58, 0.6);
 }
 
 .stats .score{
