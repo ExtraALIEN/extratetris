@@ -168,6 +168,11 @@ body > header{
   text-align: center;
 }
 
+body > footer {
+  position: absolute;
+  bottom:0;
+  right:1rem;
+}
 header .login{
   position:absolute;
   top : 50%;
@@ -190,6 +195,7 @@ header .login > a {
 body > main {
   flex-basis: 80vh;
   flex-grow: 1;
+  max-height: 80vh;
 }
 
 
@@ -356,10 +362,22 @@ body > main {
 .tetris-view button[id^="connect"]{
   position: absolute;
   top: 0;
+  left:0;
+  width:100%;
+  height: 100%;
+  background-color: transparent;
+  border:none;
+  color: #a13702;
+  font-size: 3rem;
+  text-align: center;
 }
 
 .tetris-view .connected button[id^="connect"]{
   display :none;
+}
+
+.tetris-view .inactive button[id*="connect"]{
+  display: none;
 }
 
 .tetris-view .disconnect{

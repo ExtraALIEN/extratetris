@@ -1,102 +1,19 @@
-import {startTetris, getReady, removeControls, updateTetris, refreshTetris, updateRoomLines ,updatePowerup, updateGoals, updateFlag, blind, removeBlind} from './gamecontrols.js';
 import {nodeScriptReplace} from './nodescript.js';
-import {secondsToMinutes} from './timing.js';
+import {showInfoBlock} from './info.js';
+import {activateConnectButtons, connectPlayer, disconnectPlayer, updatePlayers, kickRoom, showDisconnect,
+showGameover, fillPlaces} from './lobby.js';
+import {startTetris, renderTetris, updateTetris, refreshTetris, updateRoomLines,
+updateGoals, updateFlag, updatePowerup, blind, removeBlind} from './render.js';
 
-function sendConnectToRoomSignal(){
-  let number = document.getElementById('room-number').dataset.roomNumber;
-  let pos = this.dataset.pos;
-  conn.send(JSON.stringify({type: 'connect',
-                            room_id: number,
-                            pos: pos,
-                            player: player
-                          }));
+
+function initConnection(event){
+  document.conn = conn;
+  sendRoomNumber(event);
+  activateConnectButtons();
 }
 
 
-function sendDisconnectSignal(){
-  let number = document.getElementById('room-number').dataset.roomNumber;
-  let pos = this.dataset.pos;
-  conn.send(JSON.stringify({type: 'disconnect',
-                            room_id: number,
-                            pos: pos,
-                        }));
-}
-
-function showGameover(data){
-  let STATS_SELECTOR = {
-    'result' : '.primary .main-value',
-    'score' : '.scores .total',
-    'score-intermediate' : '.scores .intermediate',
-    'score-sec' : '.scores .sec',
-    'score-piece' : '.scores .piece',
-    'score-action' : '.scores .action',
-    'score-dist' : '.scores .dist',
-    'time' : '.time .overall',
-    'time-climb' : '.time .climb',
-    'time-lines' : '.time .lines',
-    'time-acc' : '.time .acc',
-    'time-drag' : '.time .drag',
-    'lines' : '.lines .total',
-    'lines-min' : '.lines .min',
-    'pieces-line' : '.lines .pieces',
-    'dist-line' : '.lines .dist',
-    'pieces' : '.figures .total',
-    'pieces-min' : '.figures .min',
-    'actions-piece' : '.figures .act',
-    'max-speed': '.other .speed',
-    'distance': '.other .dist',
-    'apm':'.other .apm',
-  };
-  let resultTable = document.querySelector(`#field${data.pos} .result`);
-  for (let elem of [...resultTable.querySelectorAll('.val')]){
-    if (!elem.innerHTML) {
-      elem.innerHTML = '-';
-    }
-  }
-  for (let x in data.stats){
-    let cell = resultTable.querySelector(`${STATS_SELECTOR[x]} .val`);
-    let val = data.stats[x];
-    if (val === null){
-      continue;
-    }
-    else if (cell.classList.contains('timing')){
-      val = secondsToMinutes(val, cell.classList.contains('dec'));
-    }
-    else if (cell.parentElement.classList.contains('main-value') &&
-            ['SU', 'LI', 'SA', 'DR', 'AC', 'HF'].indexOf(data.mode) !== -1){
-      val = secondsToMinutes(val, data.mode !== 'SU');
-    }
-    else if (val %1 !== 0){
-      val = val.toFixed(2);
-    }
-    cell.innerHTML = val;
-  }
-
-  resultTable.classList.add('finished');
-}
-
-function fillPlaces(places){
-  for (let x in places){
-    for (let pos of places[x]){
-      console.log(pos,x);
-      let elem = document.querySelector(`#field${pos} .result-place`);
-      elem.innerHTML = x;
-    }
-  }
-}
-
-
-function showDisconnect(pos){
-  let selector = `#field${pos} .announce .message`;
-  console.log(selector);
-  document.querySelector(selector).innerHTML = 'Player disconnected';
-}
-
-
-
-let conn = new WebSocket('ws://localhost/ws/connect/');
-
-conn.onopen = function(event){
+function sendRoomNumber(event){
   let number = document.getElementById('room-number').dataset.roomNumber;
   conn.send(JSON.stringify({
     'type': 'init',
@@ -104,126 +21,88 @@ conn.onopen = function(event){
   }));
 }
 
+function setPlayer({name}){
+  document.player = name;
+}
 
-
-conn.onmessage = function(event){
-  let data = JSON.parse(event.data);
-
-  let type = data.type;
-  if(type === 'player'){
-     player = data.player;
-  } else if (type === 'info'){
-    console.log(data.msg);
-    let info = document.getElementById('info')
-    info.innerHTML = data.msg;
-    info.classList.add('new-info');
-  } else if (type === 'connected'){
-    let pos = data.pos;
-    let div = document.getElementById('position'+pos);
-    div.classList.add('connected');
-    let dis = document.getElementById('disconnect'+pos);
-    dis.classList.add('connected');
-    let myField = document.getElementById('field'+pos);
-    myField.classList.add('current');
-  } else if (type === 'update-players'){
-    let new_player = data.player;
-    let pos = data.pos;
-    let selector = `#field${pos} .announce .player-name`;
-    let span = document.querySelector(selector);
-    span.innerHTML = new_player;
-    let dash = document.querySelector(`#field${pos} .stats`);
-    dash.classList.add('ready');
-    let conPos = document.querySelector(`#position${pos}`);
-    if (conPos){
-      conPos.classList.add('connected');
-    }
-  } else if (type === 'disconnect-player'){
-    let pos = data.pos;
-    let selector = `#position${pos} + .announce .player-name`;
-    let span = document.querySelector(selector);
-    span.innerHTML = "";
-    let myDis = document.querySelector('.current .connected[id^="disconnect"]');
-    let myPos = +myDis.id.replace('disconnect', '');
-    let dash = document.querySelector(`#field${pos} .stats`);
-    dash.classList.remove('ready');
-    if (+pos == myPos){
-      myDis.classList.remove('connected');
-      document.querySelector(`#position${pos}`).classList.remove('connected');
-      document.querySelector('.current').classList.remove('current');
-    }
-
-
-  }else if (type === 'room-deleted'){
-    console.log('room deleted');
-    fetch(window.location.origin)
-            .then(res => res.text())
-            .then(function(text) {
-              console.log('fetched');
+function prepareToGame(){
+  fetch(window.location.href)
+       .then(res => res.text())
+       .then(function(text) {
+          if(!ready){
             document.body.innerHTML = text;
-            let info = document.getElementById('info')
-            info.innerHTML = 'room deleted by author';
-            info.classList.add('new-info');
             nodeScriptReplace(document.getElementsByTagName("body")[0]);
-            }
-            );
+          }
+        });
+}
 
+function getReady(){
+  ready = true;
+  conn.send(JSON.stringify({'type': 'ready'}));
+}
 
-  } else if (type === 'start-game'){
-    console.log('start game');
-    console.log(window.location.href);
-    fetch(window.location.href)
-                   .then(res => res.text())
-                   .then(function(text) {
-                      if(!ready){
-                        document.body.innerHTML = text;
-                        nodeScriptReplace(document.getElementsByTagName("body")[0]);
-                      }
-                    });
-  } else if (type === 'get-ready'){
-    getReady(conn);
-    ready = true;
-  }
-    else if (type === 'start-tetris') {
-    startTetris(data.fields, conn);
-  } else if (type === 'watch-tetris'){
-    startTetris(data.fields);
-  } else if (type === 'update-tetris'){
-    updateTetris(data);
-  } else if (type === 'refresh-tetris'){
-    refreshTetris(data);
-  }
-  else if (type === 'room-lines'){
-    updateRoomLines(data.lines);
-  } else if (type === 'game-over'){
-    showGameover(data);
-    let myField = document.querySelector('.tetris-view.current');
-    console.log(myField);
-    if (myField && +data.pos === +myField.dataset.pos){
-      removeControls();
-    }
-    console.log(data);
-  } else if (type === 'queue-update'){
-    updateQueue(data);
-  } else if(type === 'game-disconnect'){
-    showDisconnect(data.pos);
-  } else if (type ==='places'){
-      fillPlaces(data.places);
-  } else if (type === 'powerup'){
-    updatePowerup(data);
-  }  else if (type === 'blind'){
-    blind(data);
-  }  else if (type === 'remove-blind'){
-    removeBlind(data);
-  } else if (type === 'flag'){
-    updateFlag(data);
-  } else if (type === 'goal'){
-    updateGoals(data.goals);
-  }
-
-  else{
-      console.log(data);
-  }
+let MESSAGE_HANDLERS = {
+  'player' : setPlayer,
+  'info' : showInfoBlock,
+  'connected': connectPlayer,
+  'update-players' : updatePlayers,
+  'disconnect-player' : disconnectPlayer,
+  'room-deleted' : kickRoom,
+  'start-game' : prepareToGame,
+  'get-ready' : getReady,
+  'start-tetris': startTetris,
+  'watch-tetris': renderTetris,
+  'update-tetris' : updateTetris,
+  'refresh-tetris' : refreshTetris,
+  'room-lines' : updateRoomLines,
+  'goal' : updateGoals,
+  'flag' : updateFlag,
+  'powerup' : updatePowerup,
+  'blind' : blind,
+  'remove-blind': removeBlind,
+  'game-disconnect': showDisconnect,
+  'game-over' : showGameover,
+  'places' : fillPlaces
 };
+
+const HANDLER_PARAMS = {
+  'player' : ['player'],
+  'info' : ['msg'],
+  'connected' : ['pos'],
+  'update-players': ['player', 'pos'],
+  'disconnect-player': ['pos'],
+  'room-deleted' : [],
+  'start-game': [],
+  'get-ready': [],
+  'start-tetris': ['fields'],
+  'watch-tetris': ['fields'],
+  'update-tetris': ['pos', 'current_piece', 'speed', 'time', 'score', 'distance', 'lines'],
+  'refresh-tetris': ['new_piece', 'queue', 'surface'],
+  'room-lines' : ['lines'],
+  'goal' : ['goals'],
+  'flag' : ['pos', 'y'],
+  'powerup' : ['pos', 'num', 'powerup', 'time'],
+  'blind' : ['pos', 'cols'],
+  'remove-blind': ['pos', 'x'],
+  'game-disconnect': ['pos'],
+  'game-over' : ['pos', 'stats', 'mode'],
+  'places' : ['places']
+};
+
+function processMessage(event){
+  let data = JSON.parse(event.data);
+  let type = data.type;
+  let params = {};
+  for (let x of HANDLER_PARAMS[data.type]){
+    params[x] = data[x];
+  }
+  MESSAGE_HANDLERS[data.type](params);
+}
+
+let ready = false;
+let conn = new WebSocket('ws://localhost/ws/connect/');
+
+conn.onopen = initConnection;
 
 conn.onerror = function(error){
   console.log('websocket error');
@@ -234,9 +113,5 @@ conn.onclose = function(event){
   console.log('websocket closed');
   console.log(event);
 };
-let player;
-let ready = false;
-let connectButtons = document.querySelectorAll('button[id^="connect"]');
-[...connectButtons].forEach(a=> a.addEventListener('click', sendConnectToRoomSignal));
-let diss = document.querySelectorAll('[id^="disconnect"]');
-[...diss].forEach(a=> a.addEventListener('click', sendDisconnectSignal));
+
+conn.onmessage = processMessage;
