@@ -27,6 +27,10 @@
       <div class='short'></div>
       <div class='text'>Здесь появится описание выбранного типа игры</div>
     </div>
+    <div class='radio-block vol inactive'>
+      <span>Продолжительность игры</span>{{ form.volume }}<span>%</span>
+      <p></p>
+    </div>
 
   <button id='create' type='submit'>Создать игру</button>
 
@@ -36,6 +40,6 @@
 
 {% block scripts %}
   {%for script in scripts %}
-    <script src='/static/js/{{script}}.js'></script>
+    <script type='module' src='/static/js/{{script}}.js'></script>
   {% endfor %}
 {% endblock %}

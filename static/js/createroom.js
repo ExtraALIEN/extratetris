@@ -1,17 +1,54 @@
+import {secondsToMinutes} from './timing.js';
+
 function sendInit(event){
   let starter = {
     'command' : 'init_room',
     'players' : document.querySelector('[name="players"]:checked').value,
     'game_type' : document.querySelector('[name="game_type"]:checked').value,
+    'volume': document.querySelector('.vol input').value,
   }
 
   conn.send(JSON.stringify(starter));
 }
 
-function showDescription(event){
-  let sh = event.target.value
-  short.innerHTML = sh;
-  text.innerHTML = DESCRIPTIONS[sh];
+
+function changeGameType(event){
+  let type = event.target.value;
+  showDescription(type);
+  displayVolume(type);
+}
+
+function showDescription(type){
+  short.innerHTML = type;
+  text.innerHTML = DESCRIPTIONS[type];
+}
+
+function displayVolume(type){
+  if (type in STANDARD_VOLUME){
+    vol.classList.remove('inactive');
+    calculateVolume();
+  }else{
+    vol.classList.add('inactive');
+    vol.querySelector('p').innerHTML = '';
+  }
+}
+
+function calculateVolume(){
+  let type = document.querySelector('[name="game_type"]:checked').value;
+  let proc = vol.querySelector('input').value;
+  if (proc > 250){
+    proc = 250;
+  }else if(proc < 25){
+    proc = 25;
+  }
+  let total = (STANDARD_VOLUME[type]/100) * proc;
+  if (type === 'CO'){
+    total = secondsToMinutes(total);
+  }
+  else{
+    total = parseInt(total);
+  }
+  vol.querySelector('p').innerHTML = `${MEASURE[type]}: ${total}`;
 }
 
 function checkFilled(event){
@@ -20,6 +57,22 @@ function checkFilled(event){
         btn.classList.add('filled');
       }
 }
+
+const STANDARD_VOLUME = {
+  'LI' : 60,
+  'CO' : 360,
+  'SA' : 20000,
+  'DR' : 4020,
+  'AC' : 100,
+};
+
+const MEASURE = {
+  'LI' : 'Линии',
+  'CO' : 'Время',
+  'SA' : 'Очки',
+  'DR' : 'Пробег',
+  'AC' : 'Скорость',
+};
 
 let conn = new WebSocket('ws://localhost/ws/create/');
 
@@ -102,8 +155,10 @@ let typeButtons = document.querySelectorAll('input[name="game_type"]');
 let desc = document.getElementById('game-description');
 let short = desc.querySelector('.short');
 let text = desc.querySelector('.text');
+let vol = document.querySelector('.vol');
+vol.querySelector('input').addEventListener('input', calculateVolume);
 for (let x of [...typeButtons]){
-  x.addEventListener('change', showDescription);
+  x.addEventListener('change', changeGameType);
 }
 for (let x of [...inputs]){
   x.addEventListener('change', checkFilled);

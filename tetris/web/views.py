@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from web.forms import SignupForm, LoginForm, CreateGameForm
-from web.helpers import session_login
+from web.helpers import session_login, VOLUME_STANDARD
 from datetime import timedelta
 import time
 from django.utils import timezone
@@ -75,7 +75,6 @@ def profile(request, profile_id):
 
 def create_game(request):
     if request.method == 'POST':
-        print(request.POST)
         form = CreateGameForm(request.POST)
         if form.is_valid():
             if request.user is None:
@@ -110,6 +109,7 @@ def enter_room(request, room_number):
         return guest.do_login(room.get_url())
     elif request.user == room.author:
         is_author = True
+    limited = room.type in VOLUME_STANDARD
     # if room.started:
     #     scripts = ['gamecontrols']
     return render(request, 'web/room.html', {'room': room,
@@ -119,7 +119,8 @@ def enter_room(request, room_number):
                                              'height': height,
                                              'queue' : queue,
                                              'queue_grid': queue_grid,
-                                             'is_author' : is_author})
+                                             'is_author' : is_author,
+                                             'limited' : limited})
 
 
 def delete_room(request, room_number):

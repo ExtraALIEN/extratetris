@@ -2,7 +2,7 @@ import json
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from web.helpers import GAME_TYPES
+from web.helpers import GAME_TYPES, VOLUME_STANDARD
 
 
 class PlayerManager(models.Manager):
@@ -231,6 +231,7 @@ class TetrisRoom(models.Model):
     players = models.IntegerField()
     guests = models.IntegerField(default=0)
     type = models.CharField(max_length=2, choices=GAME_TYPES)
+    proc = models.FloatField(default=100.0)
     active_players = models.ManyToManyField(Player)
     players_at_positions = models.TextField(default="")
     started = models.BooleanField(default=False)
@@ -245,6 +246,14 @@ class TetrisRoom(models.Model):
         pp[str(pos)] = player.username
         self.players_at_positions = json.dumps(pp)
         self.save()
+
+
+    def get_volume(self):
+        print(self.proc)
+        if self.type in VOLUME_STANDARD:
+            if self.type == 'CO':
+                return (self.proc*VOLUME_STANDARD[self.type]) / 100
+            return int((self.proc*VOLUME_STANDARD[self.type]) // 100)
 
 
     def remove_player(self, player, pos):

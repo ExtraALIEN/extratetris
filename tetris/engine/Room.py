@@ -4,19 +4,34 @@ from django.utils import timezone
 from engine.Field import Field
 from engine.ingame import process_command
 from web.models import TetrisRoom, SingleGameRecord
-from web.helpers import GAME_COUNTS, POWERUPS
+from web.helpers import GAME_COUNTS, POWERUPS, VOLUME_STANDARD
 from random import randint
 
 
 class Room:
-    def __init__(self, id, size, type):
+    def __init__(self, id, size, type, proc):
         self.id = id
         self.type = type
         self.flag = False
+        self.proc = proc
         if self.type in ['CF', 'HF']:
             self.flag = True
         self.players = size
-        self.fields = [Field(room=self, pos=i) for i in range(self.players)]
+        arg = {'room': self,
+               }
+        if self.proc != 100:
+            if self.type == 'LI':
+                arg['max_lines'] = (proc*VOLUME_STANDARD['LI']) // 100
+            elif self.type == 'CO':
+                arg['timeleft'] = (proc*VOLUME_STANDARD['CO']) / 100
+            elif self.type == 'SA':
+                arg['score_finish'] = (proc*VOLUME_STANDARD['SA']) // 100
+            elif self.type == 'DR':
+                arg['drag_finish'] = (proc*VOLUME_STANDARD['DR']) // 100
+            elif self.type == 'AC':
+                arg['acc_finish'] = (proc*VOLUME_STANDARD['AC']) // 100
+
+        self.fields = [Field(pos=i, **arg) for i in range(self.players)]
         self.start_time = None
         self.lines = 0
         self.next_positive = 5
@@ -142,8 +157,8 @@ class Room:
                 player.score += field.score
                 if field.score > player.best_score:
                     player.best_score = field.score
-                if field.score_intermediate and field.score_intermediate > player.best_countdown_score:
-                    player.best_countdown_score = field.score_intermediate
+                if field.score_intermediate_st and field.score_intermediate_st > player.best_countdown_score:
+                    player.best_countdown_score = field.score_intermediate_st
                 if not player.best_time_lines or field.time_lines and field.time_lines < player.best_time_lines:
                     player.best_time_lines = field.time_lines
                 if not player.best_time_drag or field.time_drag and field.time_drag < player.best_time_drag:

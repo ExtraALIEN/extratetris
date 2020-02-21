@@ -52,7 +52,7 @@ TYPE_OF_RESULT = {
 'CL': 'score',
 'DM': 'score',
 'SU': 'time',
-'LI': 'time_lines',
+'LI': 'time_maxlines',
 'CO': 'score_intermediate',
 'SA': 'time_climb',
 'DR': 'time_drag',
@@ -109,3 +109,11 @@ POWERUPS = ['chance_up',
             'weak_signal',
 
             ]
+
+VOLUME_STANDARD = {
+    'LI' : 60,
+    'CO' : 360,
+    'SA' : 20000,
+    'DR' : 4020,
+    'AC' : 100,
+}

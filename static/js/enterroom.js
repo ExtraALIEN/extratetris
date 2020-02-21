@@ -1,5 +1,6 @@
 import {nodeScriptReplace} from './nodescript.js';
 import {showInfoBlock} from './info.js';
+import {secondsToMinutes} from './timing.js';
 import {activateConnectButtons, connectPlayer, disconnectPlayer, updatePlayers, kickRoom, showDisconnect,
 showGameover, fillPlaces} from './lobby.js';
 import {startTetris, renderTetris, updateTetris, refreshTetris, updateRoomLines,
@@ -39,6 +40,25 @@ function prepareToGame(){
 function getReady(){
   ready = true;
   conn.send(JSON.stringify({'type': 'ready'}));
+}
+
+function copyURL(event){
+  let textArea = document.createElement("textarea");
+  textArea.value = event.target.dataset.url;
+  textArea.style.color = 'transparent';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textArea);
+}
+
+function checkTimeLimit(){
+  let type = document.getElementById('room-type').dataset.roomType;
+  if (type === 'CO'){
+    let lim = document.getElementById('room-limit');
+    lim.innerHTML = `Limit: ${secondsToMinutes(+lim.dataset.limit)}`;
+  }
 }
 
 let MESSAGE_HANDLERS = {
@@ -100,7 +120,12 @@ function processMessage(event){
 }
 
 let ready = false;
+let copier = document.getElementById('copy-url');
+copier.addEventListener('click', copyURL);
+checkTimeLimit();
 let conn = new WebSocket('ws://localhost/ws/connect/');
+
+
 
 conn.onopen = initConnection;
 

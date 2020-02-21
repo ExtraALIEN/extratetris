@@ -3,6 +3,7 @@ from engine.QueuePieces import QueuePieces
 from engine.ActivePiece import ActivePiece
 from threading import Timer
 from random import randint, shuffle, choice, choices, random
+from web.helpers import VOLUME_STANDARD
 
 class Field:
 
@@ -12,7 +13,7 @@ class Field:
                             acc_finish=100, #100
                             drag_finish=4020, #4020
                             timeleft=360, #360
-                            score_finish=15000, #15000
+                            score_finish=18000, #18000
                             max_lines=60,
                             ): #60
         self.pos = pos
@@ -34,7 +35,7 @@ class Field:
         self.lost_actions = 0
         self.powerup_chance = 0.02
         self.powerup_boost = 0
-        self.powerup_mul = 10
+        self.powerup_mul = 1
         self.powerups = [None, None, None]
         self.powerups_time = [0, 0, 0]
         self.powerups_lifetime = 15
@@ -47,17 +48,22 @@ class Field:
         self.actions = 0
         self.lines = 0
         self.max_lines = max_lines
+        self.time_maxlines = None
         self.time_lines = None
         self.score = 0
         self.time = 0
         self.distance = 0
         self.time_climb = None
+        self.time_climb_st = None
         self.score_finish = score_finish
         self.score_intermediate = None
+        self.score_intermediate_st = None
         self.timeleft = timeleft
         self.time_acc = None
+        self.time_acc_st = None
         self.acc_finish = acc_finish
         self.time_drag = None
+        self.time_drag_st = None
         self.drag_finish = drag_finish
         self.goal = 0
         self.surface = buildEmptyFieldList(width, height)
@@ -133,6 +139,12 @@ class Field:
             self.max_speed = self.speed
         elif self.speed < 0:
             self.speed = 0.02
+        if self.speed >= VOLUME_STANDARD['AC'] and self.time_acc_st is None:
+            self.time_acc_st = self.time
+        if self.speed >= self.acc_finish and self.time_acc is None:
+            self.time_acc = self.time
+            if self.room.type == 'AC':
+                self.end_game()
 
     def add_line(self):
         filled = randint(self.width/2, self.width-1)
@@ -228,12 +240,16 @@ class Field:
             base = 15 * (1 + (land_y * (7 / 60)))
         to_add = round_half_up(base * (math.sqrt(2)**(self.speed/50))*self.multiplier)
         self.score += to_add
+        if self.score >= VOLUME_STANDARD['SA'] and self.time_climb_st is None:
+            self.time_climb_st = self.time
         if self.score >= self.score_finish and self.time_climb is None:
             self.time_climb = self.time
             if self.room.type == 'SA':
                 self.end_game()
-        if self.lines >= self.max_lines and self.time_lines is None:
+        if self.lines >= VOLUME_STANDARD['LI'] and self.time_lines is None:
             self.time_lines = self.time
+        if self.lines >= self.max_lines and self.time_maxlines is None:
+            self.time_maxlines = self.time
             if self.room.type == 'LI':
                 self.end_game()
 
@@ -458,14 +474,8 @@ class Field:
         t = Timer(delay, self.update_timer, [delay])
         if not self.game_over:
             self.time += delay
-            if self.speed >= self.acc_finish and self.time_acc is None:
-                self.time_acc = self.time
-                if self.room.type == 'AC':
-                    self.end_game()
-            if self.distance >= self.drag_finish and self.time_drag is None:
-                self.time_drag = self.time
-                if self.room.type == 'DR':
-                    self.end_game()
+            if self.time >= VOLUME_STANDARD['CO'] and self.score_intermediate_st is None:
+                self.score_intermediate_st = self.score
             if self.time >= self.timeleft and self.score_intermediate is None:
                 self.score_intermediate = self.score
                 if self.room.type == 'CO':
@@ -562,16 +572,16 @@ class Field:
             stats['score-dist'] = self.score/self.distance
         if self.actions > 0:
             stats['score-action'] = self.score/self.actions
-        if self.time_acc is not None:
-            stats['time-acc'] = self.time_acc
+        if self.time_acc_st is not None:
+            stats['time-acc'] = self.time_acc_st
         if self.time_lines is not None:
             stats['time-lines'] = self.time_lines
-        if self.time_drag is not None:
-            stats['time-drag'] = self.time_drag
-        if self.time_climb is not None:
-            stats['time-climb'] = self.time_climb
-        if self.score_intermediate is not None:
-            stats['score-intermediate'] = self.score_intermediate
+        if self.time_drag_st is not None:
+            stats['time-drag'] = self.time_drag_st
+        if self.time_climb_st is not None:
+            stats['time-climb'] = self.time_climb_st
+        if self.score_intermediate_st is not None:
+            stats['score-intermediate-st'] = self.score_intermediate_st
 
         x = TYPE_OF_RESULT[self.room.type]
         self.result = getattr(self, x)

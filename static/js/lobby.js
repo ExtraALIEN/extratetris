@@ -16,7 +16,7 @@ function activateConnectButtons(){
   function sendDisconnectSignal(){
     let number = document.getElementById('room-number').dataset.roomNumber;
     let pos = this.dataset.pos;
-    conn.send(JSON.stringify({type: 'disconnect',
+    document.conn.send(JSON.stringify({type: 'disconnect',
                               room_id: number,
                               pos: pos,
                           }));
@@ -37,6 +37,8 @@ function deactivateConnectButtons(x){
 }
 
 
+
+
 function connectPlayer({pos}){
   let div = document.getElementById(`position${pos}`);
   let dis = document.getElementById(`disconnect${pos}`);
@@ -44,6 +46,12 @@ function connectPlayer({pos}){
   div.classList.add('connected');
   dis.classList.add('connected');
   myField.classList.add('current');
+  let fields = document.querySelectorAll(`[id^="field"]`);
+  for (let x of [...fields]){
+    if (+x.dataset.pos !== +pos){
+      x.classList.add('inactive');
+    }
+  }
 }
 
 function updatePlayers({player, pos}){
@@ -70,6 +78,10 @@ function disconnectPlayer({pos}){
     myDis.classList.remove('connected');
     document.querySelector(`#position${pos}`).classList.remove('connected');
     document.querySelector('.current').classList.remove('current');
+    let inactives = document.querySelectorAll('.inactive');
+    for (let x of [...inactives]){
+      x.classList.remove('inactive');
+    }
   }
 }
 
@@ -97,7 +109,7 @@ function showGameover({pos, stats, mode}){
   const STATS_SELECTOR = {
     'result' : '.primary .main-value',
     'score' : '.scores .total',
-    'score-intermediate' : '.scores .intermediate',
+    'score-intermediate-st' : '.scores .inter-st',
     'score-sec' : '.scores .sec',
     'score-piece' : '.scores .piece',
     'score-action' : '.scores .action',

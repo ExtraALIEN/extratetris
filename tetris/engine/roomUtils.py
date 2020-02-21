@@ -3,8 +3,8 @@ from engine.Room import Room
 from web.models import TetrisRoom, Player, Session
 from engine.ingame import init_fields
 
-def create_room(id, size, type):
-    new_room = Room(id=id, size=size, type=type)
+def create_room(id, size, type, proc):
+    new_room = Room(id=id, size=size, type=type, proc=proc)
     activate_room(id, new_room)
 
 

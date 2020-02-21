@@ -1,4 +1,5 @@
 from engine.Piece import Piece
+from web.helpers import VOLUME_STANDARD
 
 class ActivePiece(Piece):
     def __init__(self, current_piece, x, y, field):
@@ -85,6 +86,12 @@ class ActivePiece(Piece):
         if not phantom.blocked():
             self.y = phantom.y
             self.field.distance += 1
+            if self.field.distance >= VOLUME_STANDARD['DR'] and self.field.time_drag_st is None:
+                self.field.time_drag_st = self.field.time
+            if self.field.distance >= self.field.drag_finish and self.field.time_drag is None:
+                self.field.time_drag = self.field.time
+                if self.field.room.type == 'DR':
+                    self.field.end_game()
         else:
             terminated = self.field.land_piece()
         return terminated

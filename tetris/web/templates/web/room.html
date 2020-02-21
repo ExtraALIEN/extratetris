@@ -5,10 +5,13 @@
 
 {% block room_number %}
   <div class='room-number'>
-   <h2>Room number:
-      <span data-room-number='{{room.room_id}}' id='room-number'>{{room.room_id}}</span>
-      Type:
-      <span data-room-type='{{room.type}}' id='room-type'>{{room.type}}</span>
+   <h2>
+      <span data-room-number='{{room.room_id}}' id='room-number'> Room: {{room.room_id}}</span>
+      <span id='copy-url' data-url='extratetris.ru{{room.get_url}}'>Click here to copy URL</span>
+      <span data-room-type='{{room.type}}' id='room-type'>Type: {{room.type}}</span>
+      {% if limited %}
+      <span data-limit='{{room.get_volume}}' id='room-limit'> Limit : {{room.get_volume}}</span>
+      {% endif %}
     </h2>
     {% if room.started %}
     <p data-room-players='{{room.players}}' id='room-players'>>Ожидание игроков...{{room.count_players}}</p>
@@ -109,8 +112,8 @@
                  <span>Очки</span>
                  <span class='val'></span>
                </div>
-               <div class='intermediate'>
-                 <span>Очки за установленное время</span>
+               <div class='inter-st'>
+                 <span>Очки за 6 минут</span>
                  <span class='val'></span>
                </div>
                <div class='sec'>
@@ -136,19 +139,19 @@
                  <span class='val timing'></span>
                </div>
                <div class='climb'>
-                 <span>Время набора установленных очков</span>
+                 <span>Время набора 20000 очков</span>
                  <span class='val timing dec'></span>
                </div>
                <div class='lines'>
-                 <span>Время до установленного количества линий</span>
+                 <span>Время 60 линий</span>
                  <span class='val timing dec'></span>
                </div>
                <div class='acc'>
-                 <span>Время разгона до установленной скорости</span>
+                 <span>Время разгона до 100</span>
                  <span class='val timing dec'></span>
                </div>
                <div class='drag'>
-                 <span>Врем прохождения установленной дистанции</span>
+                 <span>Время прохождения 4020 пробега</span>
                  <span class='val timing dec'></span>
                </div>
              </div>

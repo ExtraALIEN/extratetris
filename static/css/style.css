@@ -169,10 +169,25 @@ body > header{
 }
 
 body > footer {
-  position: absolute;
+  position: fixed;
   bottom:0;
   right:1rem;
+  flex-basis:0;
 }
+
+.home{
+  width: 30vh;
+  margin: 0 auto;
+}
+
+#copy-url{
+  font-size:0.75rem;
+}
+
+#copy-url:hover{
+  animation: flick .2s infinite alternate;
+}
+
 header .login{
   position:absolute;
   top : 50%;
@@ -193,10 +208,16 @@ header .login > a {
 }
 
 body > main {
-  flex-basis: 80vh;
-  flex-grow: 1;
-  max-height: 80vh;
+  flex-basis: 90vh;
+  flex-grow: 9;
+  max-height: 90vh;
 }
+
+.room-number h2{
+  font-size: 1.25rem;
+  color: #43b933;
+}
+
 
 
 .index{
@@ -370,19 +391,81 @@ body > main {
   color: #a13702;
   font-size: 3rem;
   text-align: center;
+  transition: .7s;
+}
+
+.tetris-view button[id^="connect"]::after{
+  position: absolute;
+  display: block;
+  content: '';
+  top: 0;
+  left:0;
+  width:100%;
+  height: 100%;
+  background-image: url('/static/pic/add.png');
+  background-size: 40% auto;
+  background-position: 50% 30%;
+  background-repeat: no-repeat;
+  transition: .7s;
+  opacity: .2;
+}
+
+.tetris-view button[id^="connect"]:hover{
+  color: #fb671d;
+}
+
+.tetris-view button[id^="connect"]:hover::after{
+  opacity: 1;
 }
 
 .tetris-view .connected button[id^="connect"]{
   display :none;
 }
 
-.tetris-view .inactive button[id*="connect"]{
+.tetris-view.inactive button[id*="connect"]{
   display: none;
 }
 
 .tetris-view .disconnect{
   position: absolute;
-  bottom: 20px;
+  top: 0;
+  left:0;
+  width:100%;
+  height: 100%;
+  background-color: transparent;
+  border:none;
+  color: #7d0e0e;
+  font-size: 3rem;
+  text-align: center;
+  transition: .7s;
+}
+
+.tetris-view .disconnect::after{
+  display: block;
+  content: '';
+  position: absolute;
+  top: 0;
+  left:0;
+  width:100%;
+  height: 100%;
+  background-image: url('/static/pic/remove.png');
+  background-size: 40% auto;
+  background-position: 50% 30%;
+  background-repeat: no-repeat;
+  border:none;
+  color: #7d0e0e;
+  font-size: 3rem;
+  text-align: center;
+  transition: .7s;
+  opacity: .2;
+}
+
+.tetris-view .disconnect:hover{
+  color: #d70303;
+}
+
+.tetris-view .disconnect:hover::after{
+  opacity: 1;
 }
 
 
@@ -636,6 +719,8 @@ body > main {
   height: 7rem;
   padding: 5px;
   border-bottom: 1px solid #a13702;
+  box-shadow: inset 0 0 0 0 rgba(22, 71, 58, 0.6);
+  transition: .7s;
 }
 
 .stats.ready{
@@ -923,11 +1008,12 @@ body > main {
 .result {
   position: absolute;
   z-index:20;
-  top: 0;
-  left: 0;
+  top: -1px;
+  left: -1px;
   width:133%;
-  height: 100%;
-  background-color: rgba(256,256,256,0.8);
+  height: 101%;
+  background-color: rgba(0,0,0,0.8);
+  color: #44d530;
   display: none;
 }
 
@@ -1077,6 +1163,23 @@ body > main {
   padding-left: 5px;
 }
 
+.vol{
+  font-size: 3rem;
+}
+
+.vol input[type="number"]{
+  font-family: 'FZ DIGITAL 9';
+  text-align: right;
+  background-color: #000000;
+  border: none;
+  outline: none;
+  color: #44d530;
+  font-size: 3rem;
+  line-height: 3rem;
+  width: 5ch;
+  margin: 0 .5ch;
+}
+
 #create{
   display: block;
   cursor: pointer;
@@ -1119,4 +1222,13 @@ body > main {
 #create.filled:hover{
   animation: glow .7s infinite alternate ease-in-out;
   background-color: #000000;
+}
+
+.vol.inactive{
+  display: none;
+}
+
+.vol{
+  text-align: center;
+  display:block;
 }
