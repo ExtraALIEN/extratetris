@@ -5,7 +5,7 @@ import {activateConnectButtons, connectPlayer, disconnectPlayer, updatePlayers, 
 showGameover, fillPlaces} from './lobby.js';
 import {startTetris, renderTetris, updateTetris, refreshTetris, updateRoomLines,
 updateGoals, updateFlag, updatePowerup, blind, removeBlind} from './render.js';
-
+import {addBot, delBot} from './bot.js';
 
 function initConnection(event){
   document.conn = conn;
@@ -16,6 +16,7 @@ function initConnection(event){
 
 function sendRoomNumber(event){
   let number = document.getElementById('room-number').dataset.roomNumber;
+  document.roomNumber = number;
   conn.send(JSON.stringify({
     'type': 'init',
     'room_id': number
@@ -62,7 +63,7 @@ function checkTimeLimit(){
 }
 
 let MESSAGE_HANDLERS = {
-  'player' : setPlayer,
+  // 'player' : setPlayer,
   'info' : showInfoBlock,
   'connected': connectPlayer,
   'update-players' : updatePlayers,
@@ -123,6 +124,14 @@ let ready = false;
 let copier = document.getElementById('copy-url');
 copier.addEventListener('click', copyURL);
 checkTimeLimit();
+let buttonsAddBot = document.querySelectorAll('[id^="addbot"]');
+for (let x of [...buttonsAddBot]){
+  x.addEventListener('click', addBot);
+}
+let buttonsDelBot = document.querySelectorAll('[id^="delbot"]');
+for (let x of [...buttonsDelBot]){
+  x.addEventListener('click', delBot);
+}
 let conn = new WebSocket('ws://localhost/ws/connect/');
 
 

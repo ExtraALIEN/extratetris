@@ -2,12 +2,17 @@
 
 {% block lobby %}
   <h2>Текущие игры</h2>
-  <ul>
+  <ul class='lobby'>
     {% for room in rooms %}
-      <li>
-        Тип игры:<b>{{room.type}}</b>
-        Игроков: {{room.count_players}}
-        <a class='flick' href={{room.get_url}}>Подойти</a>
+      <li class='room'>
+        <span class='type'>{{room.type}}</span>
+        <span class='players'>Игроков: {{room.players}}</span>
+        <ul class='current-players'>
+          {% for field in room.describe %}
+            <li>{{field.username}}  {{field.games}}</li>
+          {% endfor %}
+        </ul>
+        <a class='enter flick' href={{room.get_url}}>Подойти</a>
       </li>
     {% endfor %}
   </ul>

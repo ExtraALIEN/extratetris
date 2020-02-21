@@ -27,7 +27,8 @@
   <div class='grid'>
     {% for pos in positions %}
       <div id='field{{pos}}'
-           class='tetris-view {% if is_author and not pos%} current {% endif %}'
+           class='tetris-view {% if is_author and not pos%} current {% endif %}
+                              {% if is_author and pos %} inactive {% endif %}'
            data-pos='{{pos}}'>
            <!-- <span class='player-name'><span> -->
            {% for y in height %}
@@ -55,10 +56,17 @@
              {% endfor%}
            </div>
            <div id='position{{pos}}'
-                class='connect {% if is_author %} connected {% endif %} '
+                class='connect {% if is_author and not pos %} connected {% endif %}'
                 data-pos='{{pos}}'>
                 <button id='connect{{pos}}' data-pos='{{pos}}'>Занять место</button>
            </div>
+           {% if is_author and pos %}
+           <div class='bot-handle'
+                data-pos='{{pos}}'>
+                <button id='addbot{{pos}}' data-pos='{{pos}}'>Добавить бота</button>
+                <button id='delbot{{pos}}' data-pos='{{pos}}'>Убрать бота</button>
+           </div>
+           {% endif %}
            <div class='announce'>
              <span class='message'></span>
              <span class='player-name'></span>

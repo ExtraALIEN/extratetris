@@ -2,7 +2,7 @@ import asyncio
 import json
 from channels.generic.websocket import JsonWebsocketConsumer
 from engine.roomUtils import room_connect, create_room, find_next_id, \
-        init_room, room_hard_disconnect, room_disconnect
+        init_room, room_hard_disconnect, room_disconnect, add_bot, del_bot
 from engine.ingame import add_ready, process_command
 
 class ConnectRoom(JsonWebsocketConsumer):
@@ -22,6 +22,10 @@ class ConnectRoom(JsonWebsocketConsumer):
             add_ready(self)
         elif type == 'control':
             process_command(self, data)
+        elif type == 'add-bot':
+            add_bot(data)
+        elif type == 'del-bot':
+            del_bot(data)
 
 
 

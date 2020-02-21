@@ -34,6 +34,10 @@ function deactivateConnectButtons(x){
   let disconnectButton = document.getElementById(`disconnect${x}`);
   connectDiv.remove();
   disconnectButton.remove();
+  let botHandle = document.querySelector(`#field${x} .bot-handle`);
+  if (botHandle){
+    botHandle.remove();
+  }
 }
 
 
@@ -64,23 +68,36 @@ function updatePlayers({player, pos}){
   if (conPos){
     conPos.classList.add('connected');
   }
+  if (player === '* bot *'){
+    let botHandle = document.querySelector(`#field${pos} .bot-handle`);
+    if (botHandle){
+      botHandle.classList.add('bot');
+      conPos.classList.add('bot');
+    }
+  }
 }
 
 function disconnectPlayer({pos}){
-  let selector = `#position${pos} + .announce .player-name`;
+  let selector = `#field${pos} .announce .player-name`;
   let span = document.querySelector(selector);
   span.innerHTML = "";
-  let myDis = document.querySelector('.current .connected[id^="disconnect"]');
-  let myPos = +myDis.id.replace('disconnect', '');
   let dash = document.querySelector(`#field${pos} .stats`);
+  document.querySelector(`#position${pos}`).classList.remove('connected');
   dash.classList.remove('ready');
-  if (+pos == myPos){
-    myDis.classList.remove('connected');
-    document.querySelector(`#position${pos}`).classList.remove('connected');
-    document.querySelector('.current').classList.remove('current');
-    let inactives = document.querySelectorAll('.inactive');
-    for (let x of [...inactives]){
-      x.classList.remove('inactive');
+  let botDivs = document.querySelectorAll(`#field${pos} .bot`);
+  for (let x of [...botDivs]){
+    x.classList.remove('bot');
+  }
+  let myDis = document.querySelector('.current .connected[id^="disconnect"]');
+  if (myDis){
+    let myPos = +myDis.id.replace('disconnect', '');
+    if (+pos == myPos){
+      myDis.classList.remove('connected');
+      document.querySelector('.current').classList.remove('current');
+      let inactives = document.querySelectorAll('.inactive');
+      for (let x of [...inactives]){
+        x.classList.remove('inactive');
+      }
     }
   }
 }

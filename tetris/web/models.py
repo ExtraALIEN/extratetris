@@ -230,6 +230,7 @@ class TetrisRoom(models.Model):
     author = models.OneToOneField(Player, on_delete=models.CASCADE, related_name="current_room")
     players = models.IntegerField()
     guests = models.IntegerField(default=0)
+    bots = models.IntegerField(default=0)
     type = models.CharField(max_length=2, choices=GAME_TYPES)
     proc = models.FloatField(default=100.0)
     active_players = models.ManyToManyField(Player)
@@ -247,15 +248,6 @@ class TetrisRoom(models.Model):
         self.players_at_positions = json.dumps(pp)
         self.save()
 
-
-    def get_volume(self):
-        print(self.proc)
-        if self.type in VOLUME_STANDARD:
-            if self.type == 'CO':
-                return (self.proc*VOLUME_STANDARD[self.type]) / 100
-            return int((self.proc*VOLUME_STANDARD[self.type]) // 100)
-
-
     def remove_player(self, player, pos):
         self.active_players.remove(player)
         if player.is_guest:
@@ -265,12 +257,53 @@ class TetrisRoom(models.Model):
         self.players_at_positions = json.dumps(pp)
         self.save()
 
-    def count_players(self):
-        current = self.active_players.count()
-        return str(current) + '/' + str(self.players)
+    def add_bot(self, bot, pos):
+        self.bots += 1
+        pp = json.loads(self.players_at_positions)
+        pp[str(pos)] = bot.username
+        self.players_at_positions = json.dumps(pp)
+        self.save()
+
+    def del_bot(self, pos):
+        self.bots -= 1
+        pp = json.loads(self.players_at_positions)
+        pp[str(pos)] = ''
+        self.players_at_positions = json.dumps(pp)
+        self.save()
+
+    def describe(self):
+        info = [{'username': '', 'games': '' } for x in range(self.players)]
+        connected_players = self.active_players.all()
+        count = len(connected_players)
+        bots = self.bots
+        for x in range(self.players):
+            if x < count:
+                player = connected_players[x]
+                info[x]['username'] = player.username
+                if not player.is_guest:
+                    info[x]['games'] = player.games_count
+            elif bots > 0:
+                info[x]['username'] = '* BOT *'
+                bots -= 1
+            else:
+                info[x]['username'] = '---'
+        return info
+
+
+
+
+    def get_volume(self):
+        print(self.proc)
+        if self.type in VOLUME_STANDARD:
+            if self.type == 'CO':
+                return (self.proc*VOLUME_STANDARD[self.type]) / 100
+            return int((self.proc*VOLUME_STANDARD[self.type]) // 100)
+
+
+
 
     def is_full(self):
-        return self.active_players.count() == self.players
+        return self.active_players.count() + self.bots == self.players
 
     def get_url(self):
         return '/room/'+ str(self.room_id)

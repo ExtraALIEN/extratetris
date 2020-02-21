@@ -408,7 +408,7 @@ class Field:
         from engine.ListMethods import diff_obj
         from engine.roomUtils import broadcast_room
         import engine.status as status
-        id = status.connections[self.websocket]['id']
+        id = self.room.id
         piece = self.active_piece
         prev = piece.to_view()
         terminated = False

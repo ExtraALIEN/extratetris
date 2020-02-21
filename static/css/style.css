@@ -426,6 +426,14 @@ body > main {
   display: none;
 }
 
+.tetris-view .connected + .bot-handle{
+  display: none;
+}
+
+.tetris-view .connected.bot + .bot-handle{
+  display: block;
+}
+
 .tetris-view .disconnect{
   position: absolute;
   top: 0;
@@ -472,6 +480,105 @@ body > main {
 .connect .player-name{
   position: absolute;
   top: 50%;
+}
+
+.tetris-view .addbot{
+  position: absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
+
+.tetris-view button[id^="addbot"]{
+  position: absolute;
+  top: 0;
+  left:0;
+  width:100%;
+  height: 100%;
+  background-color: transparent;
+  border:none;
+  color: #316c29;
+  font-size: 3rem;
+  text-align: center;
+  transition: .7s;
+}
+
+.tetris-view button[id^="addbot"]::after{
+  position: absolute;
+  display: block;
+  content: '';
+  top: 0;
+  left:0;
+  width:100%;
+  height: 100%;
+  background-image: url('/static/pic/addbot.png');
+  background-size: 40% auto;
+  background-position: 50% 30%;
+  background-repeat: no-repeat;
+  transition: .7s;
+  opacity: .2;
+}
+
+.tetris-view button[id^="addbot"]:hover{
+  color: #43b933;
+}
+
+.tetris-view button[id^="addbot"]:hover::after{
+  opacity: 1;
+}
+
+.bot-handle.bot button[id^="addbot"]{
+  display: none;
+}
+
+
+
+.tetris-view button[id^="delbot"]{
+  display: none;
+  position: absolute;
+  top: 0;
+  left:0;
+  width:100%;
+  height: 100%;
+  background-color: transparent;
+  border:none;
+  color: #7d0e0e;
+  font-size: 3rem;
+  text-align: center;
+  transition: .7s;
+}
+
+.tetris-view button[id^="delbot"]::after{
+  display:block;
+  content: '';
+  position: absolute;
+  top: 0;
+  left:0;
+  width:100%;
+  height: 100%;
+  background-image: url('/static/pic/remove.png');
+  background-size: 40% auto;
+  background-position: 50% 30%;
+  background-repeat: no-repeat;
+  border:none;
+  color: #7d0e0e;
+  font-size: 3rem;
+  text-align: center;
+  transition: .7s;
+  opacity: .2;
+}
+
+.bot-handle.bot button[id^="delbot"]{
+  display: block;
+}
+
+.tetris-view button[id^="delbot"]:hover{
+  color: #d70303;
+}
+
+.tetris-view button[id^="delbot"]:hover::after{
+  opacity: 1;
 }
 
 .cell.color-0{
@@ -1231,4 +1338,63 @@ body > main {
 .vol{
   text-align: center;
   display:block;
+}
+
+.lobby{
+  width:80%;
+  margin: 5vh auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.lobby .room{
+  position: relative;
+  flex-basis: 25%;
+  margin: 10px;
+  text-align:center;
+  border: 5px solid #43b933;
+  padding: 10px;
+  background-color: #000000;
+  color: #7bcf72;
+}
+
+
+.lobby .room:hover{
+  animation: glow 2s infinite alternate;
+}
+
+.lobby .room .type{
+  font-family: 'Digital-7 Mono';
+  font-size: 3rem;
+  font-weight: bold;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #000000;
+  text-shadow: -1px 1px 0 #7bcf72,
+				        1px 1px 0 #7bcf72,
+				        1px -1px 0 #7bcf72,
+				        -1px -1px 0 #7bcf72;
+}
+
+.lobby .room:hover .type{
+  animation: flick 1s infinite alternate;
+}
+
+.lobby .room .players{
+  font-size: 1.5rem;
+}
+
+.lobby .room .current-players{
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+
+}
+
+.lobby .room .enter{
+  font-size: 2rem;
 }

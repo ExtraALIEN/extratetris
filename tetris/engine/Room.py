@@ -39,6 +39,14 @@ class Room:
         self.next_negative2 = 14
 
 
+    def human_players(self):
+        s = self.players
+        for field in self.fields:
+            if field.websocket == 'bot':
+                s -= 1
+        return s
+
+
     def start_timers(self):
         delay = .01
         self.start_time = timezone.now()

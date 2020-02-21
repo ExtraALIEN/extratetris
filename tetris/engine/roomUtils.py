@@ -1,5 +1,6 @@
 import engine.status as status
 from engine.Room import Room
+from engine.Bot import Bot
 from web.models import TetrisRoom, Player, Session
 from engine.ingame import init_fields
 
@@ -66,7 +67,7 @@ def init_room(conn, data):
 def room_connect(conn, data):
     id = int(data['room_id'])
     player = detect_player(conn)
-    conn.send_json({'type': 'player', 'player': player.username})
+    # conn.send_json({'type': 'player', 'player': player.username})
     if player_in_game(player):
         msg = 'already connected, room # ' + str(status.players[player]['id'])
         conn.send_json({'type': 'info', 'msg': msg})
@@ -167,9 +168,11 @@ def deactivate_room(id):
 
 def create_room_lobby(id):
     status.room_lobby[int(id)] = set()
+    status.room_bots[int(id)] = set()
 
 def delete_room_lobby(id):
     del status.room_lobby[int(id)]
+    del status.room_bots[int(id)]
 
 def room_lobby_exists(id):
     return int(id) in status.room_lobby
@@ -230,3 +233,52 @@ def clear_room(id):
     all_exit_fields(id)
     all_exit_room_lobby(id)
     deactivate_room(id)
+
+def bot_enter_field(id, pos, bot):
+    room = bot.room
+    room.fields[int(pos)].websocket = 'bot'
+    room.fields[int(pos)].player = bot
+    room.fields[int(pos)].start_player = bot
+    if pos not in status.room_bots[id]:
+        status.room_bots[id].add(pos)
+
+
+def bot_exit_field(id, pos):
+    room = status.active_rooms[id]
+    field = room.fields[pos]
+    bot = field.player
+    field.websocket = None
+    field.player = None
+    field.start_player = None
+    status.room_bots[id].remove(pos)
+    del bot
+
+
+def add_bot(data):
+    id = int(data['room_number'])
+    pos = int(data['pos'])
+    room = status.active_rooms[id]
+    bot = Bot(room, pos)
+    bot_enter_field(id, pos, bot)
+    tetris_room = TetrisRoom.objects.get(room_id=int(id))
+    tetris_room.add_bot(bot, pos)
+    upd = {'type': 'update-players',
+                           'pos': pos,
+                           'player': bot.username,
+                            }
+    broadcast_room(id, upd)
+    if tetris_room.is_full():
+        tetris_room.start()
+        start_signal = {'type': 'start-game'}
+        broadcast_room(int(id), start_signal)
+        init_fields(int(id))
+
+def del_bot(data):
+    id = int(data['room_number'])
+    pos = int(data['pos'])
+    room = status.active_rooms[id]
+    tetris_room = TetrisRoom.objects.get(room_id=int(id))
+    tetris_room.del_bot(pos)
+    bot_exit_field(id, pos)
+    dis = {'type': 'disconnect-player', 'pos': pos}
+    broadcast_room(id, dis)
