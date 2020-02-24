@@ -76,10 +76,9 @@ class ActivePiece(Piece):
         return sh
 
 
-    def detect_possible_landing_height(self, trimmed_shape):
+    def detect_possible_landing_height(self, trimmed_shape, top):
         top = self.field.top_points()
         bottoms = list(filter(lambda a: a != -1, [*self.bottom_points().values()]))
-
         base = min(bottoms)
         width = len(bottoms)
         height = len(trimmed_shape)
