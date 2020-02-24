@@ -58,7 +58,6 @@ class CreateGameForm(forms.Form):
 
         try:
             new_room.save()
-            print('tetris room created')
         except IntegrityError:
             if author.is_guest:
                 author.delete()

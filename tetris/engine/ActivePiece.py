@@ -32,8 +32,14 @@ class ActivePiece(Piece):
             for y in range(len(self.shape)-1, -1, -1):
                 if self.shape[y][x] != 0:
                     return self.y-y
-            return self.y
-        return {x+self.x: bottom_point(x) for x in range(len(self.shape[0]))}
+            return -1
+        points = {x+self.x: bottom_point(x) for x in range(len(self.shape[0]))}
+        result = {}
+        for x in points:
+            if points[x] != -1:
+                result[x] = points[x]
+        return result
+
 
     def detect_landing_row(self):
         land_y = None
@@ -54,6 +60,47 @@ class ActivePiece(Piece):
         if land_y > 0 and has_zero:
             land_y = 0
         return land_y
+
+    def trimmed_shape(self):
+        shape = list(filter(lambda a: sum(a) > 0, self.shape))
+        sh = []
+        for y in range(len(shape)):
+            sh.append([])
+        for x in range(len(shape[0])):
+            s = 0
+            for y in range(len(shape)):
+                s += shape[y][x]
+            if s > 0:
+                for y in range(len(shape)):
+                    sh[y].append(shape[y][x])
+        return sh
+
+
+    def detect_possible_landing_height(self, trimmed_shape):
+        top = self.field.top_points()
+        bottoms = list(filter(lambda a: a != -1, [*self.bottom_points().values()]))
+
+        base = min(bottoms)
+        width = len(bottoms)
+        height = len(trimmed_shape)
+        result = []
+        for x in range(self.field.width + 1 - width):
+            h = top[x]
+            while self.blocked_at(trimmed_shape, h, x) and h < self.field.height:
+                h += 1
+            y = [(b-base)+h-height+1 for b in bottoms]
+            result.append(y)
+        return result
+
+    def blocked_at(self, sh, y0, x0):
+        for y in range(len(sh)):
+                if y0-y < 0:
+                    return True
+                for x in range(len(sh[0])):
+                    if sh[y][x] > 0 and self.field.surface[y0-y][x0+x] > 0:
+                        return True
+        return False
+
 
     def blocked(self):
         for y in range(len(self.shape)):

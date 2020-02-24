@@ -13,11 +13,6 @@
       <span data-limit='{{room.get_volume}}' id='room-limit'> Limit : {{room.get_volume}}</span>
       {% endif %}
     </h2>
-    {% if room.started %}
-    <p data-room-players='{{room.players}}' id='room-players'>>Ожидание игроков...{{room.count_players}}</p>
-    <p>Инициатор игры: {{room.author.username}}</p>
-    <a href="{{room.delete_url}}">Отменить игру</a>
-    {% endif %}
   </div>
 {% endblock %}
 

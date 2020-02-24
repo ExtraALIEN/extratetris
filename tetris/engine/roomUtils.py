@@ -114,7 +114,6 @@ def room_disconnect(conn, data):
 
 def room_hard_disconnect(conn):
     if conn not in status.in_room_lobby:
-        print('romm deleted')
         return
     player = detect_player(conn)
     id = status.in_room_lobby[conn]
@@ -252,6 +251,13 @@ def bot_exit_field(id, pos):
     field.start_player = None
     status.room_bots[id].remove(pos)
     del bot
+
+def remove_fields_bots(id):
+    room = status.active_rooms[id]
+    for field in status.room_bots[id]:
+        del room.fields[field].player
+        del room.fields[field].start_player
+        room.fields[field].websocket = None
 
 
 def add_bot(data):

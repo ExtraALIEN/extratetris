@@ -42,7 +42,8 @@ class Field:
         self.shield_time = 0
         self.max_speed = 0
         self.multiplier = 1
-        self.to_movedown = 25 / (self.speed + 25)
+        # self.to_movedown = 12 / (self.speed + 12)
+        self.to_movedown = 200 / (199 + self.speed**1.55)
         self.to_accelerate = 1.2
         self.total_figures = 0
         self.actions = 0
@@ -483,7 +484,7 @@ class Field:
             self.to_movedown -= delay
             if self.to_movedown <= 0:
                 self.auto_move_down()
-                self.to_movedown += 12 / (self.speed + 12)
+                self.to_movedown += 200 / (199 + self.speed**1.55)
             for x in range(self.width):
                 if self.blind_time[x] > 0:
                     self.blind_time[x] -= delay
