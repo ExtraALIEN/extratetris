@@ -612,9 +612,9 @@ class Field:
         msg = {'type': 'game-over',
                'mode': self.room.type,
                'pos': self.pos,
+               'username': self.start_player.username,
                'stats': self.game_stats_to_view(),
                'disconnect': hard_disconnect}
-        print('broadcasting gameover')
         broadcast_room(self.room.id, msg)
 
     def surface_to_view(self):

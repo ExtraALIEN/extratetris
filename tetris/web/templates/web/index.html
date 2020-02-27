@@ -18,7 +18,11 @@
 
 {% block lobby %}
   <div class='index'>
+    {% if waiting %}
+    <a class='flick' href='{{cur_room.get_url}}'>Досмотреть свою игру</a>
+    {% else %}
     <a class='flick' href='/create-game/'>Создать игру</a>
+    {% endif %}
     <a class='flick' href='/lobby/'>Присоединиться к игре</a>
   </div>
 {% endblock %}

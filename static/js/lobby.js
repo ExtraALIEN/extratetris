@@ -62,9 +62,6 @@ function updatePlayers({player, pos}){
   let selector = `#field${pos} .announce .player-name`;
   let span = document.querySelector(selector);
   span.innerHTML = player;
-  let resultSelector = `#field${pos} .result .player-name`;
-  let resultSpan = document.querySelector(resultSelector);
-  resultSpan.innerHTML = player;
   let dash = document.querySelector(`#field${pos} .stats`);
   dash.classList.add('ready');
   let conPos = document.querySelector(`#position${pos}`);
@@ -84,9 +81,6 @@ function disconnectPlayer({pos}){
   let selector = `#field${pos} .announce .player-name`;
   let span = document.querySelector(selector);
   span.innerHTML = "";
-  let resultSelector = `#field${pos} .result .player-name`;
-  let resultSpan = document.querySelector(resultSelector);
-  resultSpan.innerHTML = "";
   let dash = document.querySelector(`#field${pos} .stats`);
   document.querySelector(`#position${pos}`).classList.remove('connected');
   dash.classList.remove('ready');
@@ -124,11 +118,14 @@ function showDisconnect({pos}){
   document.querySelector(selector).innerHTML = 'Player disconnected';
 }
 
-function showGameover({pos, stats, mode}){
+function showGameover({pos, stats, mode, username}){
   let myField = document.querySelector('.tetris-view.current');
   if (myField && +pos === +myField.dataset.pos){
     removeControls();
   }
+  let selector = `#field${pos} .result .player-name`;
+  let userSpan = document.querySelector(selector);
+  userSpan.innerHTML = player;
   const STATS_SELECTOR = {
     'result' : '.primary .main-value',
     'score' : '.scores .total',

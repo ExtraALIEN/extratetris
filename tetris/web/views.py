@@ -9,18 +9,25 @@ from django.utils import timezone
 from web.models import TetrisRoom, Player
 
 def index(request):
-
-
     guest_mode = True
     us = ''
     profile_url = ''
+    waiting = False
+    cur_room = None
     if request.user and not request.user.is_guest:
         guest_mode = False
         us = request.user.username
         profile_url = request.user.get_url()
+        cur_room = request.user.has_room()
+        if cur_room is not None:
+            waiting = True
+
     return render(request, 'web/index.html', {'guest_mode': guest_mode,
                                               'user': us,
-                                              'profile_url': profile_url})
+                                              'profile_url': profile_url,
+                                              'waiting' : waiting,
+                                              'cur_room' : cur_room
+                                              })
 
 def lobby(request):
     rooms = TetrisRoom.objects.all()
@@ -89,6 +96,8 @@ def create_game(request):
 
 
     else:
+        if request.user and request.user.has_room() is not None:
+            return HttpResponseRedirect('/')
         form = CreateGameForm(auto_id='id_%s')
         scripts = ['createroom']
     return render(request, 'web/create-game.html', {'form': form,

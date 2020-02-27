@@ -106,7 +106,7 @@ const HANDLER_PARAMS = {
   'blind' : ['pos', 'cols'],
   'remove-blind': ['pos', 'x'],
   'game-disconnect': ['pos'],
-  'game-over' : ['pos', 'stats', 'mode'],
+  'game-over' : ['pos', 'stats', 'mode', 'username'],
   'places' : ['places']
 };
 

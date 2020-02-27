@@ -7,6 +7,7 @@ from engine.ingame import init_fields
 def create_room(id, size, type, proc):
     new_room = Room(id=id, size=size, type=type, proc=proc)
     activate_room(id, new_room)
+    print(status.active_rooms)
 
 
 def find_next_id():
