@@ -67,6 +67,7 @@ class Room:
                 total += 1
         return total
 
+
     def update_lines(self, pos, lines):
         self.lines += lines
         announce = False
@@ -213,13 +214,13 @@ class Room:
         self.update_records(final_places)
 
 
-    def finish_game(self):
+    def finish_game(self, forced=False):
         from engine.roomUtils import clear_room, remove_fields_bots
+        tetris_room = TetrisRoom.objects.get(room_id=self.id)
+        author = tetris_room.author
         self.record_game()
         remove_fields_bots(self.id)
         clear_room(self.id)
-        tetris_room = TetrisRoom.objects.get(room_id=self.id)
-        author = tetris_room.author
         tetris_room.delete()
         if author.is_guest:
             author.delete()

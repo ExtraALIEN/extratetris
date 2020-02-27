@@ -103,6 +103,11 @@ class Player(models.Model):
     def get_url(self):
         return '/profile/'+str(self.pk)
 
+    def has_room(self):
+        if hasattr(self, 'current_room') and self.current_room is not None:
+            return self.current_room
+        return None
+
     def get_profile_stats(self):
         stats = {
             'games': {
@@ -231,6 +236,7 @@ class TetrisRoom(models.Model):
     players = models.IntegerField()
     guests = models.IntegerField(default=0)
     bots = models.IntegerField(default=0)
+    botlevels = models.TextField(default="[]")
     type = models.CharField(max_length=2, choices=GAME_TYPES)
     proc = models.FloatField(default=100.0)
     active_players = models.ManyToManyField(Player)
@@ -262,6 +268,9 @@ class TetrisRoom(models.Model):
         pp = json.loads(self.players_at_positions)
         pp[str(pos)] = bot.username
         self.players_at_positions = json.dumps(pp)
+        botlevels = json.loads(self.botlevels)
+        botlevels.append(bot.level)
+        self.botlevels = json.dumps(botlevels)
         self.save()
 
     def del_bot(self, pos):
@@ -269,6 +278,9 @@ class TetrisRoom(models.Model):
         pp = json.loads(self.players_at_positions)
         pp[str(pos)] = ''
         self.players_at_positions = json.dumps(pp)
+        botlevels = json.loads(self.botlevels)
+        botlevels.remove(bot.level)
+        self.botlevels = json.dumps(botlevels)
         self.save()
 
     def describe(self):
@@ -276,6 +288,7 @@ class TetrisRoom(models.Model):
         connected_players = self.active_players.all()
         count = len(connected_players)
         bots = self.bots
+        botlevels = json.loads(self.botlevels)
         for x in range(self.players):
             if x < count:
                 player = connected_players[x]
@@ -283,7 +296,7 @@ class TetrisRoom(models.Model):
                 if not player.is_guest:
                     info[x]['games'] = player.games_count
             elif bots > 0:
-                info[x]['username'] = '* BOT *'
+                info[x]['username'] = '* BOT LEVEL '+ str(botlevels[bots-1]) +' *'
                 bots -= 1
             else:
                 info[x]['username'] = '---'

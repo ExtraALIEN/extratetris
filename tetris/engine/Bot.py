@@ -1,22 +1,25 @@
 from threading import Timer
-from random import choice
+from random import choice, random
+places = [1,2,3]
+
 
 class Bot:
-    def __init__(self, room, pos):
-        self.username = '* bot *'
+    def __init__(self, room, pos, level):
+        self.level = level
+        self.username = '* bot level ' + str(self.level) + ' *'
         self.room = room
         self.pos = pos
         self.field = room.fields[pos]
         self.delay = .01
-        self.skill = 50
-        self.speed = 86
-        self.mul_land = 3
-        self.mul_clean = 5
-        self.mul_reach = 8
-        self.mul_side = 2
-        self.mul_height = 5
-        self.mul_lines = 6
-        self.to_next_action = 1.01 - (0.01*self.speed)
+        self.apm = 25+self.level*6.8
+        self.time_step = 60 / self.apm
+        self.to_next_action = self.time_step
+        self.mul_land = 2 + self.level*0.02  # 3
+        self.mul_clean = 4 + max([self.level-20, 0])/40 # 5
+        self.mul_reach = 2 + min([self.level, 60])/10 # 8
+        self.mul_side = 3 - self.level*0.02 # 2
+        self.mul_height = 5 # 5
+        self.mul_lines = 5 + self.level*0.02 # 6
         self.current_max = 0
         self.target = []
         self.locked_target = False
@@ -33,19 +36,29 @@ class Bot:
         if not self.field.game_over:
             self.to_next_action -= delay
             if self.to_next_action <= 0:
-                self.to_next_action += 1.01 - (0.01*self.speed)
+                self.to_next_action += self.time_step
                 self.next_action()
             t.start()
         else:
             t.cancel()
 
     def next_action(self):
-        if self.field.active_piece is not self.prev_piece:
-            self.next_piece()
-        if not self.locked_target:
-            self.detect_target()
+        if random() < 0.04:
+            self.try_powerup()
         else:
-            self.move_to_target()
+            if self.field.active_piece is not self.prev_piece:
+                self.next_piece()
+            if not self.locked_target:
+                self.detect_target()
+            else:
+                self.move_to_target()
+
+
+    def try_powerup(self):
+        place = choice(places)
+        if self.field.powerups[place-1] is not None:
+            target = choice([x for x in range(1, self.room.players+1)])
+            self.field.use_powerup(place, target, manual=True)
 
 
     def detect_target(self):
@@ -63,7 +76,7 @@ class Bot:
                                          self.side_points(base, shape),
                                          self.height_points(base, shape, max(top)),
                                          self.line_points(base, shape))
-                # print(points)
+                # print('result ', points)
                 max_points = max(points)
                 if max_points > self.current_max:
                     self.current_max = max_points
@@ -148,16 +161,18 @@ class Bot:
 
         result = []
         for x in range(len(base)):
-            blocked = set()
+            blocked = False
             for dx in range(width):
-                if dx not in blocked:
-                    target_y = base[x][dx] + height
+                if not blocked:
+                    target_y = base[x][dx]
                     for y in range(target_y, cur_y):
                         if self.field.surface[y][x+dx] > 0:
-                            blocked.add(dx)
-
-            result.append( ((width - len(blocked))/width)*100 )
-
+                            blocked = True
+                            break
+            point = 100
+            if blocked:
+                point = 0
+            result.append(point)
         result = [x*self.mul_reach for x in result]
         return result
 

@@ -87,6 +87,7 @@ def create_game(request):
                 url = new_room.get_url()
                 return HttpResponseRedirect(url)
 
+
     else:
         form = CreateGameForm(auto_id='id_%s')
         scripts = ['createroom']

@@ -48,6 +48,9 @@ class CreateGameForm(forms.Form):
         #     'author': Player.objects.get(pk=author.pk),
         #     'type' : self.cleaned_data['game_type']
         # }
+        cur_room = author.has_room()
+        if cur_room is not None:
+            return cur_room
         new_room = TetrisRoom()
         new_room.players = int(self.cleaned_data['players'])
         new_room.type = self.cleaned_data['game_type']
@@ -55,16 +58,8 @@ class CreateGameForm(forms.Form):
         new_room.author = author
         new_room.players_at_positions = json.dumps({x: "" for x in range(new_room.players)})
         new_room.room_id = TetrisRoom.objects.next_id()
+        new_room.save()
 
-        try:
-            new_room.save()
-        except IntegrityError:
-            if author.is_guest:
-                author.delete()
-        # except IntegrityError:
-        #     print('duplicate entry')
-
-        # new_room.add_player(author)
 
 
         return new_room

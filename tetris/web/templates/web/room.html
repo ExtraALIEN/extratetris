@@ -59,6 +59,10 @@
            <div class='bot-handle'
                 data-pos='{{pos}}'>
                 <button id='addbot{{pos}}' data-pos='{{pos}}'>Добавить бота</button>
+                <div class='bot-level'>
+                  <p>Уровень бота</p>
+                  <input type='number' value='50' min='0' max='100' step='1'>
+                </div>
                 <button id='delbot{{pos}}' data-pos='{{pos}}'>Убрать бота</button>
            </div>
            {% endif %}
@@ -100,6 +104,7 @@
              </div>
            </div>
            <div class='result'>
+             <span class='player-name'></span>
              <div class='stat primary'>
                <div class='place'>
                  <span>Место</span>

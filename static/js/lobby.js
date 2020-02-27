@@ -62,13 +62,16 @@ function updatePlayers({player, pos}){
   let selector = `#field${pos} .announce .player-name`;
   let span = document.querySelector(selector);
   span.innerHTML = player;
+  let resultSelector = `#field${pos} .result .player-name`;
+  let resultSpan = document.querySelector(resultSelector);
+  resultSpan.innerHTML = player;
   let dash = document.querySelector(`#field${pos} .stats`);
   dash.classList.add('ready');
   let conPos = document.querySelector(`#position${pos}`);
   if (conPos){
     conPos.classList.add('connected');
   }
-  if (player === '* bot *'){
+  if (/\* bot level \d{1,3} \*/.test(player)){
     let botHandle = document.querySelector(`#field${pos} .bot-handle`);
     if (botHandle){
       botHandle.classList.add('bot');
@@ -81,6 +84,9 @@ function disconnectPlayer({pos}){
   let selector = `#field${pos} .announce .player-name`;
   let span = document.querySelector(selector);
   span.innerHTML = "";
+  let resultSelector = `#field${pos} .result .player-name`;
+  let resultSpan = document.querySelector(resultSelector);
+  resultSpan.innerHTML = "";
   let dash = document.querySelector(`#field${pos} .stats`);
   document.querySelector(`#position${pos}`).classList.remove('connected');
   dash.classList.remove('ready');

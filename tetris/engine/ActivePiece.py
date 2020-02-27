@@ -92,13 +92,18 @@ class ActivePiece(Piece):
         return result
 
     def blocked_at(self, sh, y0, x0):
-        for y in range(len(sh)):
-                if y0-y < 0:
-                    return True
-                for x in range(len(sh[0])):
-                    if sh[y][x] > 0 and self.field.surface[y0-y][x0+x] > 0:
+        try:
+            for y in range(len(sh)):
+                    if y0-y < 0:
                         return True
-        return False
+                    for x in range(len(sh[0])):
+                        if sh[y][x] > 0 and self.field.surface[y0-y][x0+x] > 0:
+                            return True
+            return False
+        except:
+            print('Error active-piece', sh, y0, x0)
+            print(self.field.surface)
+            return False
 
 
     def blocked(self):

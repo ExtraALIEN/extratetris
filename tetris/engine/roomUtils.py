@@ -263,8 +263,9 @@ def remove_fields_bots(id):
 def add_bot(data):
     id = int(data['room_number'])
     pos = int(data['pos'])
+    level = int(data['level'])
     room = status.active_rooms[id]
-    bot = Bot(room, pos)
+    bot = Bot(room, pos, level)
     bot_enter_field(id, pos, bot)
     tetris_room = TetrisRoom.objects.get(room_id=int(id))
     tetris_room.add_bot(bot, pos)
