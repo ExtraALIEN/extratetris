@@ -1,4 +1,4 @@
-from web.models import Session, Player
+from web.models import Session
 from django.utils import timezone
 
 

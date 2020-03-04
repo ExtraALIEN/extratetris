@@ -8,6 +8,7 @@ function removeControls(){
 
 function controlField(event){
   let c = event.code;
+  event.preventDefault();
   let msg = {'type': 'control'};
   if(c === 'KeyA' || c === 'ArrowLeft'){
     msg.command = 'move_left';

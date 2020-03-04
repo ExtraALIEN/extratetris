@@ -42,12 +42,6 @@ class CreateGameForm(forms.Form):
     volume = forms.FloatField(widget=forms.NumberInput(attrs={'min': 25, 'max': 250, 'value': 100}))
 
     def save(self, author):
-        # options = {
-        #     'players' : self.cleaned_data['players'],
-        #     'for_teams' : self.cleaned_data['team_game'],
-        #     'author': Player.objects.get(pk=author.pk),
-        #     'type' : self.cleaned_data['game_type']
-        # }
         cur_room = author.has_room()
         if cur_room is not None:
             return cur_room

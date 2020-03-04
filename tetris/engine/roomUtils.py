@@ -62,6 +62,7 @@ def init_room(conn, data):
             if field.game_over:
                 msg = {'type': 'game-over',
                        'pos': field.pos,
+                       'username': field.start_player.username,
                        'stats': field.game_stats_to_view()}
                 conn.send_json(msg)
 

@@ -85,25 +85,21 @@ class ActivePiece(Piece):
         result = []
         for x in range(self.field.width + 1 - width):
             h = top[x]
-            while self.blocked_at(trimmed_shape, h, x) and h < self.field.height:
+            while self.blocked_at(trimmed_shape, h, x) and h < self.field.height-1:
                 h += 1
             y = [(b-base)+h-height+1 for b in bottoms]
             result.append(y)
         return result
 
     def blocked_at(self, sh, y0, x0):
-        try:
-            for y in range(len(sh)):
-                    if y0-y < 0:
+        for y in range(len(sh)):
+                if y0-y < 0:
+                    return True
+                for x in range(len(sh[0])):
+                    if sh[y][x] > 0 and self.field.surface[y0-y][x0+x] > 0:
                         return True
-                    for x in range(len(sh[0])):
-                        if sh[y][x] > 0 and self.field.surface[y0-y][x0+x] > 0:
-                            return True
-            return False
-        except:
-            print('Error active-piece', sh, y0, x0)
-            print(self.field.surface)
-            return False
+        return False
+        
 
 
     def blocked(self):

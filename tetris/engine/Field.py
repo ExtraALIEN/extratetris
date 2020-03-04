@@ -15,6 +15,7 @@ class Field:
                             timeleft=360, #360
                             score_finish=18000, #18000
                             max_lines=60,
+                            powerup_mul=1,
                             ): #60
         self.pos = pos
         self.room = room
@@ -35,14 +36,13 @@ class Field:
         self.lost_actions = 0
         self.powerup_chance = 0.02
         self.powerup_boost = 0
-        self.powerup_mul = 1
+        self.powerup_mul = powerup_mul
         self.powerups = [None, None, None]
         self.powerups_time = [0, 0, 0]
         self.powerups_lifetime = 15
         self.shield_time = 0
         self.max_speed = 0
         self.multiplier = 1
-        # self.to_movedown = 12 / (self.speed + 12)
         self.to_movedown = 200 / (199 + self.speed**1.55)
         self.to_accelerate = 1.2
         self.total_figures = 0
@@ -612,7 +612,7 @@ class Field:
         msg = {'type': 'game-over',
                'mode': self.room.type,
                'pos': self.pos,
-               'username': self.start_player.username,
+               'username': self.start_player.username or '',
                'stats': self.game_stats_to_view(),
                'disconnect': hard_disconnect}
         broadcast_room(self.room.id, msg)

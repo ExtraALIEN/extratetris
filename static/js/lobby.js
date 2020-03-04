@@ -125,7 +125,7 @@ function showGameover({pos, stats, mode, username}){
   }
   let selector = `#field${pos} .result .player-name`;
   let userSpan = document.querySelector(selector);
-  userSpan.innerHTML = player;
+  userSpan.innerHTML = username;
   const STATS_SELECTOR = {
     'result' : '.primary .main-value',
     'score' : '.scores .total',

@@ -76,6 +76,31 @@ GAME_COUNTS = {
 'RA': 'rally',
 }
 
+COUNT_STATS = [
+'games',
+'score',
+'time',
+'actions',
+'lines',
+'distance',
+'figures',
+]
+
+TYPE_STATS = [
+'TOTAL',
+'CL',
+'DM',
+'SU',
+'LI',
+'CO',
+'SA',
+'DR',
+'AC',
+'CF',
+'HF',
+'RA',
+]
+
 SHAPES = [
     [[1, 1, 1, 1]],
     [[1, 1, 1], [0, 1, 0], [0, 0, 0]],

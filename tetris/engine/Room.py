@@ -19,6 +19,8 @@ class Room:
         self.players = size
         arg = {'room': self,
                }
+        if self.type == 'CL':
+            arg['powerup_mul'] = 0
         if self.proc != 100:
             if self.type == 'LI':
                 arg['max_lines'] = (proc*VOLUME_STANDARD['LI']) // 100
@@ -162,51 +164,30 @@ class Room:
                 player = field.start_player
                 if not player.is_guest:
                     rec.players.add(player)
-                    player.games_count += 1
-                    prop = 'games_count_' + GAME_COUNTS[self.type]
-                    new_val = getattr(player, prop) + 1
-                    setattr(player, prop, new_val)
-                    player.score += field.score
-                    if field.score > player.best_score:
-                        player.best_score = field.score
-                    if field.score_intermediate_st and field.score_intermediate_st > player.best_countdown_score:
-                        player.best_countdown_score = field.score_intermediate_st
-                    if not player.best_time_lines or field.time_lines and field.time_lines < player.best_time_lines:
-                        player.best_time_lines = field.time_lines
-                    if not player.best_time_drag or field.time_drag and field.time_drag < player.best_time_drag:
-                        player.best_time_drag = field.time_drag
-                    if not player.best_time_climb or field.time_climb and field.time_climb < player.best_time_climb:
-                        player.best_time_climb = field.time_climb
-                    if not player.best_time_acc or field.time_acc and field.time_acc < player.best_time_acc:
-                        player.best_time_acc = field.time_acc
-                    player.time += field.time
-                    if field.time > player.best_survival_time:
-                        player.best_survival_time = field.time
-                    if field.max_speed > player.best_speed:
-                        player.best_speed = field.max_speed
-                    player.actions += field.actions
-                    player.lines += field.lines
-                    if field.lines >= player.best_lines_count:
-                        player.best_lines_count = field.lines
-                    player.distance += field.distance
-                    if field.distance >= player.best_distance:
-                        player.best_distance = field.distance
-                    player.figures += field.total_figures
+                    player.update_stats(type=self.type,
+                                        multiplayer=self.players > 1,
+                                        score=field.score,
+                                        time=field.time,
+                                        actions=field.actions,
+                                        lines=field.lines,
+                                        distance=field.distance,
+                                        figures=field.total_figures,
+                                        countdown_score=field.score_intermediate_st,
+                                        time_lines=field.time_lines,
+                                        time_drag=field.time_drag,
+                                        time_climb=field.time_climb,
+                                        time_acc=field.time_acc,
+                                        max_speed=field.max_speed,
+                                        games=1
+                                        )
 
                     if self.players > 1:
-                        player.multiplayer_games_count += 1
-                        prop = 'multiplayer_games_count_' + GAME_COUNTS[self.type]
-                        new_val = getattr(player, prop) + 1
-                        setattr(player, prop, new_val)
                         eff = 0
                         for p in places:
                             if field.pos in places[p]:
                                 eff = eff_points[p]
                                 break
-                        player.effective_points += eff
-                        prop = 'effective_points_' + GAME_COUNTS[self.type]
-                        new_val = getattr(player, prop) + eff
-                        setattr(player, prop, new_val)
+                        player.update_eff(self.type, eff)
                     player.save()
 
     def record_game(self):
