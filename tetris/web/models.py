@@ -296,54 +296,86 @@ class Player(models.Model):
 
     def get_profile_stats(self):
         stats = {
+            'user': {
+                'outside' : True,
+                'username': self.username,
+                'date_joined': self.date_joined.strftime('%d %b %Y %H:%I %Z')
+                 },
             'best': {
-                'speed': self.best_speed,
-                'score': self.best_score,
-                'lines': self.best_lines_count,
-                'distance': self.best_distance,
-                'survival_time': self.best_survival_time,
-                'time_lines': self.best_time_lines,
-                'time_climb': self.best_time_climb,
-                'time_drag': self.best_time_drag,
-                'time_acc': self.best_time_acc,
-                'time_lines': self.best_time_lines,
-                'time_climb': self.best_time_climb,
-                'countdown_score': self.best_countdown_score,
-            },
-            'joined': self.date_joined,
-            'rating': self.rating,
+                'outside' : True,
+                'speed': round(self.best_speed, 2),
+                'score': int(self.best_score),
+                'lines': int(self.best_lines_count),
+                'distance': int(self.best_distance),
+                'survival_time': round(self.best_survival_time/60, 2),
+                'time_lines': round(self.best_time_lines/60, 2),
+                'time_climb': round(self.best_time_climb/60, 2),
+                'time_drag': round(self.best_time_drag/60, 2),
+                'time_acc': round(self.best_time_acc/60, 2),
+                'countdown_score': int(self.best_countdown_score),
+                },
+            # 'rating': {self.rating},
         }
         full_stats = COUNT_STATS + ['eff']
         for t in TYPE_STATS:
             dic = {}
             for st in full_stats:
                 key = t + '_' + st
-                dic[st] = getattr(self, key)
-            if getattr(self, t + '_games') > 0:
-                dic['score_game'] = getattr(self, t + '_score')/getattr(self, t + '_games')
-                dic['lines_game'] = getattr(self, t + '_lines')/getattr(self, t + '_games')
-                dic['distance_game'] = getattr(self, t + '_distance')/getattr(self, t + '_games')
-                dic['time_game'] = getattr(self, t + '_time')/getattr(self, t + '_games')
-            if getattr(self, t + '_lines') > 0:
-                dic['distance_line'] = getattr(self, t + '_distance')/getattr(self, t + '_lines')
-                dic['figures_line'] = getattr(self, t + '_figures')/getattr(self, t + '_lines')
-            if getattr(self, t + '_figures') > 0:
-                dic['actions_figure'] = getattr(self, t + '_actions')/getattr(self, t + '_figures')
-                dic['score_figure'] = getattr(self, t + '_score')/getattr(self, t + '_figures')
-            if getattr(self, t + '_actions') > 0:
-                dic['score_actions'] = getattr(self, t + '_score')/getattr(self, t + '_actions')
-            if getattr(self, t + '_distance') > 0:
-                dic['score_distance'] = getattr(self, t + '_score')/getattr(self, t + '_distance')
-            if getattr(self, t + '_time') > 0:
-                dic['score_sec'] = getattr(self, t + '_score')/getattr(self, t + '_time')
-                dic['lines_min'] = getattr(self, t + '_lines')/(getattr(self, t + '_time')/60)
-                dic['actions_min'] = getattr(self, t + '_actions')/(getattr(self, t + '_time')/60)
+                dic[st] = int(getattr(self, key))
+            dic['outside'] = False
+            dic['score_game'] = '-'
+            dic['lines_game'] = '-'
+            dic['distance_game'] = '-'
+            dic['figures_game'] = '-'
+            dic['time_game'] = '-'
+            dic['distance_line'] = '-'
+            dic['figures_line'] = '-'
+            dic['actions_figure'] = '-'
+            dic['score_figure'] = '-'
+            dic['score_actions'] = '-'
+            dic['score_distance'] = '-'
+            dic['score_sec'] = '-'
+            dic['lines_min'] = '-'
+            dic['actions_min'] = '-'
+            dic['figures_min'] = '-'
+            if dic['games'] > 0:
+                dic['score_game'] = round(dic['score']/dic['games'], 2)
+                dic['lines_game'] = round(dic['lines']/dic['games'], 2)
+                dic['figures_game'] = round(dic['figures']/dic['games'], 2)
+                dic['distance_game'] = round(dic['distance']/dic['games'], 2)
+                dic['time_game'] = round(dic['time']/dic['games']/60, 2)
+            if dic['lines'] > 0:
+                dic['distance_line'] = round(dic['distance']/dic['lines'], 2)
+                dic['figures_line'] = round(dic['figures']/dic['lines'], 2)
+            if dic['figures'] > 0:
+                dic['actions_figure'] = round(dic['actions']/dic['figures'], 2)
+                dic['score_figure'] = round(dic['score']/dic['figures'], 2)
+            if dic['actions'] > 0:
+                dic['score_actions'] = round(dic['score']/dic['actions'], 2)
+            if dic['distance'] > 0:
+                dic['score_distance'] = round(dic['score']/dic['distance'], 2)
+            if dic['time'] > 0:
+                dic['score_sec'] = round(dic['score']/dic['time'], 2)
+                dic['lines_min'] = round(dic['lines']/(dic['time']/60), 2)
+                dic['actions_min'] = round(dic['actions']/(dic['time']/60), 2)
+                dic['figures_min'] = round(dic['figures']/(dic['time']/60), 2)
+                dic['time'] = round(dic['time']/3600, 2)
+            del dic['actions']
+            del dic['figures']
             stats[t] = dic
-
-        for x in stats:
-            print(x)
-            print(stats[x])
         return stats
+
+    def get_recorded_games(self):
+        all_games = self.recorded_games.all().order_by('-started_at')
+        games = []
+        for x in all_games:
+            game = {}
+            game['started_at'] = x.started_at.strftime('%d %b %Y %H:%I %Z')
+            game['type'] = x.type
+            game['url'] = x.get_url()
+            game['place'] = x.get_place(self)
+            games.append(game)
+        return games
 
 
 
@@ -361,6 +393,15 @@ class SingleGameRecord(models.Model):
 
     def load_results(self):
         return json.loads(self.positions)
+
+    def get_url(self):
+        return '/results/' + str(self.pk)
+
+    def get_place(self, player):
+        places = self.load_results()
+        for x in places:
+            if player.username in places[x]:
+                return x + '/' + str(self.size)
 
 
 class Session(models.Model):
@@ -443,7 +484,7 @@ class TetrisRoom(models.Model):
                 player = connected_players[x]
                 info[x]['username'] = player.username
                 if not player.is_guest:
-                    info[x]['games'] = player.games
+                    info[x]['games'] = str(round(player.TOTAL_games))
             elif bots > 0:
                 info[x]['username'] = '* BOT LEVEL '+ str(botlevels[bots-1]) +' *'
                 bots -= 1

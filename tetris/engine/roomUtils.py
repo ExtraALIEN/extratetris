@@ -156,7 +156,8 @@ def room_hard_disconnect(conn):
 
 
 def broadcast_room(room_id, data):
-    for conn in status.room_lobby[room_id]:
+    connections = status.room_lobby[room_id].copy()
+    for conn in connections:
         conn.send_json(data)
 
 def activate_room(id, room_instance):

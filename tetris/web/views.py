@@ -78,7 +78,11 @@ def logout(request):
 def profile(request, profile_id):
     user = Player.objects.get(pk=profile_id)
     stats = user.get_profile_stats()
-    return render(request, 'web/profile.html', {'stats': stats})
+    games = user.get_recorded_games()
+    scripts = ['profile']
+    return render(request, 'web/profile.html', {'stats': stats,
+                                                'scripts': scripts,
+                                                'games': games})
 
 def create_game(request):
     if request.method == 'POST':
@@ -146,6 +150,10 @@ def play_room(request, room_number):
     room.add_player(request.user)
     return HttpResponseRedirect(room.get_url())
 
+def recorded_game(request, game_number):
+    from web.models import SingleGameRecord
+    game = SingleGameRecord.objects.get(pk=game_number)
+    return render(request, 'web/game.html', {})
 
 def testpage(request):
     print('test')
