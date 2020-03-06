@@ -31,7 +31,9 @@ def index(request):
 
 def lobby(request):
     rooms = TetrisRoom.objects.all()
+    scripts = ['lobbyConnect']
     return render(request, 'web/lobby.html', {'rooms': rooms,
+                                              'scripts': scripts
                                               })
 
 

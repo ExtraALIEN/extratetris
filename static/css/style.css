@@ -343,7 +343,6 @@ body > main {
 
 .tetris-view .cell{
   position: relative;
-  box-sizing: border-box;
   flex-basis: 2.75vh;
   max-width:2.75vh;
   border: 1px solid #000000;

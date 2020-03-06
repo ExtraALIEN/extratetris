@@ -3,6 +3,7 @@ from engine.Room import Room
 from engine.Bot import Bot
 from web.models import TetrisRoom, Player, Session
 from engine.ingame import init_fields
+from engine.lobbyUtils import broadcast_lobby
 
 def create_room(id, size, type, proc):
     new_room = Room(id=id, size=size, type=type, proc=proc)
@@ -36,6 +37,9 @@ def init_room(conn, data):
     tetris_room = TetrisRoom.objects.get(room_id=id)
     player = detect_player(conn)
     if player == tetris_room.author:
+        broadcast_lobby(id, type='room', game_type=tetris_room.type,
+                        size=tetris_room.players, users=tetris_room.describe(),
+                        url=tetris_room.get_url())
         connect_data = {'room_id': id, 'pos': 0}
         room_connect(conn, connect_data)
 
@@ -168,6 +172,7 @@ def deactivate_room(id):
     delete_room_lobby(id)
     del status.active_rooms[int(id)]
 
+
 def create_room_lobby(id):
     status.room_lobby[int(id)] = set()
     status.room_bots[int(id)] = set()
@@ -175,6 +180,7 @@ def create_room_lobby(id):
 def delete_room_lobby(id):
     del status.room_lobby[int(id)]
     del status.room_bots[int(id)]
+    broadcast_lobby(id, type='delete')
 
 def room_lobby_exists(id):
     return int(id) in status.room_lobby
@@ -193,7 +199,9 @@ def exit_room_lobby(conn):
 def all_exit_room_lobby(id):
     lobby_copy = set(status.room_lobby[id])
     for ws in lobby_copy:
-        exit_room_lobby(ws)
+        if ws != 'bot':
+            exit_room_lobby(ws)
+    remove_fields_bots(id)
 
 def enter_field(id, pos, conn, player):
     room = status.active_rooms[int(id)]
@@ -202,6 +210,7 @@ def enter_field(id, pos, conn, player):
     room.fields[int(pos)].start_player = player
     status.connections[conn] = {'id': int(id), 'pos': int(pos)}
     status.players[player] = {'id': int(id), 'pos': int(pos)}
+    broadcast_lobby(id, pos, type='connect', username=player.username)
 
 def exit_field(conn, started=False):
     data = status.connections[conn]
@@ -214,6 +223,7 @@ def exit_field(conn, started=False):
     field.player = None
     if not started:
         field.start_player = None
+        broadcast_lobby(id, pos, type='disconnect')
     del status.connections[conn]
     del status.players[pl]
 
@@ -221,7 +231,12 @@ def exit_field(conn, started=False):
 def all_exit_fields(id):
     room = status.active_rooms[int(id)]
     for field in room.fields:
-        if field.websocket is not None:
+        ws = field.websocket
+        if ws is None:
+            return
+        elif ws == 'bot':
+            bot_exit_field(id, field.pos)
+        else:
             exit_field(field.websocket)
 
 def player_in_game(player):
@@ -243,6 +258,7 @@ def bot_enter_field(id, pos, bot):
     room.fields[int(pos)].start_player = bot
     if pos not in status.room_bots[id]:
         status.room_bots[id].add(pos)
+    broadcast_lobby(id, pos, type='connect', username=bot.username)
 
 
 def bot_exit_field(id, pos):
@@ -253,6 +269,7 @@ def bot_exit_field(id, pos):
     field.player = None
     field.start_player = None
     status.room_bots[id].remove(pos)
+    broadcast_lobby(id, pos, type='disconnect')
     del bot
 
 def remove_fields_bots(id):

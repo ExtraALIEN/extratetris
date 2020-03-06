@@ -18,7 +18,7 @@ class PlayerManager(models.Manager):
         guest = Player(is_guest=True,
                       login=guest_login,
                       password='',
-                      username='anonymous')
+                      username='* anonymous *')
         guest.save()
         return guest
 
@@ -308,14 +308,23 @@ class Player(models.Model):
                 'lines': int(self.best_lines_count),
                 'distance': int(self.best_distance),
                 'survival_time': round(self.best_survival_time/60, 2),
-                'time_lines': round(self.best_time_lines/60, 2),
-                'time_climb': round(self.best_time_climb/60, 2),
-                'time_drag': round(self.best_time_drag/60, 2),
-                'time_acc': round(self.best_time_acc/60, 2),
+                'time_lines': '-',
+                'time_climb': '-',
+                'time_drag': '-',
+                'time_acc': '-',
                 'countdown_score': int(self.best_countdown_score),
                 },
             # 'rating': {self.rating},
         }
+        if self.best_time_lines:
+            stats['best']['time_lines'] = round(self.best_time_lines/60, 2)
+        if self.best_time_climb:
+            stats['best']['time_climb'] = round(self.best_time_climb/60, 2)
+        if self.best_time_drag:
+            stats['best']['time_drag'] = round(self.best_time_drag/60, 2)
+        if self.best_time_acc:
+            stats['best']['time_acc'] = round(self.best_time_acc/60, 2)
+
         full_stats = COUNT_STATS + ['eff']
         for t in TYPE_STATS:
             dic = {}
@@ -385,6 +394,7 @@ class SingleGameRecord(models.Model):
     size = models.IntegerField(default=0)
     started_at = models.DateTimeField(null=True)
     positions = models.TextField(default="")
+    stats = models.TextField(default="")
     players = models.ManyToManyField(Player, related_name='recorded_games')
 
     def save_results(self, results):
@@ -393,6 +403,11 @@ class SingleGameRecord(models.Model):
 
     def load_results(self):
         return json.loads(self.positions)
+
+    def save_stats(self, stats):
+        self.stats = json.dumps(stats)
+        self.save()
+
 
     def get_url(self):
         return '/results/' + str(self.pk)
@@ -432,8 +447,8 @@ class TetrisRoom(models.Model):
     active_players = models.ManyToManyField(Player)
     players_at_positions = models.TextField(default="")
     started = models.BooleanField(default=False)
+    start_players = models.TextField(default="")
 
-    # start_players = models.ManyToManyField(Player, blank=True,null=True)
 
     def add_player(self, player, pos):
         self.active_players.add(player)
@@ -464,32 +479,22 @@ class TetrisRoom(models.Model):
         self.save()
 
     def del_bot(self, pos):
+        import re
         self.bots -= 1
         pp = json.loads(self.players_at_positions)
+        level = re.sub('\D', '', pp[str(pos)])
         pp[str(pos)] = ''
         self.players_at_positions = json.dumps(pp)
         botlevels = json.loads(self.botlevels)
-        botlevels.remove(bot.level)
+        botlevels.remove(int(level))
         self.botlevels = json.dumps(botlevels)
         self.save()
 
     def describe(self):
-        info = [{'username': '', 'games': '' } for x in range(self.players)]
-        connected_players = self.active_players.all()
-        count = len(connected_players)
-        bots = self.bots
-        botlevels = json.loads(self.botlevels)
-        for x in range(self.players):
-            if x < count:
-                player = connected_players[x]
-                info[x]['username'] = player.username
-                if not player.is_guest:
-                    info[x]['games'] = str(round(player.TOTAL_games))
-            elif bots > 0:
-                info[x]['username'] = '* BOT LEVEL '+ str(botlevels[bots-1]) +' *'
-                bots -= 1
-            else:
-                info[x]['username'] = '---'
+        pp = json.loads(self.players_at_positions)
+        info = []
+        for x in pp:
+            info.append({'pos': x, 'username' : pp[x] or '---'})
         return info
 
 
@@ -516,4 +521,5 @@ class TetrisRoom(models.Model):
 
     def start(self):
         self.started = True
+        self.start_players = self.players_at_positions
         self.save()

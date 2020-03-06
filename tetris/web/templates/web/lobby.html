@@ -4,16 +4,22 @@
   <h2>Текущие игры</h2>
   <ul class='lobby'>
     {% for room in rooms %}
-      <li class='room'>
+      <li class='room' data-number={{room.room_id}}>
         <span class='type'>{{room.type}}</span>
         <span class='players'>Игроков: {{room.players}}</span>
         <ul class='current-players'>
           {% for field in room.describe %}
-            <li>{{field.username}}  {{field.games}}</li>
+            <li data-pos={{field.pos}}>{{field.username}}</li>
           {% endfor %}
         </ul>
         <a class='enter flick' href={{room.get_url}}>Подойти</a>
       </li>
     {% endfor %}
   </ul>
+{% endblock %}
+
+{% block scripts %}
+  {%for script in scripts %}
+    <script type='module' src='/static/js/{{script}}.js'></script>
+  {% endfor %}
 {% endblock %}
