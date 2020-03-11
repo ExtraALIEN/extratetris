@@ -1,3 +1,5 @@
+import {secondsToMinutes} from './timing.js';
+
 let DESCRIPTIONS = {
   'best': 'Рекорды в игре',
   'user' : 'Игрок',
@@ -54,4 +56,12 @@ for (let x of [...topics]){
 let stats = document.querySelectorAll('[data-stat]');
 for (let x of [...stats]){
   x.innerHTML = DESCRIPTIONS_STATS[x.dataset.stat];
+}
+
+let timeSurvival = document.querySelectorAll('.time');
+for (let x of timeSurvival){
+  let val = x.innerHTML;
+  if (val !== '-'){
+    x.innerHTML = secondsToMinutes(val);
+  }
 }

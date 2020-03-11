@@ -201,7 +201,7 @@ def all_exit_room_lobby(id):
     for ws in lobby_copy:
         if ws != 'bot':
             exit_room_lobby(ws)
-    remove_fields_bots(id)
+    # remove_fields_bots(id)
 
 def enter_field(id, pos, conn, player):
     room = status.active_rooms[int(id)]

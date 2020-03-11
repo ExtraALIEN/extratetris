@@ -1,1 +1,68 @@
-Game
+{% extends "./base_main.html" %}
+
+{% block game %}
+  <h3>График игры №{{number}} тип {{type}} начало {{datestart}}</h3>
+  <div class='graph'>
+  </div>
+  <h3>Результаты</h3>
+  <div class='game-results'>
+    <ul class="col">
+      <li>Игрок</li>
+      <li class='end'>Результат игры</li>
+      <li>Очки</li>
+      <li>Очки за 6 минут</li>
+      <li>Очки в секунду</li>
+      <li>Очки за фигуру</li>
+      <li>Очки за действие</li>
+      <li class='end'>Очки за шаг</li>
+      <li>Время выживания</li>
+      <li>Время разгона до 100</li>
+      <li>Время 60 линий</li>
+      <li>Время пробега 4020</li>
+      <li class='end'>Время набора 20000 очков</li>
+      <li>Линии</li>
+      <li>Линии в минуту</li>
+      <li>Фигур на 1 линию</li>
+      <li class='end'>Пробег на 1 линию</li>
+      <li>Фигуры</li>
+      <li>Фигур в минуту</li>
+      <li class='end'>Действий на 1 фигуру</li>
+      <li>Максимальная скорость</li>
+      <li>Пробег</li>
+      <li>Действий в минуту</li>
+    </ul>
+    {% for key, val in stats.items %}
+      <ul class='col' data-pos={{key}}>
+        <li>{{val.username}}</li>
+        <li class='end'>{{val.result}}</li>
+        <li>{{val.score}}</li>
+        <li>{{val.score_intermediate_st}}</li>
+        <li>{{val.score_sec}}</li>
+        <li>{{val.score_piece}}</li>
+        <li>{{val.score_action}}</li>
+        <li class='end'>{{val.score_dist}}</li>
+        <li class='time' data-time={{val.time}}></li>
+        <li class='time dec' data-time={{val.time_acc}}></li>
+        <li class='time dec' data-time={{val.time_lines}}></li>
+        <li class='time dec' data-time={{val.time_drag}}></li>
+        <li class='end time dec' data-time={{val.time_climb}}></li>
+        <li>{{val.lines}}</li>
+        <li>{{val.lines_min}}</li>
+        <li>{{val.pieces_line}}</li>
+        <li class='end'>{{val.dist_line}}</li>
+        <li>{{val.pieces}}</li>
+        <li>{{val.pieces_min}}</li>
+        <li class='end'>{{val.actions_piece}}</li>
+        <li>{{val.max_speed}}</li>
+        <li>{{val.distance}}</li>
+        <li>{{val.apm}}</li>
+      </ul>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {%for script in scripts %}
+    <script type='module' src='/static/js/{{script}}.js'></script>
+  {% endfor %}
+{% endblock %}

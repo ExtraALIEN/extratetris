@@ -155,7 +155,13 @@ def play_room(request, room_number):
 def recorded_game(request, game_number):
     from web.models import SingleGameRecord
     game = SingleGameRecord.objects.get(pk=game_number)
-    return render(request, 'web/game.html', {})
+    stats = game.load_stats()
+    scripts = ['record']
+    return render(request, 'web/game.html', {'stats': stats,
+                                             'number': game.pk,
+                                             'datestart': game.started_at.strftime('%d %b %Y %H:%I %Z'),
+                                             'type': game.type,
+                                             'scripts': scripts})
 
 def testpage(request):
     print('test')

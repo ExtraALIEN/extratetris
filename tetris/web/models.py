@@ -307,7 +307,7 @@ class Player(models.Model):
                 'score': int(self.best_score),
                 'lines': int(self.best_lines_count),
                 'distance': int(self.best_distance),
-                'survival_time': round(self.best_survival_time/60, 2),
+                'survival_time': round(self.best_survival_time),
                 'time_lines': '-',
                 'time_climb': '-',
                 'time_drag': '-',
@@ -330,7 +330,12 @@ class Player(models.Model):
             dic = {}
             for st in full_stats:
                 key = t + '_' + st
-                dic[st] = int(getattr(self, key))
+                dic[st] = float(getattr(self, key))
+                if st == 'eff':
+                    games_key = t + '_games'
+                    games = int(getattr(self, games_key))
+                    if games > 0:
+                        dic[st] = round(dic[st]/games, 2)
             dic['outside'] = False
             dic['score_game'] = '-'
             dic['lines_game'] = '-'
@@ -348,30 +353,38 @@ class Player(models.Model):
             dic['actions_min'] = '-'
             dic['figures_min'] = '-'
             if dic['games'] > 0:
-                dic['score_game'] = round(dic['score']/dic['games'], 2)
-                dic['lines_game'] = round(dic['lines']/dic['games'], 2)
-                dic['figures_game'] = round(dic['figures']/dic['games'], 2)
-                dic['distance_game'] = round(dic['distance']/dic['games'], 2)
-                dic['time_game'] = round(dic['time']/dic['games']/60, 2)
+                dic['score_game'] = dic['score']/dic['games']
+                dic['lines_game'] = dic['lines']/dic['games']
+                dic['figures_game'] = dic['figures']/dic['games']
+                dic['distance_game'] = dic['distance']/dic['games']
+                dic['time_game'] = dic['time']/dic['games']
             if dic['lines'] > 0:
-                dic['distance_line'] = round(dic['distance']/dic['lines'], 2)
-                dic['figures_line'] = round(dic['figures']/dic['lines'], 2)
+                dic['distance_line'] = dic['distance']/dic['lines']
+                dic['figures_line'] = dic['figures']/dic['lines']
             if dic['figures'] > 0:
-                dic['actions_figure'] = round(dic['actions']/dic['figures'], 2)
-                dic['score_figure'] = round(dic['score']/dic['figures'], 2)
+                dic['actions_figure'] = dic['actions']/dic['figures']
+                dic['score_figure'] = dic['score']/dic['figures']
             if dic['actions'] > 0:
-                dic['score_actions'] = round(dic['score']/dic['actions'], 2)
+                dic['score_actions'] = dic['score']/dic['actions']
             if dic['distance'] > 0:
-                dic['score_distance'] = round(dic['score']/dic['distance'], 2)
+                dic['score_distance'] = dic['score']/dic['distance']
             if dic['time'] > 0:
-                dic['score_sec'] = round(dic['score']/dic['time'], 2)
-                dic['lines_min'] = round(dic['lines']/(dic['time']/60), 2)
-                dic['actions_min'] = round(dic['actions']/(dic['time']/60), 2)
-                dic['figures_min'] = round(dic['figures']/(dic['time']/60), 2)
-                dic['time'] = round(dic['time']/3600, 2)
+                dic['score_sec'] = dic['score']/dic['time']
+                dic['lines_min'] = dic['lines']/(dic['time']/60)
+                dic['actions_min'] = dic['actions']/(dic['time']/60)
+                dic['figures_min'] = dic['figures']/(dic['time']/60)
+                dic['time'] = dic['time']/3600
             del dic['actions']
             del dic['figures']
+            for x in dic:
+                val = dic[x]
+                if isinstance(val, float):
+                    if val % 1 == 0:
+                        dic[x] = int(val)
+                    else:
+                        dic[x] = round(val, 2)
             stats[t] = dic
+
         return stats
 
     def get_recorded_games(self):
@@ -405,7 +418,23 @@ class SingleGameRecord(models.Model):
         return json.loads(self.positions)
 
     def save_stats(self, stats):
-        self.stats = json.dumps(stats)
+        stats_to_base = {}
+        for x in stats:
+            stats_to_base[x] = {}
+            for key in stats[x]:
+                new_key = key.replace('-', '_')
+                val = stats[x][key]
+                if key == 'username':
+                    stats_to_base[x][new_key] = val
+                elif val:
+                    val = float(val)
+                    if val % 1 != 0:
+                        stats_to_base[x][new_key] = round(val, 2)
+                    else:
+                        stats_to_base[x][new_key] = int(val)
+                else:
+                    stats_to_base[x][new_key] = '-'
+        self.stats = json.dumps(stats_to_base)
         self.save()
 
 
@@ -417,6 +446,9 @@ class SingleGameRecord(models.Model):
         for x in places:
             if player.username in places[x]:
                 return x + '/' + str(self.size)
+
+    def load_stats(self):
+        return json.loads(self.stats)
 
 
 class Session(models.Model):

@@ -1497,3 +1497,38 @@ body > main {
 .recorded-games{
   text-align: center;
 }
+
+.graph{
+  width: 80%;
+  margin: 10px auto;
+  height: 60vh;
+  border: 1px solid white;
+}
+
+.game-results{
+  width: 80%;
+  margin: 1rem auto;
+  display:flex;
+  flex-direction: row;
+  flex-wrap:nowrap;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+
+.game-results .col{
+  flex-basis: 20%;
+  flex-grow:1;
+  text-align: center;
+}
+
+.game-results .col > li{
+  height: 1.5rem;
+}
+
+.game-results li:nth-child(2n+1){
+  color: #30a109;
+}
+
+.game-results .end{
+  margin-bottom: 1.5rem;
+}

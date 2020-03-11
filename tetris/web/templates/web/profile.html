@@ -20,7 +20,7 @@
       </ul>
       <ul class='stats-block'>
         <li>Часов в игре</li>
-        <li>Среднее время 1 игры, минут</li>
+        <li>Среднее время 1 игры</li>
       </ul>
       <ul class='stats-block'>
         <li>Всего линий</li>
@@ -60,7 +60,7 @@
         </ul>
         <ul class='stats-block'>
           <li>{{values.time}}</li>
-          <li>{{values.time_game}}</li>
+          <li class='time'>{{values.time_game}}</li>
         </ul>
         <ul class='stats-block'>
           <li>{{values.lines}}</li>
@@ -105,7 +105,7 @@
     </div>
     <div>
       <span>Время выживания</span>
-      <span>{{stats.best.survival_time}}</span>
+      <span class='time'>{{stats.best.survival_time}}</span>
     </div>
     <div>
       <span>Разгон до 100</span>
