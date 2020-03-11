@@ -156,8 +156,10 @@ def recorded_game(request, game_number):
     from web.models import SingleGameRecord
     game = SingleGameRecord.objects.get(pk=game_number)
     stats = game.load_stats()
+    graphs = game.graphs_data()
     scripts = ['record']
     return render(request, 'web/game.html', {'stats': stats,
+                                             'data': graphs,
                                              'number': game.pk,
                                              'datestart': game.started_at.strftime('%d %b %Y %H:%I %Z'),
                                              'type': game.type,

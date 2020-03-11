@@ -99,7 +99,7 @@ class ActivePiece(Piece):
                     if sh[y][x] > 0 and self.field.surface[y0-y][x0+x] > 0:
                         return True
         return False
-        
+
 
 
     def blocked(self):
@@ -133,6 +133,7 @@ class ActivePiece(Piece):
         if not phantom.blocked():
             self.y = phantom.y
             self.field.distance += 1
+            self.field.update_graph('distance', self.field.distance)
             if self.field.distance >= VOLUME_STANDARD['DR'] and self.field.time_drag_st is None:
                 self.field.time_drag_st = self.field.time
             if self.field.distance >= self.field.drag_finish and self.field.time_drag is None:

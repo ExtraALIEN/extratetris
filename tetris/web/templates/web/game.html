@@ -59,10 +59,17 @@
       </ul>
     {% endfor %}
   </div>
+  {% for pos, graph in data.items %}
+    {% for key, s in graph.items %}
+      <div id='{{key}}-{{pos}}' data-times='{{s.times}}' data-vals='{{s.vals}}'></div>
+    {% endfor %}
+  {% endfor %}
 {% endblock %}
 
 {% block scripts %}
+  <script type='application/javascript' src='/static/js/d3.js'></script>
   {%for script in scripts %}
     <script type='module' src='/static/js/{{script}}.js'></script>
   {% endfor %}
+
 {% endblock %}

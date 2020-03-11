@@ -160,10 +160,12 @@ class Room:
                     for place in places}
         rec.save_results(results)
         stats = {}
+        graphs = {}
         for field in self.fields:
             stat = field.game_stats_to_view()
             stat['username'] = field.start_player.username
             stats[field.pos] = stat
+            graphs[field.pos] = field.graph
 
             if field.websocket != 'bot':
                 player = field.start_player
@@ -195,10 +197,18 @@ class Room:
                         player.update_eff(self.type, eff)
                     player.save()
         rec.save_stats(stats)
+        rec.save_graphs(graphs)
+
+    def need_record(self):
+        for field in self.fields:
+            if field.websocket != 'bot' and not field.start_player.is_guest:
+                return True
+        return False
 
     def record_game(self):
         final_places = self.detect_places()
-        self.update_records(final_places)
+        if self.need_record():
+            self.update_records(final_places)
 
 
     def finish_game(self, forced=False):

@@ -24,7 +24,6 @@ class PlayerManager(models.Manager):
 
 class Player(models.Model):
     objects = PlayerManager()
-    is_robot = models.BooleanField(default=False)
     is_guest = models.BooleanField(default=False)
     login = models.CharField(max_length=20, unique=True)
     password = models.TextField(max_length=20, blank=True, null=True)
@@ -408,6 +407,7 @@ class SingleGameRecord(models.Model):
     started_at = models.DateTimeField(null=True)
     positions = models.TextField(default="")
     stats = models.TextField(default="")
+    graphs = models.TextField(default="")
     players = models.ManyToManyField(Player, related_name='recorded_games')
 
     def save_results(self, results):
@@ -424,7 +424,7 @@ class SingleGameRecord(models.Model):
             for key in stats[x]:
                 new_key = key.replace('-', '_')
                 val = stats[x][key]
-                if key == 'username':
+                if key in ['username']:
                     stats_to_base[x][new_key] = val
                 elif val:
                     val = float(val)
@@ -437,6 +437,27 @@ class SingleGameRecord(models.Model):
         self.stats = json.dumps(stats_to_base)
         self.save()
 
+    def save_graphs(self, graphs):
+        data = {}
+        for x in graphs:
+            data[x] = {'score': {'times': [0],
+                                 'vals': [0]},
+                       'lines': {'times': [0],
+                                 'vals': [0]},
+                       'speed': {'times': [0],
+                                 'vals': [0]},
+                       'distance': {'times': [0],
+                                    'vals': [0]}
+                       }
+            for time in graphs[x]:
+                for stat in graphs[x][time]:
+                    data[x][stat]['times'].append(time)
+                    data[x][stat]['vals'].append(graphs[x][time][stat])
+        self.graphs = json.dumps(data)
+        self.save()
+
+    def graphs_data(self):
+        return json.loads(self.graphs)
 
     def get_url(self):
         return '/results/' + str(self.pk)

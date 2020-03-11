@@ -72,6 +72,13 @@ class Field:
         self.active_piece = self.create_piece()
         self.game_over = False
         self.result = None
+        self.graph = {}
+
+    def update_graph(self, stat, val):
+        time = round(self.time, 2)
+        if time not in self.graph:
+            self.graph[time] = {}
+        self.graph[time][stat] = val
 
     def top_points(self):
         def top_point(x):
@@ -113,6 +120,7 @@ class Field:
         terminated_lines = self.check_terminate()
         li = len(terminated_lines)
         self.lines += li
+        self.update_graph('lines', self.lines)
         if li > 0 and self.room.type == 'RA':
             self.room.update_lines(self.pos, li)
         if sum(self.surface[-1]) > 0:
@@ -136,6 +144,7 @@ class Field:
 
     def change_speed(self, delta):
         self.speed += delta
+        self.update_graph('speed', round(self.speed,2))
         if self.speed > self.max_speed:
             self.max_speed = self.speed
         elif self.speed < 0:
@@ -241,6 +250,7 @@ class Field:
             base = 15 * (1 + (land_y * (7 / 60)))
         to_add = round_half_up(base * (math.sqrt(2)**(self.speed/50))*self.multiplier)
         self.score += to_add
+        self.update_graph('score', self.score)
         if self.score >= VOLUME_STANDARD['SA'] and self.time_climb_st is None:
             self.time_climb_st = self.time
         if self.score >= self.score_finish and self.time_climb is None:
@@ -563,7 +573,6 @@ class Field:
         print('60 ', self.time_lines)
         print('100 ', self.time_acc_st)
         print('4020 ', self.time_drag_st)
-
 
         if players_left == 0:
             self.room.finish_game()
