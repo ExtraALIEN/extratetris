@@ -2,7 +2,7 @@
 
 {% block game %}
   <h3>График игры №{{number}} тип {{type}} начало {{datestart}}</h3>
-  <div class='graph'>
+  <div id='graph' class='graph'>
   </div>
   <h3>Результаты</h3>
   <div class='game-results'>
@@ -33,7 +33,7 @@
     </ul>
     {% for key, val in stats.items %}
       <ul class='col' data-pos={{key}}>
-        <li>{{val.username}}</li>
+        <li class='color-{{key}}'>{{val.username}}</li>
         <li class='end'>{{val.result}}</li>
         <li>{{val.score}}</li>
         <li>{{val.score_intermediate_st}}</li>
@@ -61,7 +61,7 @@
   </div>
   {% for pos, graph in data.items %}
     {% for key, s in graph.items %}
-      <div id='{{key}}-{{pos}}' data-times='{{s.times}}' data-vals='{{s.vals}}'></div>
+      <div id='{{key}}-{{pos}}' class='for-graph' data-times='{{s.times}}' data-vals='{{s.vals}}'></div>
     {% endfor %}
   {% endfor %}
 {% endblock %}

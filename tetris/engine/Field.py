@@ -120,9 +120,10 @@ class Field:
         terminated_lines = self.check_terminate()
         li = len(terminated_lines)
         self.lines += li
-        self.update_graph('lines', self.lines)
-        if li > 0 and self.room.type == 'RA':
-            self.room.update_lines(self.pos, li)
+        if li > 0:
+            self.update_graph('lines', self.lines)
+            if self.room.type == 'RA':
+                self.room.update_lines(self.pos, li)
         if sum(self.surface[-1]) > 0:
             self.end_game()
         else:
