@@ -1501,8 +1501,34 @@ body > main {
 .graph{
   width: 80%;
   margin: 10px auto;
-  height: 60vh;
+  min-height: 60vh;
   border: 1px solid white;
+  position: relative;
+}
+
+.graph .modes {
+  position: absolute;
+  width: 15%;
+  height: 50%;
+  left: 82.5%;
+  top: 10%;
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.graph .modes li{
+  flex-basis: 15%;
+  text-align: center;
+  font-size: 2rem;
+  line-height: 2rem;
+  cursor:pointer;
+}
+
+.graph .modes .displaying{
+  color: #30a109;
 }
 
 .game-results{
@@ -1527,6 +1553,22 @@ body > main {
 
 .game-results li:nth-child(2n+1){
   color: #30a109;
+}
+
+.game-results .col .color-0{
+  color: #c61212;
+}
+
+.game-results .col .color-1{
+  color: #004bf1;
+}
+
+.game-results .col .color-2{
+  color: #e9a611;
+}
+
+.game-results .col .color-3{
+  color: #05db0e;
 }
 
 .game-results .end{
