@@ -67,12 +67,13 @@ class Field:
         self.time_drag_st = None
         self.drag_finish = drag_finish
         self.goal = 0
+        self.graph = {}
         self.surface = buildEmptyFieldList(width, height)
         self.queue = QueuePieces(pos=self.pos)
         self.active_piece = self.create_piece()
         self.game_over = False
         self.result = None
-        self.graph = {}
+
 
     def update_graph(self, stat, val):
         time = round(self.time, 2)
@@ -109,6 +110,7 @@ class Field:
             broadcast_room(self.room.id, upd)
             self.end_game()
         self.total_figures += 1
+        self.update_graph('figures', self.total_figures)
         return piece
 
     def land_piece(self):

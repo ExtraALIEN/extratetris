@@ -447,7 +447,9 @@ class SingleGameRecord(models.Model):
                        'speed': {'times': [0],
                                  'vals': [0]},
                        'distance': {'times': [0],
-                                    'vals': [0]}
+                                    'vals': [0]},
+                       'figures': {'times': [0],
+                                   'vals': [0]},
                        }
             for time in graphs[x]:
                 for stat in graphs[x][time]:

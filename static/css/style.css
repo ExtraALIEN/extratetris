@@ -1501,7 +1501,7 @@ body > main {
 .graph{
   width: 80%;
   margin: 10px auto;
-  min-height: 60vh;
+  min-height: 100vh;
   border: 1px solid white;
   position: relative;
 }
@@ -1520,10 +1520,10 @@ body > main {
 }
 
 .graph .modes li{
-  flex-basis: 15%;
+  flex-basis: 5%;
   text-align: center;
-  font-size: 2rem;
-  line-height: 2rem;
+  font-size: 1.25rem;
+  line-height: 1.25rem;
   cursor:pointer;
 }
 
