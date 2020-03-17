@@ -7,11 +7,13 @@
       <label for='{{form.login.id_for_label}}'>Username</label>
       {{form.login}}
       </div>
+      <div class='form-error'>{{form.errors.login}}</div>
       <div class='field-input'>
       <label for='{{form.password.id_for_label}}'>Password</label>
       {{form.password}}
       </div>
+      <div class='form-error'>{{form.errors.password}}</div>
       <button type="submit" name="submit">Создать</button>
     </form>
-    {{form.errors}}
+
 {% endblock %}

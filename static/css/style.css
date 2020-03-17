@@ -1547,6 +1547,7 @@ body > main {
   text-align: center;
 }
 
+
 .game-results .col > li{
   height: 1.5rem;
 }
@@ -1573,4 +1574,37 @@ body > main {
 
 .game-results .end{
   margin-bottom: 1.5rem;
+}
+
+.graph .legend{
+  position: absolute;
+  width: 15%;
+  height: 20%;
+  left: 82.5%;
+  top: 80%;
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.legend .color-0{
+  color: #c61212;
+}
+
+.legend .color-1{
+  color: #004bf1;
+}
+
+.legend .color-2{
+  color: #e9a611;
+}
+
+.legend .color-3{
+  color: #05db0e;
+}
+
+.form-error{
+  color: #a31717;
 }

@@ -5,7 +5,11 @@ function displaySeconds(){
   let selector = `.game-results .time`;
   let cells = document.querySelectorAll(selector);
   for (let x of [...cells]){
-    x.innerHTML = secondsToMinutes(x.dataset.time, x.classList.contains('dec'));
+    if(x.dataset.time){
+      x.innerHTML = secondsToMinutes(x.dataset.time, x.classList.contains('dec'))
+    } else{
+      x.innerHTML = '-';
+    };
   }
 }
 
@@ -53,18 +57,19 @@ function currentAvg(data, stat, range, delta){
     let player = data[stat][x];
     output[x].times = [];
     output[x].vals = [];
-    let time = delta;
+    let time = range/2;
     while(time < player.times[player.times.length-1]){
       output[x].times.push(time);
       let indexes = [];
       for(let i=0; i<player.times.length; i++){
-        if( (player.times[i] <= time) && (player.times[i] >= time-range)){
+        if( (player.times[i] <= time+range/2) && (player.times[i] >= time-range/2)){
           indexes.push(i);
         }
       }
       let fact = 0;
       if (indexes.length > 0){
-        fact = (player.vals[indexes[indexes.length-1]]-player.vals[indexes[0]])/Math.min(range,time);
+        fact = (player.vals[indexes[indexes.length-1]]-player.vals[indexes[0]])/
+            (player.times[indexes[indexes.length-1]]-player.times[indexes[0]]);
       }
       output[x].vals.push(fact);
       time += delta;
@@ -143,45 +148,47 @@ function currentCrossAvg(data, stat1, stat2, range, delta){
     output[x] = {'times': [], 'vals': []};
     data1[x] = [];
     let player = data[stat1][x];
-    time = delta;
+    time = range/2;
     while(time < player.times[player.times.length-1]){
       output[x].times.push(time);
       let indexes = [];
       for(let i=0; i<player.times.length; i++){
-        if( (player.times[i] <= time) && (player.times[i] >= time-range)){
+        if( (player.times[i] <= time+range/2) && (player.times[i] >= time-range/2)){
           indexes.push(i);
         }
       }
       let fact = 0;
       if (indexes.length > 0){
-        fact = (player.vals[indexes[indexes.length-1]]-player.vals[indexes[0]])/Math.min(range,time);
+        fact = (player.vals[indexes[indexes.length-1]]-player.vals[indexes[0]])/
+            (player.times[indexes[indexes.length-1]]-player.times[indexes[0]]);
       }
       data1[x].push(fact);
       time += delta;
     }
-    output[x].times.push(player.times[player.times.length-1]);
-    data1[x].push(player.vals[player.vals.length-1]);
+    //output[x].times.push(player.times[player.times.length-1]);
+    //data1[x].push(player.vals[player.vals.length-1]);
   }
   for (let x in data[stat2]){
     data2[x] = [];
     let player = data[stat2][x];
-    time = delta;
+    time = range/2;
     while(time < player.times[player.times.length-1]){
       output[x].times.push(time);
       let indexes = [];
       for(let i=0; i<player.times.length; i++){
-        if( (player.times[i] <= time) && (player.times[i] >= time-range)){
+        if( (player.times[i] <= time+range/2) && (player.times[i] >= time-range/2)){
           indexes.push(i);
         }
       }
       let fact = 0;
       if (indexes.length > 0){
-        fact = (player.vals[indexes[indexes.length-1]]-player.vals[indexes[0]])/Math.min(range,time);
+        fact = (player.vals[indexes[indexes.length-1]]-player.vals[indexes[0]])/
+            (player.times[indexes[indexes.length-1]]-player.times[indexes[0]]);
       }
       data2[x].push(fact);
       time += delta;
     }
-    data2[x].push(player.vals[player.vals.length-1]);
+    //data2[x].push(player.vals[player.vals.length-1]);
   }
   for(let x in data1){
     for (let i in data1[x]){
@@ -226,8 +233,14 @@ function detectData(){
   data['score-figure'] = crossAvg(data, 'score', 'figures', 1);
   data['score-figure-fact'] = currentCrossAvg(data, 'score', 'figures', 60, 10);
 
+  data['score-distance'] = crossAvg(data, 'score', 'distance', 1);
+  data['score-distance-fact'] = currentCrossAvg(data, 'score', 'distance', 60, 10);
+
   data['lines-min'] = valsMul(overallAvg(data, 'lines'), 60);
   data['lines-fact'] = valsMul(currentAvg(data, 'lines', 60, 10), 60);
+
+  data['speed-min'] = valsMul(overallAvg(data, 'speed'), 60);
+  data['speed-fact'] = valsMul(currentAvg(data, 'speed', 60, 10), 60);
 
   data['figures-min'] = valsMul(overallAvg(data, 'figures'), 60);
   data['figures-fact'] = valsMul(currentAvg(data, 'figures', 60, 10), 60);
@@ -238,9 +251,10 @@ function detectData(){
   data['dist-fact'] = valsMul(currentAvg(data, 'distance', 60, 10), 60);
   data['dist-line'] = crossAvg(data, 'distance', 'lines', 1);
   data['dist-line-fact'] = currentCrossAvg(data, 'distance', 'lines', 60, 10);
+  data['dist-figure'] = crossAvg(data, 'distance', 'figures', 1);
+  data['dist-figure-fact'] = currentCrossAvg(data, 'distance', 'figures', 60, 10);
 
-  data['score-distance'] = crossAvg(data, 'score', 'distance', 1);
-  data['score-distance-fact'] = currentCrossAvg(data, 'score', 'distance', 60, 10);
+
   return data;
 }
 

@@ -3,6 +3,8 @@ from web.models import Player, TetrisRoom
 from web.helpers import GAME_TYPES, MAX_PLAYERS
 import json
 from django.db.utils import IntegrityError
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 
 class SignupForm(forms.Form):
@@ -10,11 +12,18 @@ class SignupForm(forms.Form):
     password = forms.CharField(max_length=20, widget=forms.PasswordInput)
 
     def clean(self):
-        try:
-            if Player.objects.get(login=self.cleaned_data['login']):
-                raise forms.ValidationError('Выберите другое имя пользователя')
-        except Player.DoesNotExist:
-            pass
+        if len(Player.objects.filter(login=self.cleaned_data['login'])) == 0:
+            try:
+                validate_password(self.cleaned_data['password'])
+            except ValidationError as error:
+                self.add_error('password', forms.ValidationError('Пароль должен быть не менее 6 символов, \
+                 состоять из букв и цифр латинского алфавита'))
+        else:
+            self.add_error('login', forms.ValidationError('Такое имя пользователя уже существует. \
+             Выберите другое имя пользователя'))
+
+
+
 
 
     def save(self):

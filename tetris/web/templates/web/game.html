@@ -25,7 +25,15 @@
       <li data-mode='dist-fact'>Пробег в минуту(фактич)</li>
       <li data-mode='dist-line'>Пробег на 1 линию(общ)</li>
       <li data-mode='dist-line-fact'>Пробег на 1 линию(фактич)</li>
-
+      <li data-mode='dist-figure'>Пробег 1 фигуры(общ)</li>
+      <li data-mode='dist-figure-fact'>Пробег 1 фигуры(фактич)</li>
+      <li data-mode='speed-min'>Ускорение в минуту(общ)</li>
+      <li data-mode='speed-fact'>Ускорение в минуту(фактич)</li>
+    </ul>
+    <ul class='legend'>
+      {% for key, val in stats.items %}
+        <li class='color-{{key}}'>{{val.username}}</li>
+      {% endfor %}
     </ul>
   </div>
   <h3>Результаты</h3>
