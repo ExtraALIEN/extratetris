@@ -6,6 +6,7 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator, MinLengthValidator
+from django.contrib.auth.hashers import make_password
 import re
 
 onlychars_validator = RegexValidator(regex=re.compile('^[a-z0-9_]*$', flags=re.I),
@@ -41,6 +42,7 @@ class SignupForm(forms.Form):
     def save(self):
         new_player = Player(**self.cleaned_data)
         new_player.username = self.cleaned_data['login']
+        new_player.password = make_password(self.cleaned_data['password'])
         new_player.save()
         return new_player
 

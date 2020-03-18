@@ -2,6 +2,7 @@
 import uuid
 from datetime import timedelta
 from django.utils import timezone
+from django.contrib.auth.hashers import check_password
 
 
 def session_login(login, password):
@@ -11,7 +12,7 @@ def session_login(login, password):
     except Player.DoesNotExist:
         return None
 
-    if user.password != password:
+    if not check_password(password, user.password):
         return None
     session = Session()
     session.key = str(uuid.uuid4())
