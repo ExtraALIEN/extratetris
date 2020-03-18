@@ -5,24 +5,36 @@ import json
 from django.db.utils import IntegrityError
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator, MinLengthValidator
+import re
+
+onlychars_validator = RegexValidator(regex=re.compile('^[a-z0-9_]*$', flags=re.I),
+                                message='Допускаются только буквы латинского алфавита(A-Z, a-z), цифры(0-9) и знак подчеркивания(_)',
+                                code='invalid',
+                                )
+
+firstchar_validator = RegexValidator(regex=re.compile('^[a-z]', flags=re.I),
+                                message='Должно начинаться с буквы латинского алфавита(A-Z, a-z)',
+                                code='invalid',
+                                )
+
 
 
 class SignupForm(forms.Form):
-    login = forms.CharField(max_length=20)
-    password = forms.CharField(max_length=20, widget=forms.PasswordInput)
+    login = forms.CharField(max_length=20, validators=[onlychars_validator,
+                                                       firstchar_validator,
+                                                       MinLengthValidator(4, message='Минимум 4 символа')])
+    password = forms.CharField(max_length=20,
+                               widget=forms.PasswordInput,
+                               validators=[onlychars_validator,
+                                           MinLengthValidator(4, message='Минимум 4 символа')])
 
-    def clean(self):
-        if len(Player.objects.filter(login=self.cleaned_data['login'])) == 0:
-            try:
-                validate_password(self.cleaned_data['password'])
-            except ValidationError as error:
-                self.add_error('password', forms.ValidationError('Пароль должен быть не менее 6 символов, \
-                 состоять из букв и цифр латинского алфавита'))
-        else:
+    def clean_login(self):
+        input = self.cleaned_data['login']
+        if len(Player.objects.filter(login=input)) > 0:
             self.add_error('login', forms.ValidationError('Такое имя пользователя уже существует. \
              Выберите другое имя пользователя'))
-
-
+        return input
 
 
 
