@@ -21,6 +21,8 @@ class Room:
                }
         if self.type == 'CL':
             arg['powerup_mul'] = 0
+        elif self.type == 'RA':
+            arg['ra_next'] = 0
         if self.proc != 100:
             if self.type == 'LI':
                 arg['max_lines'] = (proc*VOLUME_STANDARD['LI']) // 100
@@ -69,6 +71,12 @@ class Room:
                 total += 1
         return total
 
+    def update_ra_add(self, time):
+        for field in self.fields:
+            if not field.game_over:
+                field.ra_next = time + 60
+                field.ra_applied = False
+                field.ra_add += 1
 
     def update_lines(self, pos, lines):
         self.lines += lines

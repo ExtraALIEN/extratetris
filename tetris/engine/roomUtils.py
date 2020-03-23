@@ -56,6 +56,13 @@ def init_room(conn, data):
                'fields': room.to_view()
         }
         conn.send_json(msg)
+        if room.type in ['CF', 'HF']:
+            for field in room.fields:
+                room.announce_flag(field.pos, field.flag_height)
+        if room.type in ['CF', 'RA']:
+            room.announce_goals()
+        if room.type in ['RA']:
+            room.announce_lines()
         for field in room.fields:
             if field.player is not None:
                 upd = {'type': 'update-players',

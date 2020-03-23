@@ -1,5 +1,5 @@
 from threading import Timer
-from random import choice, random
+from random import choice, random, uniform
 places = [1,2,3]
 
 
@@ -11,15 +11,16 @@ class Bot:
         self.pos = pos
         self.field = room.fields[pos]
         self.delay = .01
-        self.apm = 25+self.level*6.8
+        self.apm = 100 + self.level*4.25
         self.time_step = 60 / self.apm
         self.to_next_action = self.time_step
-        self.mul_land = 2 + self.level*0.02  # 3
-        self.mul_clean = 4 + max([self.level-20, 0])/40 # 5
-        self.mul_reach = 2 + min([self.level, 60])/10 # 8
-        self.mul_side = 3 - self.level*0.02 # 2
-        self.mul_height = 5 # 5
-        self.mul_lines = 5 + self.level*0.02 # 6
+        self.diff = 25 * (0.975 ** self.level)/100
+        self.mul_land = 40 * uniform(1-self.diff, 1+self.diff)
+        self.mul_clean = 80 * uniform(1-self.diff, 1+self.diff)
+        self.mul_reach = 90 * uniform(1-self.diff, 1+self.diff)
+        self.mul_side = 5 * uniform(1-self.diff, 1+self.diff)
+        self.mul_height = 60 * uniform(1-self.diff, 1+self.diff)
+        self.mul_lines = 10 * uniform(1-self.diff, 1+self.diff)
         self.current_max = 0
         self.target = []
         self.locked_target = False
@@ -27,6 +28,9 @@ class Bot:
         self.rotates = 0
         self.best_rotate = 0
         self.prev_piece = self.field.active_piece
+        self.need_movedown = 1
+        if self.room.type == 'SU':
+            self.need_movedown = 1.01 - self.level/100
 
     def start(self):
         self.update_timer(self.delay)
@@ -109,7 +113,10 @@ class Bot:
             elif piece.x < self.target:
                 command += 'right'
             else:
-                command += 'down'
+                if random() < self.need_movedown:
+                    command += 'down'
+                else:
+                    return
         self.field.move(command)
 
     def rotate(self):
@@ -223,11 +230,36 @@ class Bot:
             baseline = min(base[x])
             land_y = baseline + height - 1
             lines = 0
+            can_flag = False
+            flag_dist = 0
             for y in range(height):
                 cells = len(list(filter(lambda a: a > 0, shape[y])))
                 spaces = len(list(filter(lambda a: a == 0, self.field.surface[land_y-y])))
                 if cells == spaces:
                     lines += 1
+                    if self.field.flag_height is not None:
+                        if y == self.field.flag_height:
+                            can_flag = True
+                        else:
+                            if self.field.flag_height == 0:
+                                flag_dist = self.level * 2.5
+                            else:
+                                flag_dist = (y - self.field.flag_height)/(self.field.flag_height)
+            if lines > 0 and self.room.type == 'RA':
+                cur_lines = self.room.lines + lines
+                override = 1
+                if cur_lines >= self.room.next_negative:
+                    override -= self.level/50
+                if cur_lines >= self.room.next_positive:
+                    override += self.level/25
+                if cur_lines >= self.room.next_negative2:
+                    override -= self.level/30
+                lines *= (override * self.level/25)
+            if can_flag:
+                lines *= (1 + self.level/40)
+            elif flag_dist != 0:
+                lines *= ((1 + (flag_dist*0.02)*(self.level/100)) * self.level/25)
+
             result.append(lines*25)
         result = [x*self.mul_lines for x in result]
         return result

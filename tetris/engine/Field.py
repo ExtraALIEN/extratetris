@@ -16,6 +16,8 @@ class Field:
                             score_finish=18000, #18000
                             max_lines=60,
                             powerup_mul=1,
+                            ra_next=None,
+                            ra_applied=True,
                             ): #60
         self.pos = pos
         self.room = room
@@ -67,6 +69,9 @@ class Field:
         self.time_drag_st = None
         self.drag_finish = drag_finish
         self.goal = 0
+        self.ra_next = ra_next
+        self.ra_applied = ra_applied
+        self.ra_add = 0
         self.graph = {}
         self.surface = buildEmptyFieldList(width, height)
         self.queue = QueuePieces(pos=self.pos)
@@ -74,6 +79,10 @@ class Field:
         self.game_over = False
         self.result = None
 
+
+    def update_goal(self, delta):
+        self.goal += delta
+        self.room.announce_goals()
 
     def update_graph(self, stat, val):
         time = round(self.time, 2)
@@ -494,6 +503,9 @@ class Field:
                 self.score_intermediate = self.score
                 if self.room.type == 'CO':
                     self.end_game()
+            if self.ra_applied is False and self.time >= self.ra_next:
+                self.update_goal(self.ra_add)
+                self.ra_applied = True
             self.to_movedown -= delay
             if self.to_movedown <= 0:
                 self.auto_move_down()
@@ -554,12 +566,15 @@ class Field:
 
         print('end game')
         self.game_over = True
+        if self.room.type == 'RA':
+            self.room.update_ra_add(self.time)
         hard = False
         if hard_disconnect:
             print('                   HARD DISCONNECT')
             hard = True
         self.broadcast_gameover(hard)
         players_left = self.room.players_left()
+
         print('                          game over')
         print('left ', players_left)
 
