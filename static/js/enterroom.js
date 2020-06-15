@@ -120,6 +120,21 @@ function processMessage(event){
   MESSAGE_HANDLERS[data.type](params);
 }
 
+function limitLevel(event){
+  let field = event.target;
+  let inp = field.value;
+  if (inp === ''){
+    field.value = 50;
+  }
+  if (field.value > 100){
+    field.value = 100;
+  }
+  else if (field.value < 1) {
+    field.value = 1;
+  }
+  field.value = (+field.value).toFixed(0);
+}
+
 let ready = false;
 let copier = document.getElementById('copy-url');
 copier.addEventListener('click', copyURL);
@@ -131,6 +146,10 @@ for (let x of [...buttonsAddBot]){
 let buttonsDelBot = document.querySelectorAll('[id^="delbot"]');
 for (let x of [...buttonsDelBot]){
   x.addEventListener('click', delBot);
+}
+let botLevels = document.querySelectorAll('.bot-level input');
+for (let x of [...botLevels]){
+  // x.addEventListener('change', limitLevel);
 }
 let conn = new WebSocket('ws://localhost/ws/connect/');
 

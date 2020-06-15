@@ -28,6 +28,7 @@ class Bot:
         self.rotates = 0
         self.best_rotate = 0
         self.prev_piece = self.field.active_piece
+        self.flag_reach_mode = False
         self.need_movedown = 1
         if self.room.type == 'SU':
             self.need_movedown = 1.01 - self.level/100
@@ -80,7 +81,7 @@ class Bot:
                                          self.side_points(base, shape),
                                          self.height_points(base, shape, max(top)),
                                          self.line_points(base, shape))
-                # print('result ', points)
+                # print('points', points)
                 max_points = max(points)
                 if max_points > self.current_max:
                     self.current_max = max_points
@@ -94,6 +95,8 @@ class Bot:
                 phantom.rotate()
                 self.rotates += 1
                 if self.rotates >= 4:
+                    # print('top', top)
+                    # print('result ', max_points)
                     self.checked_target = True
                     self.rotates = 0
             else:
@@ -129,6 +132,7 @@ class Bot:
         self.locked_target = False
         self.checked_target = False
         self.rotates = 0
+        self.flag_reach_mode = False
 
     def detect_offset(self, trimmed_shape):
         for y in range(len(trimmed_shape)):
@@ -137,8 +141,13 @@ class Bot:
         return -1
 
     def land_points(self, base):
-        result = [ ((self.field.height-sum(x)/len(x))/self.field.height) * 100 for x in base]
+        lands = [sum(x)/len(x) for x in base]
+        if self.room.type == 'CF' and self.flag_reach_mode is False \
+           and max(lands) <= self.field.flag_height + 1.5:
+            self.flag_reach_mode = True
+        result = [((self.field.height-x)/self.field.height) * 100 for x in lands]
         result = [x*self.mul_land for x in result]
+        # print('land', result)
         return result
 
     def clean_points(self, base):
@@ -158,6 +167,9 @@ class Bot:
             spaces.append(closed)
         result = [((self.field.height - x)/self.field.height)*100 for x in spaces]
         result = [x*self.mul_clean for x in result]
+        # print('clean', result)
+        if self.flag_reach_mode:
+            result = [x/40 for x in result]
         return result
 
     def reach_points(self, base):
@@ -181,6 +193,7 @@ class Bot:
                 point = 0
             result.append(point)
         result = [x*self.mul_reach for x in result]
+        # print('reach', result)
         return result
 
     def side_points(self, base, shape):
@@ -212,6 +225,7 @@ class Bot:
                         break
             result.append( (connected_sides/total_sides) * 100)
         result = [x*self.mul_side for x in result]
+        # print('side', result)
         return result
 
 
@@ -220,6 +234,9 @@ class Bot:
         result = [  (max((self.field.height-(min(x)+height)),t) /
                     (self.field.height-1))*100 for x in base]
         result = [x*self.mul_height for x in result]
+        if self.flag_reach_mode:
+            result = [x/60 for x in result]
+            # print('height patch', result)
         return result
 
 
@@ -237,14 +254,13 @@ class Bot:
                 spaces = len(list(filter(lambda a: a == 0, self.field.surface[land_y-y])))
                 if cells == spaces:
                     lines += 1
-                    if self.field.flag_height is not None:
-                        if y == self.field.flag_height:
-                            can_flag = True
-                        else:
-                            if self.field.flag_height == 0:
-                                flag_dist = self.level * 2.5
-                            else:
-                                flag_dist = (y - self.field.flag_height)/(self.field.flag_height)
+                    if self.field.flag_height is not None and y == self.field.flag_height:
+                        can_flag = True
+                    #     else:
+                    #         if self.field.flag_height == 0:
+                    #             flag_dist = self.level * 2.5
+                    #         else:
+                    #             flag_dist = (y - self.field.flag_height)/(self.field.flag_height)
             if lines > 0 and self.room.type == 'RA':
                 cur_lines = self.room.lines + lines
                 override = 1
@@ -256,12 +272,14 @@ class Bot:
                     override -= self.level/30
                 lines *= (override * self.level/25)
             if can_flag:
-                lines *= (1 + self.level/40)
-            elif flag_dist != 0:
-                lines *= ((1 + (flag_dist*0.02)*(self.level/100)) * self.level/25)
-
+                lines *= (1 + self.level/10)
+            # elif flag_dist != 0:
+            #     lines *= ((1 + (flag_dist*0.02)*(self.level/100)) * self.level/25)
             result.append(lines*25)
         result = [x*self.mul_lines for x in result]
+        if self.flag_reach_mode and not can_flag:
+            result = [-x for x in result]
+            # print('line patch', result)
         return result
 
 

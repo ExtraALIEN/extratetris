@@ -126,6 +126,7 @@ def enter_room(request, room_number):
     elif request.user == room.author:
         is_author = True
     limited = room.type in VOLUME_STANDARD
+    time_result = ['SU']
     # if room.started:
     #     scripts = ['gamecontrols']
     return render(request, 'web/room.html', {'room': room,
@@ -136,7 +137,8 @@ def enter_room(request, room_number):
                                              'queue' : queue,
                                              'queue_grid': queue_grid,
                                              'is_author' : is_author,
-                                             'limited' : limited})
+                                             'limited' : limited,
+                                             'time_result' : room.type in time_result})
 
 
 def delete_room(request, room_number):

@@ -127,7 +127,7 @@ class Room:
         # print(results)
         places = sorted(results)
         # print(places)
-        if self.type in ['CL', 'DM', 'SU', 'CO', 'CF', 'RA']:
+        if self.type in ['CL', 'DM', 'SU', 'CO', 'CF', 'HF' ,'RA']:
             places = list(reversed(places))
         if -9000 in places and places[0] == -9000:
             tmp = places[0]

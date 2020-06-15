@@ -546,7 +546,10 @@ class TetrisRoom(models.Model):
         self.save()
 
     def describe(self):
-        pp = json.loads(self.players_at_positions)
+        pl = self.players_at_positions
+        if self.started:
+            pl = self.start_players
+        pp = json.loads(pl)
         info = []
         for x in pp:
             info.append({'pos': x, 'username' : pp[x] or '---'})

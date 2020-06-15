@@ -13,7 +13,7 @@ class Field:
                             acc_finish=100, #100
                             drag_finish=4020, #4020
                             timeleft=360, #360
-                            score_finish=18000, #18000
+                            score_finish=20000, #18000
                             max_lines=60,
                             powerup_mul=1,
                             ra_next=None,
@@ -505,7 +505,7 @@ class Field:
                     self.end_game()
             if self.ra_applied is False and self.time >= self.ra_next:
                 self.update_goal(self.ra_add)
-                self.ra_applied = True
+                self.ra_next += 60
             self.to_movedown -= delay
             if self.to_movedown <= 0:
                 self.auto_move_down()
