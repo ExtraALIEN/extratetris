@@ -97,7 +97,7 @@ const HANDLER_PARAMS = {
   'get-ready': [],
   'start-tetris': ['fields'],
   'watch-tetris': ['fields'],
-  'update-tetris': ['pos', 'current_piece', 'speed', 'time', 'score', 'distance', 'lines'],
+  'update-tetris': ['pos', 'current_piece', 'speed', 'time', 'score', 'distance', 'lines', 'silent', 'rotate'],
   'refresh-tetris': ['new_piece', 'queue', 'surface'],
   'room-lines' : ['lines'],
   'goal' : ['goals'],

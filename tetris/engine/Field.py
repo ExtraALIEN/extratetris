@@ -463,7 +463,9 @@ class Field:
                     'pos' : self.pos,
                     'current_piece': piece_move,
                     'speed': self.speed,
-                    'time': self.time
+                    'time': self.time,
+                    'silent': command == 'auto_move_down' or len(piece_move) == 0,
+                    'rotate': command == 'rotate'
                     }
             if self.score != prev_score:
                 upd['score'] = self.score

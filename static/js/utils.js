@@ -6,4 +6,8 @@ function addLeadingZeroes(num, digits){
   return num;
 }
 
-export {addLeadingZeroes};
+function randomNumberInRange(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+export {addLeadingZeroes, randomNumberInRange};

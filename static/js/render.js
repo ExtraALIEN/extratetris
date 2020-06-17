@@ -2,6 +2,7 @@ import {activateControls} from './controls.js';
 import {deactivateConnectButtons} from './lobby.js';
 import {addLeadingZeroes} from './utils.js';
 import {secondsToMinutes} from './timing.js';
+import {playSound} from './sound.js';
 
 function startTetris({fields}){
   activateControls();
@@ -38,7 +39,7 @@ function renderTetris({fields}){
 }
 
 
-function updateTetris({pos, current_piece, speed, time, score, distance, lines}){
+function updateTetris({pos, current_piece, speed, time, score, distance, lines, silent, rotate}){
   if(current_piece){
     updateCurrentPiece({pos, current_piece});
   }
@@ -56,6 +57,15 @@ function updateTetris({pos, current_piece, speed, time, score, distance, lines})
   }
   if (time){
     updateTime({pos, time});
+  }
+  if (!silent){
+    if(rotate){
+
+    }
+    else {
+      let speed = +document.querySelector(`#field${pos} .stats .speed .val`).innerHTML;
+      playSound(pos, 'move', speed);
+    }
   }
 }
 
