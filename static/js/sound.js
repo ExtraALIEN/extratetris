@@ -1,7 +1,7 @@
 import {randomNumberInRange} from './utils.js';
 
-const ALL_SOUNDS = ['move'];
-const UNC_SOUNDS = ['move'];
+const ALL_SOUNDS = ['move', 'rotate'];
+const UNC_SOUNDS = ['move', 'rotate'];
 
 function createSoundSpace(){
   let fields = document.querySelectorAll('[id^="field"]');
@@ -38,7 +38,7 @@ function playSound(pos, type, speed=0){
   node.connect(soundSpace[pos].vol);
   // console.log(node.detune);
   if(uncontinousSound[pos]){
-      uncontinousSound[pos].stop();
+      uncontinousSound[pos].stop(0.01);
   }
   node.start(0);
   if (type in UNC_SOUNDS){

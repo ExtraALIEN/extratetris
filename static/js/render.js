@@ -60,7 +60,7 @@ function updateTetris({pos, current_piece, speed, time, score, distance, lines, 
   }
   if (!silent){
     if(rotate){
-
+      playSound(pos, 'rotate');
     }
     else {
       let speed = +document.querySelector(`#field${pos} .stats .speed .val`).innerHTML;
