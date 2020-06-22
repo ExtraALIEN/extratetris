@@ -21,7 +21,9 @@ const ALL_SOUNDS = ['move', 'rotate', 'land', 'line', 'gameover', 'select',
             'blind',
             'blind_queue',
             'drink',
-            'weak_signal'];
+            'weak_signal',
+            'flag',
+            'goal'];
 const UNC_SOUNDS = ['move', 'rotate', 'select'];
 let ctx = new AudioContext();
 
@@ -60,7 +62,7 @@ function loadSounds(){
 
 function playSound({pos, file, speed=0}){
   //console.log('playSound', ctx.getOutputTimestamp());
-  let node = new AudioBufferSourceNode(ctx, {detune : speed*2.5});
+  let node = new AudioBufferSourceNode(ctx, {detune : speed});
   node.buffer = soundBank[file];
   node.connect(vol[pos]);
   if(uncontinousSound[pos]){

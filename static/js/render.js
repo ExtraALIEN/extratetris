@@ -117,8 +117,15 @@ function updateRoomLines({lines}){
 }
 
 function updateGoals({goals}){
+  let myField = document.querySelector('.tetris-view.current');
   for (let x in goals){
-    document.querySelector(`#field${x} .goals`).innerHTML = goals[x];
+    let res = goals[x];
+    let elem = document.querySelector(`#field${x} .goals`);
+    let prev = +elem.innerHTML;
+    elem.innerHTML = res;
+    if (myField && +x === +myField.dataset.pos && res !== prev){
+      playSound({pos: x, file: 'goal', speed: (res-prev-2)*100});
+    }
   }
 }
 
@@ -148,6 +155,10 @@ function updateFlag({pos, y}){
   }
   let row = `#field${pos} .row[data-y="${y}"]`;
   document.querySelector(row).classList.add('flag');
+  let myField = document.querySelector('.tetris-view.current');
+  if (myField && +pos === +myField.dataset.pos && +myField.querySelector(`.stats .speed .val`).innerHTML > 0 && !myField.querySelector('.result.finished')){
+    playSound({pos, file: 'flag', speed: (5-y)*100});
+  }
 }
 
 
