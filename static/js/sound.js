@@ -1,7 +1,7 @@
 import {randomNumberInRange} from './utils.js';
 
-const ALL_SOUNDS = ['move', 'rotate', 'land', 'line', 'gameover'];
-const UNC_SOUNDS = ['move', 'rotate'];
+const ALL_SOUNDS = ['move', 'rotate', 'land', 'line', 'gameover', 'select'];
+const UNC_SOUNDS = ['move', 'rotate', 'select'];
 let ctx = new AudioContext();
 
 function createSoundSources(){

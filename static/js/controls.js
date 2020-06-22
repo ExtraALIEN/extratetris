@@ -1,3 +1,5 @@
+import {playSound} from './sound.js';
+
 function activateControls(){
   document.body.addEventListener('keydown', controlField);
 }
@@ -57,6 +59,7 @@ function changePowerup(next){
     newNum = num > 1 ? num - 1 : 3;
   }
   document.querySelector(`.current .powerups .place[data-pos="${newNum}"]`).classList.add('active');
+  playSound(0, 'select');
 }
 
 export {activateControls, removeControls};
