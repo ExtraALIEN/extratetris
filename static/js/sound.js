@@ -1,53 +1,65 @@
 import {randomNumberInRange} from './utils.js';
 
-const ALL_SOUNDS = ['move', 'rotate'];
+const ALL_SOUNDS = ['move', 'rotate', 'land', 'line'];
 const UNC_SOUNDS = ['move', 'rotate'];
+let ctx = new AudioContext();
 
-function createSoundSpace(){
+function createSoundSources(){
+  vol['main'] = ctx.createGain();
+  vol['main'].connect(ctx.destination);
   let fields = document.querySelectorAll('[id^="field"]');
   for(let x of fields){
     let pos = +x.dataset.pos;
-    soundSpace[pos] = new AudioContext();
     uncontinousSound[pos] = null;
-    let gainNode = soundSpace[pos].createGain();
+    let gainNode = ctx.createGain();
     gainNode.gain.value = pos === 0 ? 1 : 0.333;
-    gainNode.connect(soundSpace[pos].destination);
-    soundSpace[pos].vol = gainNode;
-
+    gainNode.connect(vol['main']);
+    vol[pos] = gainNode;
   }
 }
 
 
 function loadSounds(){
   let bank = {};
-  let tempCtx = new AudioContext();
+  //let tempCtx = new OfflineAudioContext();
+
   for (let x of ALL_SOUNDS){
     fetch(`/static/sound/${x}.ogg`)
       .then(response => response.arrayBuffer())
-      .then(arrayBuffer => tempCtx.decodeAudioData(arrayBuffer))
+      .then(arrayBuffer => ctx.decodeAudioData(arrayBuffer))
       .then(buffer => {
-        bank[x] = buffer;
-      });
+          // console.log(buffer);
+          bank[x] = buffer;
+          return null;
+        });
   }
+
   return bank;
 }
 
 function playSound(pos, type, speed=0){
-  let node = new AudioBufferSourceNode(soundSpace[pos], {'detune' : speed*2.5});
+  //console.log('playSound', ctx.getOutputTimestamp());
+  let node = new AudioBufferSourceNode(ctx, {detune : speed*2.5});
   node.buffer = soundBank[type];
-  node.connect(soundSpace[pos].vol);
-  // console.log(node.detune);
+  node.connect(vol[pos]);
   if(uncontinousSound[pos]){
-      uncontinousSound[pos].stop(0.01);
+    uncontinousSound[pos].stop(0.01);
   }
-  node.start(0);
+  node.start();
+  //console.log('started', ctx.getOutputTimestamp());
   if (type in UNC_SOUNDS){
     uncontinousSound[pos] = node;
   }
 }
-let soundSpace = {};
+
+
+let vol = {};
 let uncontinousSound = {};
-createSoundSpace();
+createSoundSources();
+console.log(ctx);
+
 let soundBank = loadSounds();
+console.log(soundBank);
+
 
 export {playSound};

@@ -21,7 +21,7 @@ function renderTetris({fields}){
     let new_piece = data.active_piece;
     let queue = data.queue;
     refreshSurface({surface});
-    refreshActivePiece({new_piece});
+    refreshActivePiece({new_piece}, true);
     refreshQueue({queue});
     let pos = x;
     let score = data.score;
@@ -48,6 +48,7 @@ function updateTetris({pos, current_piece, speed, time, score, distance, lines, 
   }
   if (lines){
     updateLines({pos, lines});
+    playSound(pos, 'line');
   }
   if (speed){
     updateSpeed({pos, speed});
@@ -228,7 +229,7 @@ function refreshQueue({queue}){
   }
 }
 
-function refreshActivePiece({new_piece}){
+function refreshActivePiece({new_piece}, silent=false){
   let pos = new_piece.pos;
   for (let y in new_piece){
     if(y !== 'pos'){
@@ -247,6 +248,9 @@ function refreshActivePiece({new_piece}){
         }
       }
     }
+  }
+  if(!silent){
+    playSound(pos, 'land');
   }
 }
 
