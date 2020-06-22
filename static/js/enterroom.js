@@ -6,6 +6,7 @@ showGameover, fillPlaces} from './lobby.js';
 import {startTetris, renderTetris, updateTetris, refreshTetris, updateRoomLines,
 updateGoals, updateFlag, updatePowerup, blind, removeBlind} from './render.js';
 import {addBot, delBot} from './bot.js';
+import {playSound} from './sound.js';
 
 function initConnection(event){
   document.conn = conn;
@@ -79,6 +80,7 @@ let MESSAGE_HANDLERS = {
   'goal' : updateGoals,
   'flag' : updateFlag,
   'powerup' : updatePowerup,
+  'powerup-sound': playSound,
   'blind' : blind,
   'remove-blind': removeBlind,
   'game-disconnect': showDisconnect,
@@ -103,6 +105,7 @@ const HANDLER_PARAMS = {
   'goal' : ['goals'],
   'flag' : ['pos', 'y'],
   'powerup' : ['pos', 'num', 'powerup', 'time'],
+  'powerup-sound': ['pos', 'file'],
   'blind' : ['pos', 'cols'],
   'remove-blind': ['pos', 'x'],
   'game-disconnect': ['pos'],

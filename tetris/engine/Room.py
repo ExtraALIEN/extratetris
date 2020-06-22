@@ -393,6 +393,12 @@ class Room:
                 tg.lost_actions = randint(0, 4)
         if msg is not None:
             broadcast_room(self.id, msg)
+        msg_snd = {
+            'type': 'powerup-sound',
+            'pos': tg.pos,
+            'file': powerup
+        }
+        broadcast_room(self.id, msg_snd)
         return 1
 
 

@@ -48,7 +48,7 @@ function updateTetris({pos, current_piece, speed, time, score, distance, lines, 
   }
   if (lines){
     updateLines({pos, lines});
-    playSound(pos, 'line');
+    playSound({pos, file: 'line'});
   }
   if (speed){
     updateSpeed({pos, speed});
@@ -61,11 +61,11 @@ function updateTetris({pos, current_piece, speed, time, score, distance, lines, 
   }
   if (!silent){
     if(rotate){
-      playSound(pos, 'rotate');
+      playSound({pos, file: 'rotate'});
     }
     else {
       let currentSpeed = +document.querySelector(`#field${pos} .stats .speed .val`).innerHTML;
-      playSound(pos, 'move', currentSpeed);
+      playSound({pos, file : 'move', speed: currentSpeed});
     }
   }
 }
@@ -250,7 +250,7 @@ function refreshActivePiece({new_piece}, silent=false){
     }
   }
   if(!silent){
-    playSound(pos, 'land');
+    playSound({pos, file: 'land'});
   }
 }
 

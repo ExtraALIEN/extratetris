@@ -178,7 +178,7 @@ function showGameover({pos, stats, mode, username, silent}){
 
   resultTable.classList.add('finished');
   if (!silent){
-    playSound(pos, 'gameover');
+    playSound({pos, file: 'gameover'});
   }
 }
 

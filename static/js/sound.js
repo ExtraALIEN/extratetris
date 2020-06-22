@@ -1,6 +1,27 @@
 import {randomNumberInRange} from './utils.js';
 
-const ALL_SOUNDS = ['move', 'rotate', 'land', 'line', 'gameover', 'select'];
+const ALL_SOUNDS = ['move', 'rotate', 'land', 'line', 'gameover', 'select',
+            'chance_up',
+            'chance_down',
+            'speed_up',
+            'speed_down',
+            'line_add_1',
+            'line_add_2',
+            'line_add_3',
+            'line_remove_1',
+            'line_remove_2',
+            'line_remove_3',
+            'copy_figure',
+            'duration_up',
+            'duration_down',
+            'thunder',
+            'shield',
+            'bomb',
+            'trash',
+            'blind',
+            'blind_queue',
+            'drink',
+            'weak_signal'];
 const UNC_SOUNDS = ['move', 'rotate', 'select'];
 let ctx = new AudioContext();
 
@@ -37,17 +58,17 @@ function loadSounds(){
   return bank;
 }
 
-function playSound(pos, type, speed=0){
+function playSound({pos, file, speed=0}){
   //console.log('playSound', ctx.getOutputTimestamp());
   let node = new AudioBufferSourceNode(ctx, {detune : speed*2.5});
-  node.buffer = soundBank[type];
+  node.buffer = soundBank[file];
   node.connect(vol[pos]);
   if(uncontinousSound[pos]){
     uncontinousSound[pos].stop(0.01);
   }
   node.start();
   //console.log('started', ctx.getOutputTimestamp());
-  if (type in UNC_SOUNDS){
+  if (file in UNC_SOUNDS){
     uncontinousSound[pos] = node;
   }
 }
