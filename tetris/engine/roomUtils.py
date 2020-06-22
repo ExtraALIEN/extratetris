@@ -74,7 +74,8 @@ def init_room(conn, data):
                 msg = {'type': 'game-over',
                        'pos': field.pos,
                        'username': field.start_player.username,
-                       'stats': field.game_stats_to_view()}
+                       'stats': field.game_stats_to_view(),
+                       'silent': True}
                 conn.send_json(msg)
 
 def room_connect(conn, data):

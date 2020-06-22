@@ -1,5 +1,6 @@
 import {removeControls} from './controls.js';
 import {secondsToMinutes} from './timing.js';
+import {playSound} from './sound.js';
 
 function activateConnectButtons(){
   function sendConnectToRoomSignal(){
@@ -118,7 +119,7 @@ function showDisconnect({pos}){
   document.querySelector(selector).innerHTML = 'Player disconnected';
 }
 
-function showGameover({pos, stats, mode, username}){
+function showGameover({pos, stats, mode, username, silent}){
   let myField = document.querySelector('.tetris-view.current');
   if (myField && +pos === +myField.dataset.pos){
     removeControls();
@@ -176,6 +177,9 @@ function showGameover({pos, stats, mode, username}){
   }
 
   resultTable.classList.add('finished');
+  if (!silent){
+    playSound(pos, 'gameover');
+  }
 }
 
 function fillPlaces({places}){

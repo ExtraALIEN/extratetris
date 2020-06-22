@@ -64,8 +64,8 @@ function updateTetris({pos, current_piece, speed, time, score, distance, lines, 
       playSound(pos, 'rotate');
     }
     else {
-      let speed = +document.querySelector(`#field${pos} .stats .speed .val`).innerHTML;
-      playSound(pos, 'move', speed);
+      let currentSpeed = +document.querySelector(`#field${pos} .stats .speed .val`).innerHTML;
+      playSound(pos, 'move', currentSpeed);
     }
   }
 }
