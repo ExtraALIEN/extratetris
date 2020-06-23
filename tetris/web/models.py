@@ -2,7 +2,30 @@ import json
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from web.helpers import GAME_TYPES, VOLUME_STANDARD, COUNT_STATS, TYPE_STATS
+from web.helpers import GAME_TYPES, VOLUME_STANDARD, COUNT_STATS, TYPE_STATS, TYPE_OF_BEST
+
+
+class PlayerRecord(models.Model):
+    best_speed_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
+                                       on_delete=models.SET_NULL, related_name='best_speed_REC')
+    best_score_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
+                                       on_delete=models.SET_NULL, related_name='best_score_REC')
+    best_distance_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
+                                          on_delete=models.SET_NULL, related_name='best_distance_REC')
+    best_survival_time_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
+                                               on_delete=models.SET_NULL, related_name='best_survival_time_REC')
+    best_lines_count_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
+                                             on_delete=models.SET_NULL, related_name='best_lines_count_REC')
+    best_countdown_score_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
+                                                 on_delete=models.SET_NULL, related_name='best_countdown_score_REC')
+    best_time_lines_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
+                                            on_delete=models.SET_NULL, related_name='best_time_lines_REC')
+    best_time_climb_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
+                                            on_delete=models.SET_NULL, related_name='best_time_climb_REC')
+    best_time_drag_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
+                                           on_delete=models.SET_NULL, related_name='best_time_drag_REC')
+    best_time_acc_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
+                                          on_delete=models.SET_NULL, related_name='best_time_acc_REC')
 
 
 class PlayerManager(models.Manager):
@@ -22,6 +45,7 @@ class PlayerManager(models.Manager):
         guest.save()
         return guest
 
+
 class Player(models.Model):
     objects = PlayerManager()
     is_guest = models.BooleanField(default=False)
@@ -40,6 +64,7 @@ class Player(models.Model):
     best_time_climb = models.FloatField(null=True, blank=True)
     best_time_drag = models.FloatField(null=True, blank=True)
     best_time_acc = models.FloatField(null=True, blank=True)
+    record_card = models.OneToOneField(PlayerRecord, null=True, blank=True, on_delete=models.CASCADE)
     TOTAL_games = models.FloatField(default=0.0)
     TOTAL_eff = models.FloatField(default=0.0)
     TOTAL_score = models.FloatField(default=0.0)
@@ -221,6 +246,12 @@ class Player(models.Model):
     M_RA_distance = models.FloatField(default=0.0)
     M_RA_figures = models.FloatField(default=0.0)
 
+    def save_new(self):
+        record = PlayerRecord()
+        record.save()
+        self.record_card = record
+        self.save()
+
     def do_login(self, url='/'):
         from web.helpers import auto_login
         from django.http import HttpResponseRedirect
@@ -247,7 +278,7 @@ class Player(models.Model):
         return None
 
     def update_stats(self, **kwargs):
-                     # type=None, multiplayer=False, score=None, time=None,
+                     # type=None, rec=None, multiplayer=False, score=None, time=None,
                      # actions=None, lines=None, distance=None, figures=None,
                      # countdown_score=None, time_lines=None, time_drag=None,
                      # time_climb=None, max_speed=None, games=1):
@@ -262,6 +293,7 @@ class Player(models.Model):
                     new_val = getattr(self, prop) +  kwargs[x]
                     setattr(self, prop, new_val)
         self.update_best(**kwargs)
+        self.record_card.save()
         self.save()
 
     def update_eff(self, type=None, eff=None):
@@ -273,24 +305,34 @@ class Player(models.Model):
     def update_best(self, **kwargs):
         if kwargs['score'] and kwargs['score'] > self.best_score:
             self.best_score = kwargs['score']
+            self.record_card.best_score_REC = kwargs['rec']
         if kwargs['countdown_score'] and kwargs['countdown_score'] > self.best_countdown_score:
             self.best_countdown_score = kwargs['countdown_score']
+            self.record_card.best_countdown_score_REC = kwargs['rec']
         if not self.best_time_lines or kwargs['time_lines'] and kwargs['time_lines'] < self.best_time_lines:
             self.best_time_lines = kwargs['time_lines']
+            self.record_card.best_time_lines_REC = kwargs['rec']
         if not self.best_time_drag or kwargs['time_drag'] and kwargs['time_drag'] < self.best_time_drag:
             self.best_time_drag = kwargs['time_drag']
+            self.record_card.best_time_drag_REC = kwargs['rec']
         if not self.best_time_climb or kwargs['time_climb'] and kwargs['time_climb'] < self.best_time_climb:
             self.best_time_climb = kwargs['time_climb']
+            self.record_card.best_time_climb_REC = kwargs['rec']
         if not self.best_time_acc or kwargs['time_acc'] and kwargs['time_acc'] < self.best_time_acc:
             self.best_time_acc = kwargs['time_acc']
+            self.record_card.best_time_acc_REC = kwargs['rec']
         if kwargs['time'] and kwargs['time'] > self.best_survival_time:
             self.best_survival_time = kwargs['time']
+            self.record_card.best_survival_time_REC = kwargs['rec']
         if kwargs['max_speed'] and kwargs['max_speed'] > self.best_speed:
             self.best_speed = kwargs['max_speed']
+            self.record_card.best_speed_REC = kwargs['rec']
         if kwargs['lines'] and kwargs['lines'] > self.best_lines_count:
             self.best_lines_count = kwargs['lines']
+            self.record_card.best_lines_count_REC = kwargs['rec']
         if kwargs['distance'] and kwargs['distance'] > self.best_distance:
             self.best_distance = kwargs['distance']
+            self.record_card.best_distance_REC = kwargs['rec']
 
 
     def get_profile_stats(self):
@@ -459,7 +501,28 @@ class SingleGameRecord(models.Model):
         self.save()
 
     def graphs_data(self):
-        return json.loads(self.graphs)
+        data = {'game' : json.loads(self.graphs)}
+        if self.type in TYPE_OF_BEST:
+            data['best'] = self.best_graphs()
+        return data
+
+    def best_graphs(self):
+        stats = self.load_stats()
+        names = {stats[x]['username']: x for x in stats.keys()}
+        graphs = {}
+        for player in self.players.all():
+            rec = player.record_card
+            name = player.username.replace('_', '-')
+            pos = names[name]
+            prop = 'best_' + TYPE_OF_BEST[self.type] + '_REC'
+            graphs[pos] = getattr(rec, prop).graph_of_player(name)
+        return graphs
+
+    def graph_of_player(self, username):
+        stats = self.load_stats()
+        names = {stats[x]['username']: x for x in stats.keys()}
+        pos = names[username]
+        return json.loads(self.graphs)[pos]
 
     def get_url(self):
         return '/results/' + str(self.pk)

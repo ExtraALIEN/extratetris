@@ -21,7 +21,7 @@ function detectMaxTime(){
 
 function primaryData(result){
   let output = {};
-  let [stat, pos] = result.id.split('-');
+  let [stat, pos] = result.dataset.stat.split('-');
   output[stat] = {};
   output[stat][pos] = {};
   let [times, vals] = [JSON.parse(result.dataset.times), JSON.parse(result.dataset.vals)];
@@ -71,7 +71,12 @@ function currentAvg(data, stat, range, delta){
         fact = (player.vals[indexes[indexes.length-1]]-player.vals[indexes[0]])/
             (player.times[indexes[indexes.length-1]]-player.times[indexes[0]]);
       }
-      output[x].vals.push(fact);
+      if(isNaN(fact)){
+        output[x].times.pop();
+      }else{
+        output[x].vals.push(fact);
+      }
+
       time += delta;
     }
   }
@@ -221,7 +226,7 @@ function valsMul(input, mul){
   return output;
 }
 
-function detectData(){
+function detectData(results){
   let data = {};
   for (let x of [...results]){
     let prim = primaryData(x);
@@ -271,11 +276,11 @@ function lineData(input){
   return result;
 }
 
-function displayGraph(stat){
+function displayGraph(data, stat){
   let maxVal = 0;
 
-  for (let x in data[stat]){
-    for (let val of data[stat][x].vals){
+  for (let x in data.game[stat]){
+    for (let val of data.game[stat][x].vals){
       if (val > maxVal){
         maxVal = val;
       }
@@ -321,20 +326,21 @@ function displayGraph(stat){
      .call(g => g.selectAll(".tick line").clone()
           .attr("x2", width)
           .attr("stroke-opacity", 0.2));
-
-  for (let pos in data[stat]){
-      let toDisplay = lineData(data[stat][pos]);
-      svg.append("path")
-         .datum(toDisplay)
-         .attr("fill", "none")
-         .attr("stroke", `${COLORS[pos]}`)
-         .attr("stroke-width", 4)
-         .attr("opacity", .95)
-         .attr("d", d3.line()
-                      .x(d => timeScale(d.x))
-                     .y(d => valScale(d.y))
-                )
-          }
+  for(let x in data){
+    for (let pos in data[x][stat]){
+        let toDisplay = lineData(data[x][stat][pos]);
+        svg.append("path")
+           .datum(toDisplay)
+           .attr("fill", "none")
+           .attr("stroke", `${COLORS[pos]}`)
+           .attr("stroke-width", 4)
+           .attr("opacity", x === 'best' ? .4 : .95)
+           .attr("d", d3.line()
+                        .x(d => timeScale(d.x))
+                       .y(d => valScale(d.y))
+                  )
+            }
+    }
 }
 
 function clearGraph(){
@@ -345,17 +351,24 @@ function changeMode(event){
   document.querySelector('.displaying').classList.remove('displaying');
   event.target.classList.add('displaying');
   clearGraph();
-  displayGraph(event.target.dataset.mode);
+  displayGraph(data, event.target.dataset.mode);
 }
 
 
 displaySeconds();
 let graph = document.getElementById('graph');
 let results = document.querySelectorAll('.for-graph');
+let bestResults = document.querySelectorAll('.best-graph');
 let maxTime = detectMaxTime();
 let maxVal = 0;
-let data = detectData();
-displayGraph('score');
+// let data = detectData(results);
+let data = {
+  'game': detectData(results),
+  'best': detectData(bestResults)
+};
+//console.log(data);
+
+displayGraph(data,'score');
 let modes = document.querySelectorAll('#graph .modes > li');
 for (let x of [...modes]){
   x.addEventListener('click', changeMode);

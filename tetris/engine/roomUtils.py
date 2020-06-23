@@ -40,8 +40,9 @@ def init_room(conn, data):
         broadcast_lobby(id, type='room', game_type=tetris_room.type,
                         size=tetris_room.players, users=tetris_room.describe(),
                         url=tetris_room.get_url())
-        connect_data = {'room_id': id, 'pos': 0}
-        room_connect(conn, connect_data)
+        if field_avalaible(id, 0):
+            connect_data = {'room_id': id, 'pos': 0}
+            room_connect(conn, connect_data)
 
     if not tetris_room.started:
         for field in room.fields:
@@ -150,6 +151,8 @@ def room_hard_disconnect(conn):
 
     else:
         if player_in_game(player):
+            print(player)
+            print(status.players)
             room = status.active_rooms[id]
             pos = status.players[player]['pos']
             room.fields[pos].end_game(hard_disconnect=True)
@@ -160,7 +163,7 @@ def room_hard_disconnect(conn):
                 room_disconnect(conn, data)
             if player.is_guest:
                 try:
-                    session = Session.objects.get(user=player).delete()
+                    Session.objects.get(user=player).delete()
                 except Session.DoesNotExist:
                     pass
 
@@ -252,7 +255,7 @@ def player_in_game(player):
 
 def field_avalaible(id, pos):
     room = status.active_rooms[int(id)]
-    return room.fields[int(pos)].websocket is None
+    return room.fields[int(pos)].websocket is None and not room.fields[int(pos)].game_over
 
 def clear_room(id):
     all_exit_fields(id)

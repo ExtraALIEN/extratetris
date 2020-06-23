@@ -102,6 +102,17 @@ TYPE_STATS = [
 'RA',
 ]
 
+TYPE_OF_BEST = {
+    'CL': 'score',
+    'DM': 'score',
+    'SU': 'survival_time',
+    'LI': 'time_lines',
+    'CO': 'countdown_score',
+    'SA': 'time_climb',
+    'DR': 'time_drag',
+    'AC': 'time_acc',
+}
+
 SHAPES = [
     [[1, 1, 1, 1]],
     [[1, 1, 1], [0, 1, 0], [0, 0, 0]],

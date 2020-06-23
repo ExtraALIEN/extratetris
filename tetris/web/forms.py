@@ -43,7 +43,7 @@ class SignupForm(forms.Form):
         new_player = Player(**self.cleaned_data)
         new_player.username = self.cleaned_data['login']
         new_player.password = make_password(self.cleaned_data['password'])
-        new_player.save()
+        new_player.save_new()
         return new_player
 
 

@@ -90,6 +90,7 @@ class Field:
             self.graph[time] = {}
         self.graph[time][stat] = val
 
+
     def top_points(self):
         def top_point(x):
             for y in range(self.height-1, -1, -1):
@@ -575,6 +576,7 @@ class Field:
             print('                   HARD DISCONNECT')
             hard = True
         self.broadcast_gameover(hard)
+
         players_left = self.room.players_left()
 
         print('                          game over')

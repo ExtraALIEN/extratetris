@@ -91,9 +91,14 @@
       </ul>
     {% endfor %}
   </div>
-  {% for pos, graph in data.items %}
+  {% for pos, graph in data.game.items %}
     {% for key, s in graph.items %}
-      <div id='{{key}}-{{pos}}' class='for-graph' data-times='{{s.times}}' data-vals='{{s.vals}}'></div>
+      <div class='for-graph' data-stat='{{key}}-{{pos}}' data-times='{{s.times}}' data-vals='{{s.vals}}'></div>
+    {% endfor %}
+  {% endfor %}
+  {% for pos, graph in data.best.items %}
+    {% for key, s in graph.items %}
+      <div class='best-graph' data-stat='{{key}}-{{pos}}' data-times='{{s.times}}' data-vals='{{s.vals}}'></div>
     {% endfor %}
   {% endfor %}
 {% endblock %}

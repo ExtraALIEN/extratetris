@@ -180,6 +180,7 @@ class Room:
                 if not player.is_guest:
                     rec.players.add(player)
                     player.update_stats(type=self.type,
+                                        rec=rec,
                                         multiplayer=self.players > 1,
                                         score=field.score,
                                         time=field.time,
