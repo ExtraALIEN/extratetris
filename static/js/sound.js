@@ -75,6 +75,33 @@ function playSound({pos, file, speed=0}){
   }
 }
 
+function initSoundControl(){
+  let btn = document.querySelector('.soundcontrol');
+  btn.addEventListener('click', toggleMute);
+  document.body.addEventListener('keydown', function(event){
+    if (event.code === 'KeyM') {
+      toggleMute();
+    }
+  });
+  let stored = localStorage.getItem('sound');
+  if (!stored){
+    localStorage.setItem('sound', 'on');
+  } else if (stored === 'off'){
+    toggleMute(null, false);
+  }
+}
+
+
+
+function toggleMute(event, manual=true){
+  let btn = document.querySelector('.soundcontrol');
+  btn.classList.toggle('mute');
+  vol['main'].gain.setValueAtTime(+(!vol['main'].gain.value), ctx.currentTime);
+  if (manual) {
+    localStorage.setItem('sound', localStorage.getItem('sound') === 'on' ? 'off': 'on');
+  }
+}
+
 
 let vol = {};
 let uncontinousSound = {};
@@ -82,7 +109,8 @@ createSoundSources();
 console.log(ctx);
 
 let soundBank = loadSounds();
-console.log(soundBank);
 
+console.log(soundBank);
+initSoundControl();
 
 export {playSound};

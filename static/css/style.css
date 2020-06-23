@@ -218,6 +218,20 @@ body > main {
   color: #43b933;
 }
 
+.soundcontrol{
+  position: absolute;
+  top: 1rem;
+  right:1rem;
+  height: 5vh;
+  width:5vh;
+  background-image: url('/static/pic/sound.png');
+  background-size: 100%;
+  cursor: pointer;
+}
+
+.soundcontrol.mute{
+  opacity: .4;
+}
 
 
 .index{
