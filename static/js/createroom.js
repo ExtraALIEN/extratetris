@@ -6,8 +6,8 @@ function sendInit(event){
     'players' : document.querySelector('[name="players"]:checked').value,
     'game_type' : document.querySelector('[name="game_type"]:checked').value,
     'volume': document.querySelector('.vol input').value,
+    'ranked': document.querySelector('#id_ranked').checked,
   }
-
   conn.send(JSON.stringify(starter));
 }
 
@@ -56,6 +56,28 @@ function checkFilled(event){
       document.querySelector('[name="game_type"]:checked') ){
         btn.classList.add('filled');
       }
+  if (document.getElementById('id_players_0').checked){
+    removeRanked();
+  } else {
+    showRanked();
+  }
+}
+
+function removeRanked(){
+  ranked.checked = false;
+  ranked.parentElement.style.display = 'none';
+}
+
+function showRanked(){
+  ranked.parentElement.style.display = 'block';
+  checkRanked();
+}
+
+function checkRanked(event){
+  if (ranked.checked){
+    vol.querySelector('input').value = 100;
+    displayVolume(document.querySelector('[name="game_type"]:checked').value);
+  }
 }
 
 const STANDARD_VOLUME = {
@@ -163,4 +185,6 @@ for (let x of [...typeButtons]){
 for (let x of [...inputs]){
   x.addEventListener('change', checkFilled);
 }
+let ranked = document.getElementById('id_ranked');
 checkFilled();
+displayVolume(document.querySelector('[name="game_type"]:checked').value);

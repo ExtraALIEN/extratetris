@@ -5,8 +5,8 @@ from web.models import TetrisRoom, Player, Session
 from engine.ingame import init_fields
 from engine.lobbyUtils import broadcast_lobby
 
-def create_room(id, size, type, proc):
-    new_room = Room(id=id, size=size, type=type, proc=proc)
+def create_room(id, size, type, proc, ranked):
+    new_room = Room(id=id, size=size, type=type, proc=proc, ranked=ranked)
     activate_room(id, new_room)
     print(status.active_rooms)
 

@@ -9,11 +9,12 @@ from random import randint
 
 
 class Room:
-    def __init__(self, id, size, type, proc):
+    def __init__(self, id, size, type, proc, ranked):
         self.id = id
         self.type = type
         self.flag = False
         self.proc = proc
+        self.ranked = ranked
         if self.type in ['CF', 'HF']:
             self.flag = True
         self.players = size

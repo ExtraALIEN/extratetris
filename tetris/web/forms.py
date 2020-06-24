@@ -63,6 +63,8 @@ class CreateGameForm(forms.Form):
     players = forms.ChoiceField(choices=possible_players, widget=forms.RadioSelect)
     game_type = forms.ChoiceField(choices=GAME_TYPES, widget=forms.RadioSelect)
     volume = forms.FloatField(widget=forms.NumberInput(attrs={'min': 25, 'max': 250, 'value': 100}))
+    ranked = forms.BooleanField(required=False)
+
 
     def save(self, author):
         cur_room = author.has_room()
@@ -75,8 +77,7 @@ class CreateGameForm(forms.Form):
         new_room.author = author
         new_room.players_at_positions = json.dumps({x: "" for x in range(new_room.players)})
         new_room.room_id = TetrisRoom.objects.next_id()
+        new_room.ranked = self.cleaned_data['ranked']
         new_room.save()
-
-
 
         return new_room
