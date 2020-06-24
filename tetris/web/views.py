@@ -165,6 +165,7 @@ def recorded_game(request, game_number):
                                              'number': game.pk,
                                              'datestart': game.started_at.strftime('%d %b %Y %H:%I %Z'),
                                              'type': game.type,
+                                             'result_is_time': game.type in ['SU'],
                                              'scripts': scripts})
 
 def testpage(request):

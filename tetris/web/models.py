@@ -501,7 +501,9 @@ class SingleGameRecord(models.Model):
         self.save()
 
     def graphs_data(self):
-        data = {'game' : json.loads(self.graphs)}
+        data = {'game' : json.loads(self.graphs),
+                'last': self.graph_last10_player()
+                }
         if self.type in TYPE_OF_BEST:
             data['best'] = self.best_graphs()
         return data
@@ -523,6 +525,45 @@ class SingleGameRecord(models.Model):
         names = {stats[x]['username']: x for x in stats.keys()}
         pos = names[username]
         return json.loads(self.graphs)[pos]
+
+    def graph_last10_player(self):
+        stats = self.load_stats()
+        names = [stats[x]['username'] for x in stats.keys()]
+        players = []
+        for name in names:
+            players.append(Player.objects.filter(username=name.replace('_', '-')))
+        games = {}
+        for x in range(len(players)):
+            if players[x].count() == 1:
+                games[x] = players[x][0].recorded_games.filter(type=self.type) \
+                                                      .order_by('-started_at')[:10]
+        data = {}
+        divides = {}
+        for x in games:
+            data[x] = {'times': [0],
+                       'speed': [0],
+                       'score': [0],
+                       'distance': [0],
+                       'figures': [0],
+                       'lines': [0]
+                      }
+            summary = [game.graph_of_player(names[x]) for game in games[x]]
+            data[x]['divide'] = len(summary)
+            for graph in summary:
+                for stat in graph:
+                    max_time = int(graph[stat]['times'][-1]) + 1
+
+                    if max_time > data[x]['times'][-1]:
+                        data[x]['times'] = list(range(0, max_time+1))
+                    pos = 0
+                    for time in range(max_time):
+                        while graph[stat]['times'][pos] < time:
+                            pos += 1
+                        if time > len(data[x][stat])-1:
+                            data[x][stat].append(0)
+
+                        data[x][stat][time] += graph[stat]['vals'][pos]
+        return data
 
     def get_url(self):
         return '/results/' + str(self.pk)

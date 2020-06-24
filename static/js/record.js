@@ -16,7 +16,8 @@ function displaySeconds(){
 function detectMaxTime(){
   let allTimes = [...document.querySelectorAll('.end + .time')]
                               .map(a => parseFloat(a.dataset.time));
-  return allTimes.sort().reverse()[0];
+  return allTimes.sort((a,b) => a-b ).reverse()[0];
+
 }
 
 function primaryData(result){
@@ -28,11 +29,53 @@ function primaryData(result){
 
   output[stat][pos].times = times;
   output[stat][pos].vals = vals;
-  output[stat][pos].times.push(playerTime(pos));
-  output[stat][pos].vals.push(vals[vals.length-1]);
+  let finishTime = playerTime(pos);
+  if (finishTime > times[times.length-1]){
+    output[stat][pos].times.push(finishTime);
+    output[stat][pos].vals.push(vals[vals.length-1]);
+  }
+
   return output;
 
 }
+
+function buildMultipleDataObj(results){
+  let data = {'score': {},
+              'speed': {},
+              'distance': {},
+              'lines': {},
+              'figures': {}};
+  let divides = {};
+  let times = {}
+  for (let x of [...results]){
+    let [stat, pos, vals] = [x.dataset.stat, x.dataset.pos, x.dataset.vals];
+    if (stat === 'divide' && !(pos in divides) ){
+      divides[pos] = vals;
+    }
+  }
+  for (let x of [...results]){
+    let [stat, pos, vals] = [x.dataset.stat, x.dataset.pos, x.dataset.vals];
+    if (stat === 'times'){
+      times[pos] = JSON.parse(vals);
+    }
+  }
+  for (let x of [...results]){
+    let [stat, pos, vals] = [x.dataset.stat, x.dataset.pos, x.dataset.vals];
+    if (!(['times', 'divide']).includes(stat)){
+      let v = JSON.parse(vals).map(a=> a/divides[pos]);
+      while(v.length < times[pos].length){
+        v.push(v[v.length-1]);
+      }
+      v.pop();
+      times[pos].pop();
+      data[stat][pos] = {'times': times[pos],
+                        'vals': v
+        };
+    }
+  }
+  return data;
+}
+
 
 function overallAvg(data, stat){
   let output = {};
@@ -226,12 +269,17 @@ function valsMul(input, mul){
   return output;
 }
 
-function detectData(results){
+function detectData(results, ready=true){
   let data = {};
-  for (let x of [...results]){
-    let prim = primaryData(x);
-    data = deepUpdate(data, prim);
+  if (ready){
+    for (let x of [...results]){
+      let prim = primaryData(x);
+      data = deepUpdate(data, prim);
+    }
+  } else {
+    data = buildMultipleDataObj(results);
   }
+
   data['score-sec'] = overallAvg(data, 'score');
   data['score-fact'] = currentAvg(data, 'score', 60, 1);
 
@@ -333,7 +381,8 @@ function displayGraph(data, stat){
            .datum(toDisplay)
            .attr("fill", "none")
            .attr("stroke", `${COLORS[pos]}`)
-           .attr("stroke-width", 4)
+           .attr("stroke-width", x === 'last' ? 1 : 4)
+           .attr("stroke-dasharray", x === 'best' ? [5,5] : null)
            .attr("opacity", x === 'best' ? .4 : .95)
            .attr("d", d3.line()
                         .x(d => timeScale(d.x))
@@ -354,19 +403,20 @@ function changeMode(event){
   displayGraph(data, event.target.dataset.mode);
 }
 
-
 displaySeconds();
 let graph = document.getElementById('graph');
 let results = document.querySelectorAll('.for-graph');
 let bestResults = document.querySelectorAll('.best-graph');
+let lastResults = document.querySelectorAll('.last-graph');
 let maxTime = detectMaxTime();
 let maxVal = 0;
 // let data = detectData(results);
 let data = {
   'game': detectData(results),
-  'best': detectData(bestResults)
+  'best': detectData(bestResults),
+  'last': detectData(lastResults, false)
 };
-//console.log(data);
+
 
 displayGraph(data,'score');
 let modes = document.querySelectorAll('#graph .modes > li');
