@@ -393,6 +393,18 @@ body > main {
   height:100%;
 }
 
+.tetris-view .connect .option-disabled{
+  text-align: center;
+  position: absolute;
+  top: 30%;
+  width: 80%;
+  left: 10%;
+}
+
+.tetris-view .connect.connected .option-disabled{
+  display:none;
+}
+
 .tetris-view button[id^="connect"]{
   position: absolute;
   top: 0;

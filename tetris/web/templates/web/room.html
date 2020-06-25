@@ -59,7 +59,11 @@
            <div id='position{{pos}}'
                 class='connect {% if is_author and not pos %} connected {% endif %}'
                 data-pos='{{pos}}'>
-                <button id='connect{{pos}}' data-pos='{{pos}}'>Занять место</button>
+                {% if room.ranked and guest_mode %}
+                  <p class='option-disabled'>Играть на рейтинг могут только зарегистрированные игроки</p>
+                {% else %}
+                  <button id='connect{{pos}}' data-pos='{{pos}}'>Занять место</button>
+                {% endif %}
            </div>
            {% if is_author and pos %}
            {% if guest_mode %}
