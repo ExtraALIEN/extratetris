@@ -106,8 +106,10 @@ def create_game(request):
             return HttpResponseRedirect('/')
         form = CreateGameForm(auto_id='id_%s')
         scripts = ['createroom']
+        guest_mode = request.user is None or request.user.is_guest
     return render(request, 'web/create-game.html', {'form': form,
-                                                    'scripts': scripts})
+                                                    'scripts': scripts,
+                                                    'guest_mode': guest_mode})
 
 
 def enter_room(request, room_number):
@@ -127,6 +129,7 @@ def enter_room(request, room_number):
         is_author = True
     limited = room.type in VOLUME_STANDARD
     time_result = ['SU']
+    guest_mode = request.user.is_guest
     # if room.started:
     #     scripts = ['gamecontrols']
     return render(request, 'web/room.html', {'room': room,
@@ -137,6 +140,7 @@ def enter_room(request, room_number):
                                              'queue' : queue,
                                              'queue_grid': queue_grid,
                                              'is_author' : is_author,
+                                             'guest_mode': guest_mode,
                                              'limited' : limited,
                                              'time_result' : room.type in time_result})
 

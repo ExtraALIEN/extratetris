@@ -6,6 +6,9 @@
     {% for room in rooms %}
       <li class='room' data-number={{room.room_id}}>
         <span class='type'>{{room.type}}</span>
+        {% if room.ranked %}
+          <span class='type r'>R</span>
+        {% endif %}
         <span class='players'>Игроков: {{room.players}}</span>
         <ul class='current-players'>
           {% for field in room.describe %}

@@ -457,6 +457,20 @@ body > main {
   color: #43b933;
 }
 
+.tetris-view .bot-handle.option-disabled p{
+  text-align: center;
+  position: absolute;
+  bottom: 40%;
+}
+
+.tetris-view .bot-handle.option-disabled button[id^="addbot"]:hover{
+  color: #316c29;
+}
+
+.tetris-view .bot-handle.option-disabled button[id^="addbot"]:hover::after{
+  opacity:.2;
+}
+
 .bot-level input{
   font-family: 'FZ DIGITAL 9';
   background-color: transparent;
@@ -1322,6 +1336,10 @@ body > main {
 
 }
 
+.ranked .disabled-option{
+  font-size: 1rem;
+}
+
 .ranked input[type="checkbox"]{
   display:none;
 }
@@ -1484,6 +1502,10 @@ body > main {
 				        1px 1px 0 #7bcf72,
 				        1px -1px 0 #7bcf72,
 				        -1px -1px 0 #7bcf72;
+}
+
+.lobby .room .type.r{
+  top: calc(10px + 3rem);
 }
 
 .lobby .room:hover .type{

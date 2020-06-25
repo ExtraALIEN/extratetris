@@ -582,19 +582,6 @@ class Field:
         print('                          game over')
         print('left ', players_left)
 
-        print(self.player.username)
-        print(self.score)
-        print(self.time)
-        print(self.lines)
-        print(self.total_figures)
-        print(self.max_speed)
-        print(self.distance)
-        print(self.actions/(self.time/60))
-        print('6 ', self.score_intermediate_st)
-        print('20 ', self.time_climb_st)
-        print('60 ', self.time_lines)
-        print('100 ', self.time_acc_st)
-        print('4020 ', self.time_drag_st)
 
         if players_left == 0:
             self.room.finish_game()

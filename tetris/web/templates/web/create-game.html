@@ -28,7 +28,17 @@
       <div class='text'>Здесь появится описание выбранного типа игры</div>
     </div>
     <div class='ranked'>
-      {{form.ranked}} <label for='id_ranked'><span>Рейтинговая игра</span></label>
+      {% if guest_mode %}
+        <input id='id_ranked' type="checkbox" disabled></>
+      {% else %}
+        {{form.ranked}}
+      {% endif %}
+      <label for='id_ranked'><span>Рейтинговая игра</span></label>
+      {% if guest_mode %}
+        <div class='disabled-option'>
+          <span>(доступно только для зарегистрированных игроков)</span>
+        </div>
+      {% endif %}
     </div>
     <div class='radio-block vol inactive'>
       <span>Продолжительность игры</span>{{ form.volume }}<span>%</span>
@@ -38,7 +48,6 @@
   <button id='create' type='submit'>Создать игру</button>
 
   </form>
-
 {% endblock %}
 
 {% block scripts %}

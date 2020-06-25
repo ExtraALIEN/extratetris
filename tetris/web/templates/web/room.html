@@ -18,7 +18,7 @@
 
 {% block soundcontrol %}
   <div class='soundcontrol'>
-   
+
   </div>
 {% endblock %}
 
@@ -62,15 +62,23 @@
                 <button id='connect{{pos}}' data-pos='{{pos}}'>Занять место</button>
            </div>
            {% if is_author and pos %}
-           <div class='bot-handle'
-                data-pos='{{pos}}'>
-                <button id='addbot{{pos}}' data-pos='{{pos}}'>Добавить бота</button>
-                <div class='bot-level'>
-                  <p>Уровень бота</p>
-                  <input type='number' value='50' min='0' max='100' step='1'>
-                </div>
-                <button id='delbot{{pos}}' data-pos='{{pos}}'>Убрать бота</button>
-           </div>
+           {% if guest_mode %}
+             <div class='bot-handle option-disabled'
+                  data-pos='{{pos}}'>
+                  <button id='addbot{{pos}}' data-pos='{{pos}}'>Добавить бота</button>
+                  <p>(доступно только для зарегистрированных игроков)</p>
+             </div>
+           {% else %}
+             <div class='bot-handle'
+                  data-pos='{{pos}}'>
+                  <button id='addbot{{pos}}' data-pos='{{pos}}'>Добавить бота</button>
+                  <div class='bot-level'>
+                    <p>Уровень бота</p>
+                    <input type='number' value='50' min='0' max='100' step='1'>
+                  </div>
+                  <button id='delbot{{pos}}' data-pos='{{pos}}'>Убрать бота</button>
+             </div>
+           {% endif %}
            {% endif %}
            <div class='announce'>
              <span class='message'></span>
