@@ -311,6 +311,11 @@ class Player(models.Model):
         new_val = getattr(self, prop) + eff
         setattr(self, prop, new_val)
 
+    def update_rating(self, type, delta):
+        prop = type + '_rating'
+        new_rating = round(getattr(self, prop) + delta)
+        setattr(self, prop, new_rating)
+
     def update_best(self, **kwargs):
         if kwargs['score'] and kwargs['score'] > self.best_score:
             self.best_score = kwargs['score']

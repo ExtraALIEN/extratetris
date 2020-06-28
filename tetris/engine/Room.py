@@ -3,6 +3,7 @@ import websockets
 from django.utils import timezone
 from engine.Field import Field
 from engine.ingame import process_command
+from engine.rating import calculate_rating_change
 from web.models import TetrisRoom, SingleGameRecord
 from web.helpers import GAME_COUNTS, POWERUPS, VOLUME_STANDARD
 from random import randint
@@ -153,6 +154,7 @@ class Room:
 
     def update_records(self, places):
         eff_points = {}
+        start_ratings = {}
         if self.players > 1:
             gap = 100 / (self.players - 1)
             next_eff = 100
@@ -162,6 +164,12 @@ class Room:
                     bank += next_eff
                     next_eff -= gap
                 eff_points[x] = bank/len(places[x])
+        if self.ranked:
+            for field in self.fields:
+                rating_prop = 'rating'
+                if field.websocket != 'bot':
+                    rating_prop = self.type + '_rating'
+                start_ratings[field.pos] = getattr(field.start_player, rating_prop)
 
         rec = SingleGameRecord(type=self.type, started_at=self.start_time, size=self.players)
         results = {place:
@@ -204,6 +212,9 @@ class Room:
                                 eff = eff_points[p]
                                 break
                         player.update_eff(self.type, eff)
+                        if self.ranked:
+                            delta = calculate_rating_change(eff, field.pos, start_ratings)
+                            player.update_rating(self.type, delta)
                     player.save()
         rec.save_stats(stats)
         rec.save_graphs(graphs)
