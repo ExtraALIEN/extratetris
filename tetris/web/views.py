@@ -21,7 +21,7 @@ def index(request):
         cur_room = request.user.has_room()
         if cur_room is not None:
             waiting = True
-
+    print('render start')
     return render(request, 'web/index.html', {'guest_mode': guest_mode,
                                               'user': us,
                                               'profile_url': profile_url,

@@ -1,9 +1,14 @@
 function updateRoom(event){
   let data = JSON.parse(event.data);
+  console.log(data);
   let type = data.type;
   if (type === 'connect'){
     let selector = `[data-number="${data.id}"] [data-pos="${data.pos}"]`;
-    document.querySelector(selector).innerHTML = data.username;
+    let name = data.username;
+    if (data.rating){
+      name += `:${data.rating}`;
+    }
+    document.querySelector(selector).innerHTML = name;
   } else if (type === 'disconnect'){
     let selector = `[data-number="${data.id}"] [data-pos="${data.pos}"]`;
     document.querySelector(selector).innerHTML = '---';

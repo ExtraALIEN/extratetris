@@ -175,7 +175,6 @@ class Room:
             stat['username'] = field.start_player.username
             stats[field.pos] = stat
             graphs[field.pos] = field.graph
-
             if field.websocket != 'bot':
                 player = field.start_player
                 if not player.is_guest:

@@ -53,7 +53,6 @@ class Player(models.Model):
     password = models.TextField(max_length=20, blank=True, null=True)
     username = models.CharField(max_length=20)
     date_joined = models.DateTimeField(auto_now_add=True)
-    rating = models.FloatField(default=1500.0)
     best_speed = models.FloatField(default=0.0)
     best_score = models.IntegerField(default=0)
     best_distance = models.IntegerField(default=0)
@@ -81,6 +80,7 @@ class Player(models.Model):
     CL_lines = models.FloatField(default=0.0)
     CL_distance = models.FloatField(default=0.0)
     CL_figures = models.FloatField(default=0.0)
+    CL_rating = models.FloatField(default=1500.0)
     DM_games = models.FloatField(default=0.0)
     DM_eff = models.FloatField(default=0.0)
     DM_score = models.FloatField(default=0.0)
@@ -89,6 +89,7 @@ class Player(models.Model):
     DM_lines = models.FloatField(default=0.0)
     DM_distance = models.FloatField(default=0.0)
     DM_figures = models.FloatField(default=0.0)
+    DM_rating = models.FloatField(default=1500.0)
     SU_games = models.FloatField(default=0.0)
     SU_eff = models.FloatField(default=0.0)
     SU_score = models.FloatField(default=0.0)
@@ -97,6 +98,7 @@ class Player(models.Model):
     SU_lines = models.FloatField(default=0.0)
     SU_distance = models.FloatField(default=0.0)
     SU_figures = models.FloatField(default=0.0)
+    SU_rating = models.FloatField(default=1500.0)
     LI_games = models.FloatField(default=0.0)
     LI_eff = models.FloatField(default=0.0)
     LI_score = models.FloatField(default=0.0)
@@ -105,6 +107,7 @@ class Player(models.Model):
     LI_lines = models.FloatField(default=0.0)
     LI_distance = models.FloatField(default=0.0)
     LI_figures = models.FloatField(default=0.0)
+    LI_rating = models.FloatField(default=1500.0)
     CO_games = models.FloatField(default=0.0)
     CO_eff = models.FloatField(default=0.0)
     CO_score = models.FloatField(default=0.0)
@@ -113,6 +116,7 @@ class Player(models.Model):
     CO_lines = models.FloatField(default=0.0)
     CO_distance = models.FloatField(default=0.0)
     CO_figures = models.FloatField(default=0.0)
+    CO_rating = models.FloatField(default=1500.0)
     SA_games = models.FloatField(default=0.0)
     SA_eff = models.FloatField(default=0.0)
     SA_score = models.FloatField(default=0.0)
@@ -121,6 +125,7 @@ class Player(models.Model):
     SA_lines = models.FloatField(default=0.0)
     SA_distance = models.FloatField(default=0.0)
     SA_figures = models.FloatField(default=0.0)
+    SA_rating = models.FloatField(default=1500.0)
     DR_games = models.FloatField(default=0.0)
     DR_eff = models.FloatField(default=0.0)
     DR_score = models.FloatField(default=0.0)
@@ -129,6 +134,7 @@ class Player(models.Model):
     DR_lines = models.FloatField(default=0.0)
     DR_distance = models.FloatField(default=0.0)
     DR_figures = models.FloatField(default=0.0)
+    DR_rating = models.FloatField(default=1500.0)
     AC_games = models.FloatField(default=0.0)
     AC_eff = models.FloatField(default=0.0)
     AC_score = models.FloatField(default=0.0)
@@ -137,6 +143,7 @@ class Player(models.Model):
     AC_lines = models.FloatField(default=0.0)
     AC_distance = models.FloatField(default=0.0)
     AC_figures = models.FloatField(default=0.0)
+    AC_rating = models.FloatField(default=1500.0)
     CF_games = models.FloatField(default=0.0)
     CF_eff = models.FloatField(default=0.0)
     CF_score = models.FloatField(default=0.0)
@@ -145,6 +152,7 @@ class Player(models.Model):
     CF_lines = models.FloatField(default=0.0)
     CF_distance = models.FloatField(default=0.0)
     CF_figures = models.FloatField(default=0.0)
+    CF_rating = models.FloatField(default=1500.0)
     HF_games = models.FloatField(default=0.0)
     HF_eff = models.FloatField(default=0.0)
     HF_score = models.FloatField(default=0.0)
@@ -153,6 +161,7 @@ class Player(models.Model):
     HF_lines = models.FloatField(default=0.0)
     HF_distance = models.FloatField(default=0.0)
     HF_figures = models.FloatField(default=0.0)
+    HF_rating = models.FloatField(default=1500.0)
     RA_games = models.FloatField(default=0.0)
     RA_eff = models.FloatField(default=0.0)
     RA_score = models.FloatField(default=0.0)
@@ -161,6 +170,7 @@ class Player(models.Model):
     RA_lines = models.FloatField(default=0.0)
     RA_distance = models.FloatField(default=0.0)
     RA_figures = models.FloatField(default=0.0)
+    RA_rating = models.FloatField(default=1500.0)
     M_TOTAL_games = models.FloatField(default=0.0)
     M_TOTAL_score = models.FloatField(default=0.0)
     M_TOTAL_time = models.FloatField(default=0.0)
@@ -293,7 +303,6 @@ class Player(models.Model):
                     new_val = getattr(self, prop) +  kwargs[x]
                     setattr(self, prop, new_val)
         self.update_best(**kwargs)
-        self.record_card.save()
         self.save()
 
     def update_eff(self, type=None, eff=None):
@@ -333,6 +342,7 @@ class Player(models.Model):
         if kwargs['distance'] and kwargs['distance'] > self.best_distance:
             self.best_distance = kwargs['distance']
             self.record_card.best_distance_REC = kwargs['rec']
+        self.record_card.save()
 
 
     def get_profile_stats(self):
@@ -366,14 +376,16 @@ class Player(models.Model):
         if self.best_time_acc:
             stats['best']['time_acc'] = round(self.best_time_acc/60, 2)
 
-        full_stats = COUNT_STATS + ['eff']
+        full_stats = COUNT_STATS + ['eff'] + ['rating']
         for t in TYPE_STATS:
             dic = {}
             for st in full_stats:
                 key = t + '_' + st
+                if t == 'TOTAL' and st == 'rating':
+                    continue
                 dic[st] = float(getattr(self, key))
                 if st == 'eff':
-                    games_key = t + '_games'
+                    games_key = 'M_' + t + '_games'
                     games = int(getattr(self, games_key))
                     if games > 0:
                         dic[st] = round(dic[st]/games, 2)
@@ -616,6 +628,9 @@ class TetrisRoom(models.Model):
             self.guests += 1
         pp = json.loads(self.players_at_positions)
         pp[str(pos)] = player.username
+        if self.ranked:
+            rateprop = self.type + '_rating'
+            pp[str(pos)] += ':' + str(round(getattr(player, rateprop)))
         self.players_at_positions = json.dumps(pp)
         self.save()
 
@@ -632,6 +647,8 @@ class TetrisRoom(models.Model):
         self.bots += 1
         pp = json.loads(self.players_at_positions)
         pp[str(pos)] = bot.username
+        if self.ranked:
+            pp[str(pos)] += ':' + str(bot.rating)
         self.players_at_positions = json.dumps(pp)
         botlevels = json.loads(self.botlevels)
         botlevels.append(bot.level)
@@ -642,7 +659,10 @@ class TetrisRoom(models.Model):
         import re
         self.bots -= 1
         pp = json.loads(self.players_at_positions)
-        level = re.sub('\D', '', pp[str(pos)])
+        botinfo = pp[str(pos)]
+        if self.ranked:
+            botinfo = botinfo.split(':')[0]
+        level = re.sub('\D', '', botinfo)
         pp[str(pos)] = ''
         self.players_at_positions = json.dumps(pp)
         botlevels = json.loads(self.botlevels)

@@ -59,10 +59,15 @@ function connectPlayer({pos}){
   }
 }
 
-function updatePlayers({player, pos}){
+function updatePlayers({player, pos, rating}){
   let selector = `#field${pos} .announce .player-name`;
   let span = document.querySelector(selector);
   span.innerHTML = player;
+  let ratingSelector = `#field${pos} .announce .player-rating`;
+  let ratingSpan = document.querySelector(ratingSelector);
+  if (ratingSpan){
+    ratingSpan.innerHTML = rating;
+  }
   let dash = document.querySelector(`#field${pos} .stats`);
   dash.classList.add('ready');
   let conPos = document.querySelector(`#position${pos}`);
@@ -82,6 +87,11 @@ function disconnectPlayer({pos}){
   let selector = `#field${pos} .announce .player-name`;
   let span = document.querySelector(selector);
   span.innerHTML = "";
+  let ratingSelector = `#field${pos} .announce .player-rating`;
+  let ratingSpan = document.querySelector(ratingSelector);
+  if (ratingSpan){
+    ratingSpan.innerHTML = "";
+  }
   let dash = document.querySelector(`#field${pos} .stats`);
   document.querySelector(`#position${pos}`).classList.remove('connected');
   dash.classList.remove('ready');

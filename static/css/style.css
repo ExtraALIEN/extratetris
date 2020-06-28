@@ -813,8 +813,16 @@ body > main {
 .announce .player-name{
   font-family: 'Digital-7 Mono';
   vertical-align: 5%;
-
 }
+
+.announce .player-rating{
+  font-family: 'Digital-7 Mono';
+  vertical-align: 5%;
+  font-size: 1rem;
+  color: #65a1d2;
+}
+
+
 
 .queue{
   box-sizing: border-box;

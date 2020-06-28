@@ -78,7 +78,7 @@
                   <button id='addbot{{pos}}' data-pos='{{pos}}'>Добавить бота</button>
                   <div class='bot-level'>
                     <p>Уровень бота</p>
-                    <input type='number' value='50' min='0' max='100' step='1'>
+                    <input type='number' value='50' min='1' max='100' step='1'>
                   </div>
                   <button id='delbot{{pos}}' data-pos='{{pos}}'>Убрать бота</button>
              </div>
@@ -87,6 +87,9 @@
            <div class='announce'>
              <span class='message'></span>
              <span class='player-name'></span>
+             {% if room.ranked %}
+               <span class='player-rating'></span>
+             {% endif %}
            </div>
            <button id='disconnect{{pos}}' class='disconnect {% if is_author %} author {% endif %}' data-pos='{{pos}}'>Отойти</button>
            <div class="stats">

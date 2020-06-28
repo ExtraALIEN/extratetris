@@ -92,7 +92,7 @@ const HANDLER_PARAMS = {
   'player' : ['player'],
   'info' : ['msg'],
   'connected' : ['pos'],
-  'update-players': ['player', 'pos'],
+  'update-players': ['player', 'pos', 'rating'],
   'disconnect-player': ['pos'],
   'room-deleted' : [],
   'start-game': [],
@@ -152,7 +152,7 @@ for (let x of [...buttonsDelBot]){
 }
 let botLevels = document.querySelectorAll('.bot-level input');
 for (let x of [...botLevels]){
-  // x.addEventListener('change', limitLevel);
+  x.addEventListener('change', limitLevel);
 }
 let conn = new WebSocket('ws://localhost/ws/connect/');
 

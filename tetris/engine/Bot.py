@@ -1,5 +1,6 @@
 from threading import Timer
 from random import choice, random, uniform
+from web.helpers import BOT_RATINGS
 places = [1,2,3]
 
 
@@ -32,6 +33,7 @@ class Bot:
         self.need_movedown = 1
         if self.room.type == 'SU':
             self.need_movedown = 1.01 - self.level/100
+        self.rating = self.detect_rating()
 
     def start(self):
         self.update_timer(self.delay)
@@ -285,3 +287,14 @@ class Bot:
 
     def sum_points(self, *args):
         return [sum(x) for x in zip(*args)]
+
+    def detect_rating(self):
+        rating_range = BOT_RATINGS[self.room.type]
+        down = self.level // 5
+        off = self.level % 5
+        rating = rating_range[down]
+        if off > 0:
+            rating += (rating_range[down+1] - rating_range[down])*off/5
+            rating = int(rating)
+        print(rating)
+        return rating

@@ -51,6 +51,11 @@ def init_room(conn, data):
                                'pos': field.pos,
                                'player': field.player.username
                                 }
+                rating_prop = 'rating'
+                if field.websocket != 'bot':
+                    rating_prop = tetris_room.type + '_rating'
+                upd['rating'] = getattr(field.player, rating_prop)
+                print(upd)
                 broadcast_room(id, upd)
     else:
         msg = {'type': 'watch-tetris',
@@ -70,6 +75,10 @@ def init_room(conn, data):
                                'pos': field.pos,
                                'player': field.player.username
                                 }
+                rating_prop = 'rating'
+                if field.websocket != 'bot':
+                    rating_prop = tetris_room.type + '_rating'
+                upd['rating'] = getattr(field.player, rating_prop)
                 conn.send_json(upd)
             if field.game_over:
                 msg = {'type': 'game-over',
@@ -97,6 +106,9 @@ def room_connect(conn, data):
                                    'pos': pos,
                                    'player': player.username,
                                     }
+            if tetris_room.ranked:
+                rating_prop = tetris_room.type + '_rating'
+                upd['rating'] = getattr(player, rating_prop)
             resp = {'type': 'connected',
                                    'pos': pos,
                                    'player': player.username,
@@ -128,12 +140,17 @@ def room_disconnect(conn, data):
 
 
 def room_hard_disconnect(conn):
+    print('disconnect')
     if conn not in status.in_room_lobby:
         return
     player = detect_player(conn)
     id = status.in_room_lobby[conn]
     tetris_room = TetrisRoom.objects.get(room_id=id)
+    print('exitin lobby')
+    if player == tetris_room.author and not tetris_room.started:
+        print('check')
     exit_room_lobby(conn)
+    print('exited')
     if not tetris_room.started:
         if player == tetris_room.author:
             delete = {'type': 'room-deleted'}
@@ -142,6 +159,7 @@ def room_hard_disconnect(conn):
             all_exit_room_lobby(id)
             deactivate_room(id)
             tetris_room.delete()
+            print('room deleted')
         elif player_in_game(player):
             pos = status.players[player]['pos']
             data = {'room_id': id, 'pos': pos}
@@ -221,7 +239,11 @@ def enter_field(id, pos, conn, player):
     room.fields[int(pos)].start_player = player
     status.connections[conn] = {'id': int(id), 'pos': int(pos)}
     status.players[player] = {'id': int(id), 'pos': int(pos)}
-    broadcast_lobby(id, pos, type='connect', username=player.username)
+    rating = ''
+    if room.ranked:
+        rateprop = room.type + '_rating'
+        rating = str(round(getattr(player, rateprop)))
+    broadcast_lobby(id, pos, type='connect', username=player.username, rating=rating)
 
 def exit_field(conn, started=False):
     data = status.connections[conn]
@@ -269,7 +291,10 @@ def bot_enter_field(id, pos, bot):
     room.fields[int(pos)].start_player = bot
     if pos not in status.room_bots[id]:
         status.room_bots[id].add(pos)
-    broadcast_lobby(id, pos, type='connect', username=bot.username)
+    rating = ''
+    if room.ranked:
+        rating = str(bot.rating)
+    broadcast_lobby(id, pos, type='connect', username=bot.username, rating=rating)
 
 
 def bot_exit_field(id, pos):
@@ -304,6 +329,8 @@ def add_bot(data):
                            'pos': pos,
                            'player': bot.username,
                             }
+    if tetris_room.ranked:
+        upd['rating'] = bot.rating
     broadcast_room(id, upd)
     if tetris_room.is_full():
         tetris_room.start()
