@@ -5,10 +5,9 @@ from web.models import TetrisRoom, Player, Session
 from engine.ingame import init_fields
 from engine.lobbyUtils import broadcast_lobby
 
-def create_room(id, size, type, proc, ranked):
-    new_room = Room(id=id, size=size, type=type, proc=proc, ranked=ranked)
+def create_room(id, size, type, proc, ranked, crazy):
+    new_room = Room(id=id, size=size, type=type, proc=proc, ranked=ranked, crazy=crazy)
     activate_room(id, new_room)
-    print(status.active_rooms)
 
 
 def find_next_id():
@@ -55,7 +54,6 @@ def init_room(conn, data):
                 if field.websocket != 'bot':
                     rating_prop = tetris_room.type + '_rating'
                 upd['rating'] = getattr(field.player, rating_prop)
-                print(upd)
                 broadcast_room(id, upd)
     else:
         msg = {'type': 'watch-tetris',

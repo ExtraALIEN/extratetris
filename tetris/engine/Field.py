@@ -15,7 +15,7 @@ class Field:
                             timeleft=360, #360
                             score_finish=20000, #18000
                             max_lines=60,
-                            powerup_mul=1,
+                            powerup_mul=1, #1
                             ra_next=None,
                             ra_applied=True,
                             ): #60
@@ -47,6 +47,7 @@ class Field:
         self.multiplier = 1
         self.to_movedown = 200 / (199 + self.speed**1.55)
         self.to_accelerate = 1.2
+        self.natural_acceleration = 0.1
         self.total_figures = 0
         self.actions = 0
         self.lines = 0
@@ -322,17 +323,13 @@ class Field:
         weights = [x**6 for x in top]
         x = choices(xs, weights=weights)[0]
         prob = 1
-        y = top[x]
-        print(top)
-        print(x, y)
+        y = top[x] - 1
         reduced = False
-        while not reduced:
+        while y >= 0 and not reduced:
             if random() < prob or random() < prob or random() < prob:
                 self.surface[y][x] = 0
                 y -= 1
-                if y < 0:
-                    reduced = True
-                elif self.surface[y][x] == 0:
+                if self.surface[y][x] == 0:
                     prob -= 0.02
                 else:
                     prob -= 0.06
@@ -361,7 +358,7 @@ class Field:
         elif center > self.width-1-wing:
             right_wing = self.width-1-center
             left_wing = 2 * wing - right_wing
-        top_y = top[center]
+        top_y = top[center] - 1
         bottom_y = top_y - 4
         if bottom_y < 0:
             bottom_y = 0
@@ -551,7 +548,7 @@ class Field:
                     self.lost_actions = 0
             self.to_accelerate -= delay
             if self.to_accelerate <= 0:
-                self.speed += .1
+                self.speed += self.natural_acceleration
                 if self.speed > self.max_speed:
                     self.max_speed = self.speed
                 self.to_accelerate += 1.2

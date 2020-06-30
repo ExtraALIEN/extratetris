@@ -10,17 +10,20 @@ from random import randint
 
 
 class Room:
-    def __init__(self, id, size, type, proc, ranked):
+    def __init__(self, id, size, type, proc, ranked, crazy):
         self.id = id
         self.type = type
         self.flag = False
         self.proc = proc
         self.ranked = ranked
+        self.crazy = crazy
         if self.type in ['CF', 'HF']:
             self.flag = True
         self.players = size
         arg = {'room': self,
                }
+        if self.crazy:
+            arg['powerup_mul'] = 8
         if self.type == 'CL':
             arg['powerup_mul'] = 0
         elif self.type == 'RA':
@@ -36,6 +39,7 @@ class Room:
                 arg['drag_finish'] = (proc*VOLUME_STANDARD['DR']) // 100
             elif self.type == 'AC':
                 arg['acc_finish'] = (proc*VOLUME_STANDARD['AC']) // 100
+
 
         self.fields = [Field(pos=i, **arg) for i in range(self.players)]
         self.start_time = None
@@ -311,10 +315,22 @@ class Room:
         if tg.shield_time > 0:
             if powerup == 'shield':
                 tg.shield_time += 45
+                msg_snd = {
+                    'type': 'powerup-sound',
+                    'pos': tg.pos,
+                    'file': powerup
+                }
+                broadcast_room(self.id, msg_snd)
             else:
                 tg.shield_time -= 15
                 if tg.shield_time < 0:
                     tg.shield_time = 0
+                msg_snd = {
+                    'type': 'powerup-sound',
+                    'pos': tg.pos,
+                    'file': 'block'
+                }
+                broadcast_room(self.id, msg_snd)
             return 1
         msg = None
         if powerup == 'chance_up':
@@ -330,6 +346,7 @@ class Room:
                     }
         elif powerup == 'speed_down':
             tg.change_speed(-10)
+            tg.natural_acceleration *= 1.15
             msg =  {'type': 'update-tetris',
                     'pos' : tg.pos,
                     'speed': tg.speed,

@@ -27,7 +27,7 @@
       <div class='short'></div>
       <div class='text'>Здесь появится описание выбранного типа игры</div>
     </div>
-    <div class='ranked'>
+    <div class='ranked tumbler'>
       {% if guest_mode %}
         <input id='id_ranked' type="checkbox" disabled></>
       {% else %}
@@ -39,6 +39,10 @@
           <span>(доступно только для зарегистрированных игроков)</span>
         </div>
       {% endif %}
+    </div>
+    <div class='tumbler'>
+      {{form.crazy}}
+      <label for='id_crazy'><span>CRAZY режим</span></label>
     </div>
     <div class='radio-block vol inactive'>
       <span>Продолжительность игры</span>{{ form.volume }}<span>%</span>

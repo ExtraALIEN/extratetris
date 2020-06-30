@@ -620,6 +620,7 @@ class TetrisRoom(models.Model):
     botlevels = models.TextField(default="[]")
     type = models.CharField(max_length=2, choices=GAME_TYPES)
     ranked = models.BooleanField(default=False)
+    crazy = models.BooleanField(default=False)
     proc = models.FloatField(default=100.0)
     active_players = models.ManyToManyField(Player)
     players_at_positions = models.TextField(default="")

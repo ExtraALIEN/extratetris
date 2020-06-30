@@ -144,7 +144,6 @@ POWERUPS = ['chance_up',
             'blind_queue',
             'drink',
             'weak_signal',
-
             ]
 
 VOLUME_STANDARD = {

@@ -7,6 +7,7 @@ function sendInit(event){
     'game_type' : document.querySelector('[name="game_type"]:checked').value,
     'volume': document.querySelector('.vol input').value,
     'ranked': document.querySelector('#id_ranked').checked,
+    'crazy': crazy.checked,
   }
   conn.send(JSON.stringify(starter));
 }
@@ -61,6 +62,11 @@ function checkFilled(event){
   } else {
     showRanked();
   }
+  if (document.getElementById('id_game_type_0').checked){
+    removeCrazy();
+  } else {
+    showCrazy();
+  }
 }
 
 function removeRanked(){
@@ -77,7 +83,26 @@ function checkRanked(event){
   if (ranked.checked){
     vol.querySelector('input').value = 100;
     displayVolume(document.querySelector('[name="game_type"]:checked').value);
+    removeCrazy();
   }
+}
+
+function removeCrazy(){
+  crazy.checked = false;
+  crazy.parentElement.style.display = 'none';
+}
+
+function showCrazy(){
+  crazy.parentElement.style.display = 'block';
+  checkCrazy();
+  checkRanked();
+}
+
+function checkCrazy(event){
+  if(crazy.checked){
+    removeRanked();
+  }
+
 }
 
 const STANDARD_VOLUME = {
@@ -186,5 +211,7 @@ for (let x of [...inputs]){
   x.addEventListener('change', checkFilled);
 }
 let ranked = document.getElementById('id_ranked');
+let crazy = document.getElementById('id_crazy');
+crazy.addEventListener('change', checkCrazy);
 checkFilled();
 displayVolume(document.querySelector('[name="game_type"]:checked').value);

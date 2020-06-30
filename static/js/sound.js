@@ -23,7 +23,8 @@ const ALL_SOUNDS = ['move', 'rotate', 'land', 'line', 'gameover', 'select',
             'drink',
             'weak_signal',
             'flag',
-            'goal'];
+            'goal',
+            'block'];
 const UNC_SOUNDS = ['move', 'rotate', 'select'];
 let ctx = new AudioContext();
 
