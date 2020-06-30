@@ -21,12 +21,14 @@ def index(request):
         cur_room = request.user.has_room()
         if cur_room is not None:
             waiting = True
+    scripts = ['index']
     print('render start')
     return render(request, 'web/index.html', {'guest_mode': guest_mode,
                                               'user': us,
                                               'profile_url': profile_url,
                                               'waiting' : waiting,
-                                              'cur_room' : cur_room
+                                              'cur_room' : cur_room,
+                                              'scripts': scripts
                                               })
 
 def lobby(request):
