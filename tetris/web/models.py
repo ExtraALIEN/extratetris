@@ -446,7 +446,7 @@ class Player(models.Model):
         return stats
 
     def get_recorded_games(self):
-        all_games = self.recorded_games.all().order_by('-started_at')
+        all_games = self.recorded_games.all().order_by('-started_at')[:50]
         games = []
         for x in all_games:
             game = {}
