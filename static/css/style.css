@@ -1802,7 +1802,9 @@ header .login > a {
 }
 
 .form-error{
-  color: #a31717;
+  color: #de3535;
+  font-weight: bold;
+  font-size: 1.5rem;
 }
 
 

@@ -13,6 +13,10 @@
       {{form.password}}
       </div>
       <div class='form-error'>{{form.errors.password}}</div>
+      <label for='{{form.confirm_password.id_for_label}}'>Confirm password</label>
+      {{form.confirm_password}}
+      </div>
+      <div class='form-error'>{{form.errors.confirm_password}}</div>
       <button type="submit" name="submit">Создать</button>
     </form>
 

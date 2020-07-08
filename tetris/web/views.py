@@ -54,19 +54,22 @@ def signup(request):
 def login(request):
     error = ""
     if request.method == 'POST':
-        login = request.POST.get('login')
-        password = request.POST.get('password')
-        key = session_login(login, password)
-        if key:
-            response = HttpResponseRedirect('/')
-            response.set_cookie('session_key', key,
-                                domain='localhost',
-                                httponly=True,
-                                expires=timezone.now()+timedelta(days=5))
-            return response
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            login = request.POST.get('login')
+            password = request.POST.get('password')
+            key = session_login(login, password)
+            if key:
+                response = HttpResponseRedirect('/')
+                response.set_cookie('session_key', key,
+                                    domain='localhost',
+                                    httponly=True,
+                                    expires=timezone.now()+timedelta(days=5))
+                return response
+            else:
+                error = "неверный логин/пароль"
         else:
-            error = "неверный логин/пароль"
-            form = LoginForm(request.POST)
+            error = 'некорректно введен логин/пароль'
     else:
         form = LoginForm(auto_id='%s')
     return render(request, 'web/login.html', {'form': form, 'error': error})

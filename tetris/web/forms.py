@@ -30,6 +30,10 @@ class SignupForm(forms.Form):
                                validators=[onlychars_validator,
                                            MinLengthValidator(4, message='Минимум 4 символа')])
 
+    confirm_password = forms.CharField(max_length=20,
+                               widget=forms.PasswordInput,
+                               validators=[onlychars_validator])
+
     def clean_login(self):
         input = self.cleaned_data['login']
         if len(Player.objects.filter(login=input)) > 0:
@@ -37,7 +41,13 @@ class SignupForm(forms.Form):
              Выберите другое имя пользователя'))
         return input
 
-
+    def clean_confirm_password(self):
+        input = self.cleaned_data['confirm_password']
+        if not 'password' in self.cleaned_data:
+            self.add_error('confirm_password', forms.ValidationError('Пароль не введен либо не соответствует требованиям'))
+        elif input != self.cleaned_data['password']:
+            self.add_error('confirm_password', forms.ValidationError('Пароли не совпадают. Внимательно введите заново пароль и его повтор'))
+        return input
 
     def save(self):
         new_player = Player(**self.cleaned_data)
@@ -48,8 +58,13 @@ class SignupForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-    login = forms.CharField(max_length=20)
-    password = forms.CharField(max_length=20, widget=forms.PasswordInput)
+    login = forms.CharField(max_length=20, validators=[onlychars_validator])
+    password = forms.CharField(max_length=20, widget=forms.PasswordInput, validators=[onlychars_validator])
+
+    def clean_login(self):
+        input = self.cleaned_data['login']
+        print(input)
+        return input
 
     def save(self):
         player = Player.objects.get(login=self.cleaned_data['login'],
