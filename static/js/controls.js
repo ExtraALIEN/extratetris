@@ -1,16 +1,24 @@
 import {playSound} from './sound.js';
+import {randomNumberInRange} from './utils.js';
 
 function activateControls(){
   document.body.addEventListener('keydown', controlField);
+  activateSensorControls();
 }
 
 function removeControls(){
   document.body.removeEventListener('keydown', controlField);
+  deactivateSensorControls();
 }
 
-function controlField(event){
+function controlField(event, sensorData=''){
   let c = event.code;
-  event.preventDefault();
+  if (c){
+    event.preventDefault();
+  }
+  if (sensorData !== ''){
+    c = sensorData;
+  }
   let msg = {'type': 'control'};
   if(c === 'KeyA' || c === 'ArrowLeft'){
     msg.command = 'move_left';
@@ -44,6 +52,68 @@ function controlField(event){
   }
   if (msg.command){
     document.conn.send(JSON.stringify(msg));
+  }
+}
+
+function sensorControlField(event){
+  let elem = event.target;
+  if (event.type === 'touchstart'){
+    sendSensorCommand(elem);
+    if (!elem.trackedTouch){
+      elem.addEventListener('touchmove', detectLeave);
+      elem.trackedTouch = true;
+    }
+  }
+  else {
+    elem.classList.remove('pressed');
+    elem.removeEventListener('touchmove', detectLeave);
+    elem.trackedTouch = false;
+    clearTimeout(elem.timer);
+    delete elem.timer;
+  }
+}
+
+function detectLeave(event){
+  let {pageX, pageY} = event.changedTouches[0];
+  let currentElement = document.elementFromPoint(pageX, pageY);
+  if (currentElement !== event.target){
+    sensorControlField(event);
+  }
+}
+
+function sendSensorCommand(elem){
+  elem.classList.add('pressed');
+  let sensorData = elem.dataset.command;
+  if (elem.dataset.command === 'use') {
+    let total = [...document.querySelectorAll('.tetris-view')].length;
+    sensorData = `Numpad${Math.floor(randomNumberInRange(1,total+1))}`;
+  }
+  controlField({'code': null}, sensorData=sensorData);
+  if(!elem.timer){
+    elem.timer = setTimeout(function(){
+      sendSensorCommand(elem);
+    }, 400);
+  } else {
+    elem.timer = setTimeout(function(){
+      sendSensorCommand(elem);
+    }, 30);
+  }
+}
+
+
+function activateSensorControls(){
+  let sensorControls = document.querySelectorAll('.touchscreen-controls');
+  for (let x of [...sensorControls]){
+    x.addEventListener('touchstart', sensorControlField);
+    x.addEventListener('touchend', sensorControlField);
+  }
+}
+
+function deactivateSensorControls(){
+  let sensorControls = document.querySelectorAll('.touchscreen-controls');
+  for (let x of [...sensorControls]){
+    x.removeEventListener('touchstart', sensorControlField);
+    x.removeEventListener('touchend', sensorControlField);
   }
 }
 

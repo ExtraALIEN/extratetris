@@ -213,6 +213,71 @@ body > main {
   padding: 1rem;
 }
 
+
+.touchscreen-controls{
+    display: none;
+    position: fixed;
+    top: 78vh;
+    left: 5vw;
+    width: 60vw;
+    height: 20vh;
+}
+
+.touchscreen-controls > div{
+  position: absolute;
+}
+
+.touchscreen-controls .round{
+    border-bottom: 2px solid #5e4507;
+    border-radius: 50%;
+    width: 6vh;
+    height: 6vh;
+    background-image: radial-gradient(circle, #ba8d1a, #000000);
+}
+
+.touchscreen-controls > div.pressed{
+  transform: translateY(2px);
+  border-bottom: none;
+}
+
+.touchscreen-controls .left{
+  top: 25%;
+  left: 10%;
+}
+
+.touchscreen-controls .right{
+  top: 25%;
+  left: 40%;
+}
+
+.touchscreen-controls .down{
+  top: 55%;
+  left: 25%;
+}
+
+.touchscreen-controls .rotate{
+  top: 30%;
+  left: 70%;
+  width: 10vh;
+  height: 10vh;
+}
+
+.touchscreen-controls .select, .touchscreen-controls .use{
+  background-image: radial-gradient(circle, #baa51a, #000000);
+  border-bottom: 2px solid #5e4e07;
+  top: 5%;
+  left: 60%;
+  width: 5vh;
+  height: 2vh;
+}
+
+.touchscreen-controls .use{
+  background-image: radial-gradient(circle, #ba4f1a, #000000);
+  border-bottom: 2px solid #5e3907;
+  left: 90%;
+}
+
+
 .home{
   width: 16rem;
   margin: 0 auto;
@@ -1880,6 +1945,14 @@ header .login > a {
     height: 102%;
   }
 
+  .tetris-view:not(.current) .result.finished .primary, .tetris-view:not(.current) .result.finished .player-name{
+    color: #44d501;
+  }
+
+  .tetris-view:not(.current) .result.finished .stat:not(.primary){
+    display:none;
+  }
+
   .tetris-view button[id^="addbot"]{
     top: 50%;
     height: 50%;
@@ -1888,6 +1961,30 @@ header .login > a {
 
   .bot-level input{
     font-size: 2rem;
+  }
+
+  .touchscreen-controls{
+      display: block;
+      top: 88vh;
+      left: 25vw;
+      width: 50vw;
+      height: 10vh;
+  }
+
+  .touchscreen-controls .left, .touchscreen-controls .right, .touchscreen-controls .rotate, .touchscreen-controls .select{
+    top: 5%;
+  }
+
+  .touchscreen-controls .down.touchscreen-controls .use{
+    top: 25%;
+  }
+
+  .touchscreen-controls .use{
+    top: 50%;
+  }
+
+  .touchscreen-controls .select, .touchscreen-controls .use{
+    left: 90%;
   }
 
 }
@@ -1917,6 +2014,7 @@ header .login > a {
     max-width: 40vw;
     order: -1;
     flex-grow: 0;
+    margin-bottom: 20vh;
   }
 
   .tetris-view:not(.current){
@@ -1957,6 +2055,14 @@ header .login > a {
     height: 102%;
   }
 
+  .tetris-view:not(.current) .result.finished .primary, .tetris-view:not(.current) .result.finished .player-name{
+    color: #44d501;
+  }
+
+  .tetris-view:not(.current) .result.finished .stat:not(.primary){
+    display: none;
+  }
+
   .tetris-view button[id^="addbot"]{
     top: 50%;
     height: 50%;
@@ -1977,6 +2083,10 @@ header .login > a {
   }
   .tetris-view button[id^="delbot"]::after, .tetris-view button[id^="connect"]::after{
     background-position: 50% 20%;
+  }
+
+  .touchscreen-controls{
+    display: block;
   }
 
 }
