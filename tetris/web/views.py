@@ -83,13 +83,16 @@ def logout(request):
 
 
 def profile(request, profile_id):
-    user = Player.objects.get(pk=profile_id)
-    stats = user.get_profile_stats()
-    games = user.get_recorded_games()
-    scripts = ['profile']
-    return render(request, 'web/profile.html', {'stats': stats,
-                                                'scripts': scripts,
-                                                'games': games})
+    try:
+        user = Player.objects.get(pk=profile_id)
+        stats = user.get_profile_stats()
+        games = user.get_recorded_games()
+        scripts = ['profile']
+        return render(request, 'web/profile.html', {'stats': stats,
+                                                    'scripts': scripts,
+                                                    'games': games})
+    except Player.DoesNotExist:
+        return HttpResponseRedirect('/')
 
 def create_game(request):
     if request.method == 'POST':
@@ -119,41 +122,45 @@ def create_game(request):
 
 def enter_room(request, room_number):
     from web.models import TetrisRoom
-    room = TetrisRoom.objects.get(room_id=room_number)
-    positions = [x for x in range(room.players)]
-    width = [x for x in range(12)]
-    height = [x for x in range(25-2,-1,-1)]
-    queue = [x for x in range(5)]
-    queue_grid = [x for x in range(-1,5)]
-    scripts = ['enterroom']
-    is_author = False
-    if request.user is None:
-        guest = Player.objects.create_guest()
-        return guest.do_login(room.get_url())
-    elif request.user == room.author:
-        is_author = True
-    limited = room.type in VOLUME_STANDARD
-    time_result = ['SU']
-    guest_mode = request.user.is_guest
-    # if room.started:
-    #     scripts = ['gamecontrols']
-    return render(request, 'web/room.html', {'room': room,
-                                             'positions': positions,
-                                             'scripts': scripts,
-                                             'width': width,
-                                             'height': height,
-                                             'queue' : queue,
-                                             'queue_grid': queue_grid,
-                                             'is_author' : is_author,
-                                             'guest_mode': guest_mode,
-                                             'limited' : limited,
-                                             'time_result' : room.type in time_result})
+    try:
+        room = TetrisRoom.objects.get(room_id=room_number)
+        positions = [x for x in range(room.players)]
+        width = [x for x in range(12)]
+        height = [x for x in range(25-2,-1,-1)]
+        queue = [x for x in range(5)]
+        queue_grid = [x for x in range(-1,5)]
+        scripts = ['enterroom']
+        is_author = False
+        if request.user is None:
+            guest = Player.objects.create_guest()
+            return guest.do_login(room.get_url())
+        elif request.user == room.author:
+            is_author = True
+        limited = room.type in VOLUME_STANDARD
+        time_result = ['SU']
+        guest_mode = request.user.is_guest
+        # if room.started:
+        #     scripts = ['gamecontrols']
+        return render(request, 'web/room.html', {'room': room,
+                                                 'positions': positions,
+                                                 'scripts': scripts,
+                                                 'width': width,
+                                                 'height': height,
+                                                 'queue' : queue,
+                                                 'queue_grid': queue_grid,
+                                                 'is_author' : is_author,
+                                                 'guest_mode': guest_mode,
+                                                 'limited' : limited,
+                                                 'time_result' : room.type in time_result})
+    except TetrisRoom.DoesNotExist:
+        return HttpResponseRedirect('/')
 
 
 def delete_room(request, room_number):
     from web.models import TetrisRoom
-    room = TetrisRoom.objects.get(room_id=room_number)
-    room.delete()
+    if request.user and request.user.username == 'extraalien':
+        room = TetrisRoom.objects.get(room_id=room_number)
+        room.delete()
     return HttpResponseRedirect('/')
 
 
@@ -165,17 +172,20 @@ def play_room(request, room_number):
 
 def recorded_game(request, game_number):
     from web.models import SingleGameRecord
-    game = SingleGameRecord.objects.get(pk=game_number)
-    stats = game.load_stats()
-    graphs = game.graphs_data()
-    scripts = ['record']
-    return render(request, 'web/game.html', {'stats': stats,
-                                             'data': graphs,
-                                             'number': game.pk,
-                                             'datestart': game.started_at.strftime('%d %b %Y %H:%I %Z'),
-                                             'type': game.type,
-                                             'result_is_time': game.type in ['SU'],
-                                             'scripts': scripts})
+    try:
+        game = SingleGameRecord.objects.get(pk=game_number)
+        stats = game.load_stats()
+        graphs = game.graphs_data()
+        scripts = ['record']
+        return render(request, 'web/game.html', {'stats': stats,
+                                                 'data': graphs,
+                                                 'number': game.pk,
+                                                 'datestart': game.started_at.strftime('%d %b %Y %H:%I %Z'),
+                                                 'type': game.type,
+                                                 'result_is_time': game.type in ['SU'],
+                                                 'scripts': scripts})
+    except SingleGameRecord.DoesNotExist:
+        return HttpResponseRedirect('/')
 
 def top_results(request, mode='score'):
     types = {'CL': 'Classic',
@@ -201,13 +211,16 @@ def top_results(request, mode='score'):
              'countdown_score': 'Очки за 6 минут',
              'hours': 'Часов в игре'
              }
-    players = Player.objects.get_top(mode=mode)
-    scripts = ['top']
-    return render(request, 'web/top.html', {'mode': mode,
+    if mode in types:
+        players = Player.objects.get_top(mode=mode)
+        scripts = ['top']
+        return render(request, 'web/top.html', {'mode': mode,
                                             'type_mode': types[mode],
                                             'players': players,
                                             'types': types,
                                             'scripts': scripts})
+    return HttpResponseRedirect('/')
+
 
 def testpage(request):
     print('test')

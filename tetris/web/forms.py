@@ -50,6 +50,7 @@ class SignupForm(forms.Form):
         return input
 
     def save(self):
+        del self.cleaned_data['confirm_password']
         new_player = Player(**self.cleaned_data)
         new_player.username = self.cleaned_data['login']
         new_player.password = make_password(self.cleaned_data['password'])
