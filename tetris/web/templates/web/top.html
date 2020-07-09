@@ -1,0 +1,36 @@
+{% extends './base_main.html' %}
+
+{% block top %}
+  <h2 data-mode='{{mode}}'>Лучшие 100 игроков, {{type_mode}}</h2>
+
+  <div class='records-menu'>
+
+  {% for type, description in types.items %}
+    <a href='/top/{{type}}/' {% if mode == type %} class='active' {% endif %}>{{description}}</a>
+  {% endfor %}
+  </div>
+  <section class='ranks'>
+      <div class='row title'>
+        <div class='pos'></div>
+        <div class='user'>Игрок</div>
+        <div class='result-rank'>Результат/рейтинг</div>
+        <div class='games'>Игр</div>
+      </div>
+    {% for x in players %}
+      <div class='row'>
+        <div class='pos'>{{x.pos}}</div>
+        <div class='user'><a href={{x.url}}>{{x.username}}</a></div>
+        <div class='result-rank' data-val={{x.result}}></div>
+        <div class='games' data-int data-val='{{x.games}}'></div>
+      </div>
+    {% endfor %}
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script type='application/javascript' src='/static/js/d3.js'></script>
+  {%for script in scripts %}
+    <script type='module' src='/static/js/{{script}}.js'></script>
+  {% endfor %}
+
+{% endblock %}

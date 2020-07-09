@@ -177,6 +177,38 @@ def recorded_game(request, game_number):
                                              'result_is_time': game.type in ['SU'],
                                              'scripts': scripts})
 
+def top_results(request, mode='score'):
+    types = {'CL': 'Classic',
+             'DM': 'Deathmatch',
+             'SU': 'Survival',
+             'LI': 'Lines',
+             'CO': 'Countdown',
+             'SA': 'Score Attack',
+             'DR': 'Drag Racing',
+             'AC': 'Accelerate',
+             'CF': 'Capture Flag',
+             'HF': 'Hold Flag',
+             'RA': 'Rally',
+             'speed': 'Максимальная скорость',
+             'score': 'Очков в 1 игре',
+             'lines_count': 'Линий в 1 игре',
+             'distance': 'Пробег в 1 игре',
+             'survival_time': 'Время выживания',
+             'time_acc': 'Разгон до 100',
+             'time_lines': 'Время 60 линий',
+             'time_drag': 'Время 4020 шагов',
+             'time_climb': 'Время 20000 очков',
+             'countdown_score': 'Очки за 6 минут',
+             'hours': 'Часов в игре'
+             }
+    players = Player.objects.get_top(mode=mode)
+    scripts = ['top']
+    return render(request, 'web/top.html', {'mode': mode,
+                                            'type_mode': types[mode],
+                                            'players': players,
+                                            'types': types,
+                                            'scripts': scripts})
+
 def testpage(request):
     print('test')
     return render(request, 'web/test.html', {})

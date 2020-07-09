@@ -45,6 +45,31 @@ class PlayerManager(models.Manager):
         guest.save()
         return guest
 
+    def get_top(self, mode, max_number=100):
+        reverse_types = ['']
+        prop = ''
+        games = 'TOTAL_games'
+        if len(mode) == 2:
+            prop = mode + '_rating'
+            games = 'M_' + mode + '_games'
+        elif mode == 'hours':
+            prop = 'TOTAL_time'
+        else:
+            prop = 'best_' + mode
+        ord = prop
+        if not mode.startswith('time_'):
+            ord = '-' + prop
+        top_players = list(self.all()
+                               .exclude(**{prop + '__isnull': True})
+                               .order_by(ord))[:max_number]
+        data = [{'pos': top_players.index(x) + 1,
+                 'username': x.username,
+                 'url': x.get_url(),
+                 'result': getattr(x, prop),
+                 'games': getattr(x, games)} for x in top_players]
+        return data
+
+
 
 class Player(models.Model):
     objects = PlayerManager()

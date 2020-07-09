@@ -405,10 +405,53 @@ header .login > a {
   box-shadow: 0 0 1rem 0 #2bd132;
 }
 
+.records-menu a{
+  display: block;
+  text-align: center;
+}
+
 .room-number{
   position: absolute;
   top: 1rem;
   left: 1rem;
+}
+
+.ranks{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.ranks .row{
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.ranks .row > div{
+  flex-basis: 15%;
+  padding: .25rem;
+  flex-grow: 1;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.ranks a {
+  color: inherit;
+}
+
+.ranks .row.title{
+  font-weight: bold;
+}
+
+.ranks .row:nth-child(2n+1), .records-menu a.active{
+  color: #30a109;
 }
 
 .grid{
