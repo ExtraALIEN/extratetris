@@ -1,6 +1,8 @@
 import {removeControls} from './controls.js';
-import {secondsToMinutes} from './timing.js';
+import {secondsToMinutes} from './utils.js';
 import {playSound} from './sound.js';
+import {TETRIS_VALUES} from './utils.js';
+
 
 function activateConnectButtons(){
   function sendConnectToRoomSignal(){
@@ -12,7 +14,6 @@ function activateConnectButtons(){
                               player: document.player
                             }));
   }
-
 
   function sendDisconnectSignal(){
     let number = document.getElementById('room-number').dataset.roomNumber;
@@ -29,7 +30,6 @@ function activateConnectButtons(){
   [...diss].forEach(a=> a.addEventListener('click', sendDisconnectSignal));
 }
 
-
 function deactivateConnectButtons(x){
   let connectDiv = document.getElementById(`position${x}`);
   let disconnectButton = document.getElementById(`disconnect${x}`);
@@ -40,9 +40,6 @@ function deactivateConnectButtons(x){
     botHandle.remove();
   }
 }
-
-
-
 
 function connectPlayer({pos}){
   let div = document.getElementById(`position${pos}`);
@@ -60,11 +57,9 @@ function connectPlayer({pos}){
 }
 
 function updatePlayers({player, pos, rating}){
-  let selector = `#field${pos} .announce .player-name`;
-  let span = document.querySelector(selector);
+  let span = document.querySelector(`#field${pos} .announce .player-name`);
   span.innerHTML = player;
-  let ratingSelector = `#field${pos} .announce .player-rating`;
-  let ratingSpan = document.querySelector(ratingSelector);
+  let ratingSpan = document.querySelector(`#field${pos} .announce .player-rating`);
   if (ratingSpan){
     ratingSpan.innerHTML = rating;
   }
@@ -84,11 +79,9 @@ function updatePlayers({player, pos, rating}){
 }
 
 function disconnectPlayer({pos}){
-  let selector = `#field${pos} .announce .player-name`;
-  let span = document.querySelector(selector);
+  let span = document.querySelector(`#field${pos} .announce .player-name`);
   span.innerHTML = "";
-  let ratingSelector = `#field${pos} .announce .player-rating`;
-  let ratingSpan = document.querySelector(ratingSelector);
+  let ratingSpan = document.querySelector(`#field${pos} .announce .player-rating`);
   if (ratingSpan){
     ratingSpan.innerHTML = "";
   }
@@ -125,8 +118,7 @@ function kickRoom(){
 }
 
 function showDisconnect({pos}){
-  let selector = `#field${pos} .announce .message`;
-  document.querySelector(selector).innerHTML = 'Player disconnected';
+  document.querySelector(`#field${pos} .announce .message`).innerHTML = 'Player disconnected';
 }
 
 function showGameover({pos, stats, mode, username, silent}){
@@ -134,33 +126,8 @@ function showGameover({pos, stats, mode, username, silent}){
   if (myField && +pos === +myField.dataset.pos){
     removeControls();
   }
-  let selector = `#field${pos} .result .player-name`;
-  let userSpan = document.querySelector(selector);
+  let userSpan = document.querySelector(`#field${pos} .result .player-name`);
   userSpan.innerHTML = username;
-  const STATS_SELECTOR = {
-    'result' : '.primary .main-value',
-    'score' : '.scores .total',
-    'score-intermediate-st' : '.scores .inter-st',
-    'score-sec' : '.scores .sec',
-    'score-piece' : '.scores .piece',
-    'score-action' : '.scores .action',
-    'score-dist' : '.scores .dist',
-    'time' : '.time .overall',
-    'time-climb' : '.time .climb',
-    'time-lines' : '.time .lines',
-    'time-acc' : '.time .acc',
-    'time-drag' : '.time .drag',
-    'lines' : '.lines .total',
-    'lines-min' : '.lines .min',
-    'pieces-line' : '.lines .pieces',
-    'dist-line' : '.lines .dist',
-    'pieces' : '.figures .total',
-    'pieces-min' : '.figures .min',
-    'actions-piece' : '.figures .act',
-    'max-speed': '.other .speed',
-    'distance': '.other .dist',
-    'apm':'.other .apm',
-  };
   let resultTable = document.querySelector(`#field${pos} .result`);
   for (let elem of [...resultTable.querySelectorAll('.val')]){
     if (!elem.innerHTML) {
@@ -168,7 +135,7 @@ function showGameover({pos, stats, mode, username, silent}){
     }
   }
   for (let x in stats){
-    let cell = resultTable.querySelector(`${STATS_SELECTOR[x]} .val`);
+    let cell = resultTable.querySelector(`${TETRIS_VALUES.statsSelector[x]} .val`);
     let val = stats[x];
     if (val === null){
       continue;
@@ -177,7 +144,7 @@ function showGameover({pos, stats, mode, username, silent}){
       val = secondsToMinutes(val, cell.classList.contains('dec'));
     }
     else if (cell.parentElement.classList.contains('main-value') &&
-            ['SU', 'LI', 'SA', 'DR', 'AC', 'HF'].indexOf(mode) !== -1){
+            ['SU', 'LI', 'SA', 'DR', 'AC', 'HF'].includes(mode)){
       val = secondsToMinutes(val, mode !== 'SU');
     }
     else if (val %1 !== 0){

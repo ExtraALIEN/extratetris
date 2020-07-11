@@ -1,9 +1,7 @@
-import {secondsToMinutes} from './timing.js';
+import {secondsToMinutes, deepUpdate, TETRIS_COLORS} from './utils.js';
 
-const COLORS = ['#c61212', '#004bf1', '#e9a611', '#05db0e'];
 function displaySeconds(){
-  let selector = `.game-results .time`;
-  let cells = document.querySelectorAll(selector);
+  let cells = document.querySelectorAll(`.game-results .time`);
   for (let x of [...cells]){
     if(x.dataset.time){
       x.innerHTML = secondsToMinutes(x.dataset.time, x.classList.contains('dec'))
@@ -17,7 +15,6 @@ function detectMaxTime(){
   let allTimes = [...document.querySelectorAll('.end + .time')]
                               .map(a => parseFloat(a.dataset.time));
   return allTimes.sort((a,b) => a-b ).reverse()[0];
-
 }
 
 function primaryData(result){
@@ -26,7 +23,6 @@ function primaryData(result){
   output[stat] = {};
   output[stat][pos] = {};
   let [times, vals] = [JSON.parse(result.dataset.times), JSON.parse(result.dataset.vals)];
-
   output[stat][pos].times = times;
   output[stat][pos].vals = vals;
   let finishTime = playerTime(pos);
@@ -34,9 +30,7 @@ function primaryData(result){
     output[stat][pos].times.push(finishTime);
     output[stat][pos].vals.push(vals[vals.length-1]);
   }
-
   return output;
-
 }
 
 function buildMultipleDataObj(results){
@@ -70,12 +64,11 @@ function buildMultipleDataObj(results){
       times[pos].pop();
       data[stat][pos] = {'times': times[pos],
                         'vals': v
-        };
+      };
     }
   }
   return data;
 }
-
 
 function overallAvg(data, stat){
   let output = {};
@@ -119,7 +112,6 @@ function currentAvg(data, stat, range, delta){
       }else{
         output[x].vals.push(fact);
       }
-
       time += delta;
     }
   }
@@ -213,8 +205,6 @@ function currentCrossAvg(data, stat1, stat2, range, delta){
       data1[x].push(fact);
       time += delta;
     }
-    //output[x].times.push(player.times[player.times.length-1]);
-    //data1[x].push(player.vals[player.vals.length-1]);
   }
   for (let x in data[stat2]){
     data2[x] = [];
@@ -236,7 +226,6 @@ function currentCrossAvg(data, stat1, stat2, range, delta){
       data2[x].push(fact);
       time += delta;
     }
-    //data2[x].push(player.vals[player.vals.length-1]);
   }
   for(let x in data1){
     for (let i in data1[x]){
@@ -248,16 +237,6 @@ function currentCrossAvg(data, stat1, stat2, range, delta){
     }
   }
   return output;
-}
-
-function deepUpdate(acc, cur){
-  for (let x in cur){
-    if (!(x in acc)){
-      acc[x] = cur[x];
-    }
-    deepUpdate(acc[x], cur[x]);
-    return acc;
-  }
 }
 
 function valsMul(input, mul){
@@ -279,35 +258,26 @@ function detectData(results, ready=true){
   } else {
     data = buildMultipleDataObj(results);
   }
-
   data['score-sec'] = overallAvg(data, 'score');
   data['score-fact'] = currentAvg(data, 'score', 60, 1);
-
   data['score-figure'] = crossAvg(data, 'score', 'figures', 1);
   data['score-figure-fact'] = currentCrossAvg(data, 'score', 'figures', 60, 10);
-
   data['score-distance'] = crossAvg(data, 'score', 'distance', 1);
   data['score-distance-fact'] = currentCrossAvg(data, 'score', 'distance', 60, 10);
-
   data['lines-min'] = valsMul(overallAvg(data, 'lines'), 60);
   data['lines-fact'] = valsMul(currentAvg(data, 'lines', 60, 10), 60);
-
   data['speed-min'] = valsMul(overallAvg(data, 'speed'), 60);
   data['speed-fact'] = valsMul(currentAvg(data, 'speed', 60, 10), 60);
-
   data['figures-min'] = valsMul(overallAvg(data, 'figures'), 60);
   data['figures-fact'] = valsMul(currentAvg(data, 'figures', 60, 10), 60);
   data['figures-line'] = crossAvg(data, 'figures', 'lines', 1);
   data['figures-line-fact'] = currentCrossAvg(data, 'figures', 'lines', 60, 10);
-
   data['dist-min'] = valsMul(overallAvg(data, 'distance'), 60);
   data['dist-fact'] = valsMul(currentAvg(data, 'distance', 60, 10), 60);
   data['dist-line'] = crossAvg(data, 'distance', 'lines', 1);
   data['dist-line-fact'] = currentCrossAvg(data, 'distance', 'lines', 60, 10);
   data['dist-figure'] = crossAvg(data, 'distance', 'figures', 1);
   data['dist-figure-fact'] = currentCrossAvg(data, 'distance', 'figures', 60, 10);
-
-
   return data;
 }
 
@@ -326,7 +296,6 @@ function lineData(input){
 
 function displayGraph(data, stat){
   let maxVal = 0;
-
   for (let x in data.game[stat]){
     for (let val of data.game[stat][x].vals){
       if (val > maxVal){
@@ -338,7 +307,6 @@ function displayGraph(data, stat){
   let gWidth = graph.clientWidth;
   let gHeight = graph.clientHeight;
   let margin = {top: gHeight/10, right: gWidth/5, bottom: gHeight/10, left: gWidth/10};
-
   let width = gWidth - margin.left - margin.right;
   let height = gHeight - margin.top - margin.bottom;
 
@@ -347,18 +315,14 @@ function displayGraph(data, stat){
         .attr("viewBox", `0 0 ${gWidth} ${gHeight}`)
         .append('g')
         .attr("transform",`translate(${margin.left}, ${margin.top})`);
-
   let timeScale = d3.scaleLinear()
                     .domain([0, maxTime/60])
                     .range([0, width]);
-
   let valScale = d3.scaleLinear()
                    .domain([0, maxVal])
                    .range([height, 0]);
-
   let xAxis = d3.axisBottom()
                 .scale(timeScale);
-
   let yAxis = d3.axisLeft()
                 .scale(valScale);
 
@@ -380,13 +344,13 @@ function displayGraph(data, stat){
         svg.append("path")
            .datum(toDisplay)
            .attr("fill", "none")
-           .attr("stroke", `${COLORS[pos]}`)
+           .attr("stroke", `${TETRIS_COLORS.record[pos]}`)
            .attr("stroke-width", x === 'last' ? 1 : 4)
            .attr("stroke-dasharray", x === 'best' ? [5,5] : null)
            .attr("opacity", x === 'best' ? .4 : .95)
            .attr("d", d3.line()
                         .x(d => timeScale(d.x))
-                       .y(d => valScale(d.y))
+                        .y(d => valScale(d.y))
                   )
             }
     }
@@ -405,19 +369,12 @@ function changeMode(event){
 
 displaySeconds();
 let graph = document.getElementById('graph');
-let results = document.querySelectorAll('.for-graph');
-let bestResults = document.querySelectorAll('.best-graph');
-let lastResults = document.querySelectorAll('.last-graph');
 let maxTime = detectMaxTime();
-let maxVal = 0;
-// let data = detectData(results);
 let data = {
-  'game': detectData(results),
-  'best': detectData(bestResults),
-  'last': detectData(lastResults, false)
+  'game': detectData(document.querySelectorAll('.for-graph')),
+  'best': detectData(document.querySelectorAll('.best-graph')),
+  'last': detectData(document.querySelectorAll('.last-graph'), false)
 };
-
-
 displayGraph(data,'score');
 let modes = document.querySelectorAll('#graph .modes > li');
 for (let x of [...modes]){

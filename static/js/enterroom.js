@@ -1,10 +1,9 @@
 import {nodeScriptReplace} from './nodescript.js';
-import {showInfoBlock} from './info.js';
-import {secondsToMinutes} from './timing.js';
+import {secondsToMinutes} from './utils.js';
 import {activateConnectButtons, connectPlayer, disconnectPlayer, updatePlayers, kickRoom, showDisconnect,
 showGameover, fillPlaces} from './lobby.js';
 import {startTetris, renderTetris, updateTetris, refreshTetris, updateRoomLines,
-updateGoals, updateFlag, updatePowerup, blind, removeBlind} from './render.js';
+updateGoals, updateFlag, updatePowerup, blind, removeBlind, showInfoBlock} from './render.js';
 import {addBot, delBot} from './bot.js';
 import {playSound} from './sound.js';
 
@@ -14,7 +13,6 @@ function initConnection(event){
   activateConnectButtons();
 }
 
-
 function sendRoomNumber(event){
   let number = document.getElementById('room-number').dataset.roomNumber;
   document.roomNumber = number;
@@ -22,10 +20,6 @@ function sendRoomNumber(event){
     'type': 'init',
     'room_id': number
   }));
-}
-
-function setPlayer({name}){
-  document.player = name;
 }
 
 function prepareToGame(){
@@ -55,7 +49,7 @@ function copyURL(event){
   document.body.removeChild(textArea);
 }
 
-function checkTimeLimit(){
+function formatTimeLimit(){
   let type = document.getElementById('room-type').dataset.roomType;
   if (type === 'CO'){
     let lim = document.getElementById('room-limit');
@@ -63,8 +57,7 @@ function checkTimeLimit(){
   }
 }
 
-let MESSAGE_HANDLERS = {
-  // 'player' : setPlayer,
+const MESSAGE_HANDLERS = {
   'info' : showInfoBlock,
   'connected': connectPlayer,
   'update-players' : updatePlayers,
@@ -141,7 +134,7 @@ function limitLevel(event){
 let ready = false;
 let copier = document.getElementById('copy-url');
 copier.addEventListener('click', copyURL);
-checkTimeLimit();
+formatTimeLimit();
 let buttonsAddBot = document.querySelectorAll('[id^="addbot"]');
 for (let x of [...buttonsAddBot]){
   x.addEventListener('click', addBot);

@@ -1,5 +1,5 @@
 import {playSound} from './sound.js';
-import {randomNumberInRange} from './utils.js';
+import {TETRIS_VALUES , randomNumberInRange} from './utils.js';
 
 function activateControls(){
   document.body.addEventListener('keydown', controlField);
@@ -20,37 +20,16 @@ function controlField(event, sensorData=''){
     c = sensorData;
   }
   let msg = {'type': 'control'};
-  if(c === 'KeyA' || c === 'ArrowLeft'){
-    msg.command = 'move_left';
-  }
-  else if(c === 'KeyD' || c === 'ArrowRight'){
-    msg.command = 'move_right';
-  }else if(c === 'KeyS' || c === 'ArrowDown'){
-    msg.command = 'move_down';
-  }else if(c === 'KeyW' || c === 'ArrowUp'){
-    msg.command = 'rotate';
-  } else if (c === 'Numpad0' || c === 'KeyQ'){
+  if (c === 'Numpad0' || c === 'KeyQ'){
     changePowerup(false);
   } else if (c === 'KeyE' || c === 'NumpadDecimal'){
     changePowerup(true);
-  } else if (c === 'Digit1' || c === 'Numpad1'){
-    msg.command = 'use_powerup';
-    msg.place = document.querySelector('.powerups .active').dataset.pos;
-    msg.target_field = 1;
-  } else if (c === 'Digit2' || c === 'Numpad2'){
-    msg.command = 'use_powerup';
-    msg.place = document.querySelector('.powerups .active').dataset.pos;
-    msg.target_field = 2;
-  } else if (c === 'Digit3' || c === 'Numpad3'){
-    msg.command = 'use_powerup';
-    msg.place = document.querySelector('.powerups .active').dataset.pos;
-    msg.target_field = 3;
-  } else if (c === 'Digit4' || c === 'Numpad4'){
-    msg.command = 'use_powerup';
-    msg.place = document.querySelector('.powerups .active').dataset.pos;
-    msg.target_field = 4;
-  }
-  if (msg.command){
+  } else {
+    msg.command = TETRIS_VALUES.commands[c];
+    if (msg.command === 'use_powerup'){
+      msg.place = document.querySelector('.powerups .active').dataset.pos;
+      msg.target_field = +[...c].pop();
+    }
     document.conn.send(JSON.stringify(msg));
   }
 }
@@ -77,7 +56,7 @@ function detectLeave(event){
   let {pageX, pageY} = event.changedTouches[0];
   let currentElement = document.elementFromPoint(pageX, pageY);
   if (currentElement !== event.target){
-    sensorControlField(event);
+    sensorControlField(event);   // removes pressed when exit from element
   }
 }
 

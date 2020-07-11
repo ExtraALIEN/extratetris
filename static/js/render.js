@@ -1,7 +1,6 @@
 import {activateControls} from './controls.js';
 import {deactivateConnectButtons} from './lobby.js';
-import {addLeadingZeroes} from './utils.js';
-import {secondsToMinutes} from './timing.js';
+import {addLeadingZeroes, secondsToMinutes} from './utils.js';
 import {playSound} from './sound.js';
 
 function startTetris({fields}){
@@ -24,11 +23,7 @@ function renderTetris({fields}){
     refreshActivePiece({new_piece}, true);
     refreshQueue({queue});
     let pos = x;
-    let score = data.score;
-    let lines = data.lines;
-    let speed = data.speed;
-    let distance = data.distance;
-    let time = data.time;
+    let {score, lines, speed, distance, time} = data;
     updateScore({pos, score});
     updateLines({pos, lines});
     updateSpeed({pos, speed});
@@ -37,7 +32,6 @@ function renderTetris({fields}){
 
   }
 }
-
 
 function updateTetris({pos, current_piece, speed, time, score, distance, lines, silent, rotate}){
   if(current_piece){
@@ -71,48 +65,37 @@ function updateTetris({pos, current_piece, speed, time, score, distance, lines, 
 }
 
 function updateScore({pos, score}){
-  let selector = `#field${pos} .stats .score .val`;
-  score = addLeadingZeroes(score, 7);
-  document.querySelector(selector).innerHTML = score;
+  document.querySelector(`#field${pos} .stats .score .val`).innerHTML = `${addLeadingZeroes(score, 7)}`;
 }
 
 function updateLines({pos, lines}){
-  let selector = `#field${pos} .stats .lines .val`;
-  lines = addLeadingZeroes(lines, 3);
-  document.querySelector(selector).innerHTML = lines;
+  document.querySelector(`#field${pos} .stats .lines .val`).innerHTML = `${addLeadingZeroes(lines, 3)}`;
 }
 
 function updateSpeed({pos, speed}){
-  let selector = `#field${pos} .stats .speed .val`;
   speed = speed.toFixed(1);
   let deg = ((360/320) * speed).toFixed(0);
   let arrow = document.querySelector(`#field${pos} .arrow`);
   arrow.style.transform = `rotate(${deg}deg)`;
-  speed = speed - speed % 1;
-  document.querySelector(selector).innerHTML = speed;
+  document.querySelector(`#field${pos} .stats .speed .val`).innerHTML = speed - speed % 1;
 }
 
 function updateDistance({pos, distance}){
-  let selector = `#field${pos} .stats .distance .val`;
-  distance = addLeadingZeroes(distance, 7);
-  let last = `#field${pos} .stats .distance .last`;
-  distance = "" + distance;
+  distance = `${addLeadingZeroes(distance, 7)}`;
   let d = distance.slice(-1);
   distance = distance.slice(0,-1);
-  document.querySelector(last).innerHTML = d;
-  document.querySelector(selector).innerHTML = distance;
+  document.querySelector(`#field${pos} .stats .distance .last`).innerHTML = d;
+  document.querySelector(`#field${pos} .stats .distance .val`).innerHTML = distance;
 }
 
 function updateTime({pos, time}){
-  let selector = `#field${pos} .stats .time .val`;
-  time = secondsToMinutes(time);
-  document.querySelector(selector).innerHTML = time;
+  document.querySelector(`#field${pos} .stats .time .val`).innerHTML = secondsToMinutes(time);
 }
 
 function updateRoomLines({lines}){
   for (let x of [...document.querySelectorAll('.room-lines')]){
     x.classList.add('visible');
-    x.innerHTML = addLeadingZeroes(lines, 3);
+    x.innerHTML = `${addLeadingZeroes(lines, 3)}`;
   }
 }
 
@@ -129,22 +112,23 @@ function updateGoals({goals}){
   }
 }
 
-
 function updateCurrentPiece({pos, current_piece}){
   for (let y in current_piece){
     for(let x in current_piece[y]){
-        let selector = `#field${pos} > .row[data-y="${y}"] .cell[data-x="${x}"]`;
-        let cell = document.querySelector(selector);
+        let cell = document.querySelector(`#field${pos} > .row[data-y="${y}"] .cell[data-x="${x}"]`);
         let total = +current_piece[y][x];
-        let color = total % 100;
-        let powerup = (total - color) / 100;
-        let newClass = `color-${color}`;
-        setColor(cell,newClass);
-        if (powerup){
-          showPowerup(cell, powerup);
-        }
-
+        updateCell(cell, total);
     }
+  }
+}
+
+function updateCell(cell, total){
+  let color = total % 100;
+  let powerup = (total - color) / 100;
+  let newClass = `color-${color}`;
+  setColor(cell,newClass);
+  if (powerup){
+    showPowerup(cell, powerup);
   }
 }
 
@@ -153,34 +137,30 @@ function updateFlag({pos, y}){
   if (flagElement){
     flagElement.classList.remove('flag');
   }
-  let row = `#field${pos} .row[data-y="${y}"]`;
-  document.querySelector(row).classList.add('flag');
+  document.querySelector(`#field${pos} .row[data-y="${y}"]`).classList.add('flag');
   let myField = document.querySelector('.tetris-view.current');
   if (myField && +pos === +myField.dataset.pos && +myField.querySelector(`.stats .speed .val`).innerHTML > 0 && !myField.querySelector('.result.finished')){
     playSound({pos, file: 'flag', speed: (5-y)*100});
   }
 }
 
-
 function refreshTetris({new_piece, queue, surface}){
-    if (surface){
-      refreshSurface({surface});
-    }
-    if (new_piece){
-      refreshActivePiece({new_piece});
-    }
-    if (queue){
-      refreshQueue({queue});
-    }
+  if (surface){
+    refreshSurface({surface});
+  }
+  if (new_piece){
+    refreshActivePiece({new_piece});
+  }
+  if (queue){
+    refreshQueue({queue});
+  }
 }
 
 function updatePowerup({pos, num, powerup, time}){
-  let selector = `#field${pos} .powerups .place[data-pos="${num}"]`;
-  let place = document.querySelector(selector);
+  let place = document.querySelector(`#field${pos} .powerups .place[data-pos="${num}"]`);
   if (powerup){
     place.classList.add(`powerup-${powerup}`);
-
-  } else if (time){
+  } else if (time) {
     for (let x of [...place.classList]){
       if (x.startsWith('time-')){
         place.classList.remove(x);
@@ -201,25 +181,17 @@ function updatePowerup({pos, num, powerup, time}){
 }
 
 function refreshSurface({surface}){
-    let pos = surface.pos;
-    let field = document.getElementById(`field${pos}`);
-    for(let y in surface){
-      if(y !== 'pos'){
-        for (let x in surface[y]){
-          let selector = `.row[data-y="${y}"] .cell[data-x="${x}"]`;
-          let cell = field.querySelector(selector);
-          let total = +surface[y][x];
-          let color = total % 100;
-          let powerup = (total - color) / 100;
-          let newColor = `color-${color}`;
-          setColor(cell,newColor);
-          if (powerup){
-            showPowerup(cell, powerup);
-          }
-
-        }
+  let pos = surface.pos;
+  let field = document.getElementById(`field${pos}`);
+  for(let y in surface){
+    if(y !== 'pos'){
+      for (let x in surface[y]){
+        let cell = field.querySelector(`.row[data-y="${y}"] .cell[data-x="${x}"]`);
+        let total = +surface[y][x];
+        updateCell(cell, total);
       }
     }
+  }
 }
 
 function refreshQueue({queue}){
@@ -230,8 +202,7 @@ function refreshQueue({queue}){
       [...qElem.querySelectorAll(`[id="queue${i}"] .cell`)].forEach(a=> setColor(a, 'color-0'));
       for(let y in queue[i]){
         for(let x in queue[i][y]){
-          let selector = `[id="queue${i}"] .queue-row[data-y="${y}"] .cell[data-x="${x}"]`;
-          let cell = qElem.querySelector(selector);
+          let cell = qElem.querySelector(`[id="queue${i}"] .queue-row[data-y="${y}"] .cell[data-x="${x}"]`);
           let cl = queue[i][y][x];
           setColor(cell, `color-${cl>0? 10:0}`);
         }
@@ -246,16 +217,9 @@ function refreshActivePiece({new_piece}, silent=false){
     if(y !== 'pos'){
       for (let x in new_piece[y]){
         if (new_piece[y][x] > 0){
-          let selector = `#field${pos} > .row[data-y="${y}"] .cell[data-x="${x}"]`;
-          let cell = document.querySelector(selector);
+          let cell = document.querySelector(`#field${pos} > .row[data-y="${y}"] .cell[data-x="${x}"]`);
           let total = +new_piece[y][x];
-          let color = total % 100;
-          let powerup = (total - color) / 100;
-          let newColor = `color-${color}`;
-          setColor(cell,newColor);
-          if (powerup){
-            showPowerup(cell, powerup);
-          }
+          updateCell(cell, total);
         }
       }
     }
@@ -269,10 +233,8 @@ function blind({pos, cols}){
   let field = document.querySelector(`#field${pos}`);
   if (cols){
     for (let x of cols){
-      let selector = `.row .cell[data-x="${x}"]`;
-      for (let elem of field.querySelectorAll(selector)){
+      for (let elem of field.querySelectorAll(`.row .cell[data-x="${x}"]`)){
         elem.classList.add('blind');
-
       }
     }
   }
@@ -312,5 +274,11 @@ function showPowerup(cell, powerup){
   cell.classList.add(`powerup-${powerup}`);
 }
 
+function showInfoBlock({msg}){
+  let info = document.getElementById('info');
+  info.innerHTML = msg;
+  info.classList.add('js-new-info');
+}
+
 export {startTetris, renderTetris, updateTetris, refreshTetris, updateRoomLines,
-updateGoals, updateFlag, updatePowerup, blind, removeBlind}
+updateGoals, updateFlag, updatePowerup, blind, removeBlind, showInfoBlock}

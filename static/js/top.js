@@ -1,15 +1,17 @@
-import {secondsToMinutes} from './timing.js';
+import {secondsToMinutes, secondsToHours} from './utils.js';
 
 function replaceInt(elem){
   elem.innerHTML = parseInt(+elem.dataset.val);
 }
 
-function replaceTime(elem){
-  elem.innerHTML = secondsToMinutes(+elem.dataset.val);
+function replaceHours(elem){
+  elem.innerHTML = secondsToHours(+elem.dataset.val);
 }
 
-function replaceDecTime(elem){
-  elem.innerHTML = secondsToMinutes(+elem.dataset.val, true);
+function replaceTime(dec=false){
+  return function(elem){
+    elem.innerHTML = secondsToMinutes(+elem.dataset.val, dec);
+  }
 }
 
 function round2(elem){
@@ -22,19 +24,17 @@ for (let x of [...ints]){
 }
 
 let mode = document.querySelector('h2').dataset.mode;
-console.log(mode);
 let proc = replaceInt;
-if (['survival_time'].includes(mode)){
-  proc = replaceTime;
+if(mode === 'hours'){
+  proc = replaceHours;
+} else if (['survival_time'].includes(mode)){
+  proc = replaceTime();
 } else if (['time_acc', 'time_lines', 'time_drag', 'time_climb', 'hours'].includes(mode)){
-  proc = replaceDecTime;
+  proc = replaceTime(true);
 } else if (['speed'].includes(mode)){
   proc = round2;
 }
 
 for (let x of [...document.querySelectorAll('.result-rank[data-val]')]){
-  if(mode === 'hours'){
-    x.dataset.val = +x.dataset.val/60;
-  }
   proc(x);
 }

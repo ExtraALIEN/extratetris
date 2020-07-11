@@ -1,22 +1,23 @@
 function updateRoom(event){
   let data = JSON.parse(event.data);
-  console.log(data);
   let type = data.type;
-  if (type === 'connect'){
-    let selector = `[data-number="${data.id}"] [data-pos="${data.pos}"]`;
-    let name = data.username;
-    if (data.rating){
-      name += `:${data.rating}`;
-    }
-    document.querySelector(selector).innerHTML = name;
-  } else if (type === 'disconnect'){
-    let selector = `[data-number="${data.id}"] [data-pos="${data.pos}"]`;
-    document.querySelector(selector).innerHTML = '---';
-  } else if (type === 'delete'){
-    let selector = `.room[data-number="${data.id}"]`;
-    let li = document.querySelector(selector);
-    li.remove();
-  } else if (type === 'room'){
+  switch (type) {
+    case 'connect':
+      let name = data.username;
+      if (data.rating){
+        name += `:${data.rating}`;
+      }
+      document.querySelector(`[data-number="${data.id}"] [data-pos="${data.pos}"]`)
+              .innerHTML = name;
+      break;
+  case 'disconnect':
+    document.querySelector(`[data-number="${data.id}"] [data-pos="${data.pos}"]`)
+            .innerHTML = '---';
+    break;
+  case 'delete':
+    document.querySelector(`.room[data-number="${data.id}"]`).remove();
+    break;
+  case 'room':
     let room = document.createElement('li');
     room.classList.add('room');
     room.dataset.number = data.id;
@@ -44,6 +45,7 @@ function updateRoom(event){
     a.href = data.url;
     room.appendChild(a);
     document.querySelector('.lobby').appendChild(room);
+    break;
   }
 }
 
