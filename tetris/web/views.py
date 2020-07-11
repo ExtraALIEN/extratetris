@@ -21,6 +21,7 @@ def index(request):
         cur_room = request.user.has_room()
         if cur_room is not None:
             waiting = True
+    css = ['index']
     scripts = ['index']
     print('render start')
     return render(request, 'web/index.html', {'guest_mode': guest_mode,
@@ -28,18 +29,22 @@ def index(request):
                                               'profile_url': profile_url,
                                               'waiting' : waiting,
                                               'cur_room' : cur_room,
-                                              'scripts': scripts
+                                              'scripts': scripts,
+                                              'css': css
                                               })
 
 def lobby(request):
     rooms = TetrisRoom.objects.all()
     scripts = ['lobbyConnect']
+    css = ['lobby']
     return render(request, 'web/lobby.html', {'rooms': rooms,
-                                              'scripts': scripts
+                                              'scripts': scripts,
+                                              'css': css
                                               })
 
 
 def signup(request):
+    css = ['loginsignupform']
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -48,11 +53,12 @@ def signup(request):
             return redirect
     else:
         form = SignupForm()
-    return render(request, 'web/signup.html', {'form': form})
+    return render(request, 'web/signup.html', {'form': form, 'css': css})
 
 
 def login(request):
     error = ""
+    css = ['loginsignupform']
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -72,7 +78,7 @@ def login(request):
             error = 'некорректно введен логин/пароль'
     else:
         form = LoginForm(auto_id='%s')
-    return render(request, 'web/login.html', {'form': form, 'error': error})
+    return render(request, 'web/login.html', {'form': form, 'error': error, 'css': css})
 
 
 def logout(request):
@@ -88,9 +94,11 @@ def profile(request, profile_id):
         stats = user.get_profile_stats()
         games = user.get_recorded_games()
         scripts = ['profile']
+        css = ['profile']
         return render(request, 'web/profile.html', {'stats': stats,
                                                     'scripts': scripts,
-                                                    'games': games})
+                                                    'games': games,
+                                                    'css': css})
     except Player.DoesNotExist:
         return HttpResponseRedirect('/')
 
@@ -114,10 +122,12 @@ def create_game(request):
             return HttpResponseRedirect('/')
         form = CreateGameForm(auto_id='id_%s')
         scripts = ['createroom']
+        css = ['creategame']
         guest_mode = request.user is None or request.user.is_guest
     return render(request, 'web/create-game.html', {'form': form,
                                                     'scripts': scripts,
-                                                    'guest_mode': guest_mode})
+                                                    'guest_mode': guest_mode,
+                                                    'css': css})
 
 
 def enter_room(request, room_number):
@@ -130,6 +140,7 @@ def enter_room(request, room_number):
         queue = [x for x in range(5)]
         queue_grid = [x for x in range(-1,5)]
         scripts = ['enterroom']
+        css = ['room']
         is_author = False
         if request.user is None:
             guest = Player.objects.create_guest()
@@ -139,8 +150,6 @@ def enter_room(request, room_number):
         limited = room.type in VOLUME_STANDARD
         time_result = ['SU']
         guest_mode = request.user.is_guest
-        # if room.started:
-        #     scripts = ['gamecontrols']
         return render(request, 'web/room.html', {'room': room,
                                                  'positions': positions,
                                                  'scripts': scripts,
@@ -151,7 +160,8 @@ def enter_room(request, room_number):
                                                  'is_author' : is_author,
                                                  'guest_mode': guest_mode,
                                                  'limited' : limited,
-                                                 'time_result' : room.type in time_result})
+                                                 'time_result' : room.type in time_result,
+                                                 'css': css})
     except TetrisRoom.DoesNotExist:
         return HttpResponseRedirect('/')
 
@@ -177,13 +187,15 @@ def recorded_game(request, game_number):
         stats = game.load_stats()
         graphs = game.graphs_data()
         scripts = ['record']
+        css = ['game']
         return render(request, 'web/game.html', {'stats': stats,
                                                  'data': graphs,
                                                  'number': game.pk,
                                                  'datestart': game.started_at.strftime('%d %b %Y %H:%I %Z'),
                                                  'type': game.type,
                                                  'result_is_time': game.type in ['SU'],
-                                                 'scripts': scripts})
+                                                 'scripts': scripts,
+                                                 'css': css})
     except SingleGameRecord.DoesNotExist:
         return HttpResponseRedirect('/')
 
@@ -214,11 +226,13 @@ def top_results(request, mode='score'):
     if mode in types:
         players = Player.objects.get_top(mode=mode)
         scripts = ['top']
+        css = ['top']
         return render(request, 'web/top.html', {'mode': mode,
                                             'type_mode': types[mode],
                                             'players': players,
                                             'types': types,
-                                            'scripts': scripts})
+                                            'scripts': scripts,
+                                            'css': css})
     return HttpResponseRedirect('/')
 
 

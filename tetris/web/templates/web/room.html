@@ -1,6 +1,10 @@
 {% extends "./base_main.html" %}
 
-
+{% block extra_css %}
+  {%for file in css %}
+    <link rel="stylesheet" href="/static/css/{{file}}.css">
+  {% endfor %}
+{% endblock %}
 
 
 {% block room_number %}

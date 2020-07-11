@@ -1,0 +1,74 @@
+.lobby{
+  width:80%;
+  margin: 5vh auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.lobby .room{
+  position: relative;
+  flex-basis: 25%;
+  margin: .5rem;
+  text-align:center;
+  border: .25rem solid #43b933;
+  padding: .5rem;
+  background-color: #000000;
+  color: #7bcf72;
+}
+
+
+.lobby .room:hover{
+  animation: glow 2s infinite alternate;
+}
+
+.lobby .room .type{
+  font-family: 'Digital-7 Mono';
+  font-size: 3rem;
+  font-weight: bold;
+  position: absolute;
+  top: .5rem;
+  left: .5rem;
+  color: #000000;
+  text-shadow: -1px 1px 0 #7bcf72,
+				        1px 1px 0 #7bcf72,
+				        1px -1px 0 #7bcf72,
+				        -1px -1px 0 #7bcf72;
+}
+
+.lobby .room .type.ext{
+  top: 3.5rem;
+}
+
+.lobby .room:hover .type{
+  animation: flick 1s infinite alternate;
+}
+
+.lobby .room .players{
+  font-size: 1.5rem;
+}
+
+.lobby .room .current-players{
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+
+
+}
+
+.lobby .room .enter{
+  font-size: 2rem;
+}
+
+@media screen and (max-width: 700px){
+  .lobby .room{
+    flex-basis: 32%;
+  }
+}
+
+@media screen and (max-width: 500px){
+  .lobby .room{
+    flex-basis: 42%;
+  }
+}

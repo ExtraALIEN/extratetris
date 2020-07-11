@@ -4,6 +4,12 @@
  Войдите или зарегистрируйтесь
 {% endblock %}
 
+{% block extra_css %}
+  {%for file in css %}
+    <link rel="stylesheet" href="/static/css/{{file}}.css">
+  {% endfor %}
+{% endblock %}
+
 {% block login %}
 <div class="login">
 {% if guest_mode %}

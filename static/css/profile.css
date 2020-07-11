@@ -1,0 +1,69 @@
+.joined, .recorded-games{
+  text-align: center;
+}
+
+
+.profile-stats {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.profile-stats .col{
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  flex-basis: 5%;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.profile-stats .col:first-child{
+  flex-grow: 12;
+}
+
+.stats-block{
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: .5rem;
+}
+
+.stats-block li{
+  flex-basis: 2rem;
+  max-height:2rem;
+}
+
+.records {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  width: 100%;
+  padding: .5rem 0 ;
+}
+
+.records > div {
+  display:flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  width: 50%;
+  margin: 0 auto;
+}
+
+.records > div > span{
+  padding: .25rem;
+  text-align: center;
+  flex-basis: 50%;
+  flex-grow: 1;
+}

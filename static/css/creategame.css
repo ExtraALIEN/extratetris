@@ -1,0 +1,244 @@
+.radio-block{
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 80%;
+  margin: 4vh auto;
+}
+
+.radio-option{
+  box-sizing: border-box;
+  position:relative;
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  flex-basis: 15%;
+  width: 15%;
+  max-width: 15%;
+  height: 8vh;
+  flex-grow:1;
+  margin: 1vh .5625vw;
+}
+
+.radio-option input{
+  display:none;
+}
+
+.radio-option input + label {
+  font-family: 'Digital-7 Mono';
+  box-sizing: border-box;
+  cursor: pointer;
+  flex-basis: 100%;
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  border: .5rem solid #e9fee6;
+  background-color: #cbe4c8;
+  color: #1d381a;
+  text-transform: uppercase;
+  text-align: center;
+  box-shadow: 0 0 .7rem .1rem #0d160c, inset 0 0 .7rem .1rem #0d160c;
+  transition: .7s;
+}
+
+.radio-option input:checked + label {
+  background-color: #000000;
+  padding-bottom: .3rem;
+  font-size: 1.7rem;
+  animation: glow .7s infinite alternate ease-in-out;
+}
+
+.game-description{
+  box-sizing: border-box;
+  width: 80%;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  padding: .5rem;
+  min-height: 8vh;
+  border: .5rem solid #a4c2a0;
+  background-color: #e9fee6;
+  color: #3f603b;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  box-shadow: 0 0 .7rem .1rem #0d160c, inset 0 0 .7rem .1rem #0d160c;
+}
+
+.game-description .short{
+  font-family: 'Digital-7 Mono';
+  flex-basis: 10%;
+  font-size: 3rem;
+  padding-bottom: .5rem;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: -1px 1px 0 #0d160c,
+				        1px 1px 0 #0d160c,
+				        1px -1px 0 #0d160c,
+				        -1px -1px 0 #0d160c,
+                0 0 .25rem #0d160c;
+}
+
+.game-description .text{
+  flex-basis: 90%;
+  padding-left: .25rem;
+}
+
+
+
+.tumbler{
+  margin: 2rem auto;
+  text-align: center;
+  line-height:2rem;
+  height: 2rem;
+  font-size: 2rem;
+  width: 20ch;
+
+}
+
+.ranked .disabled-option{
+  width: 50ch;
+  font-size: 1rem;
+}
+
+.tumbler input[type="checkbox"]{
+  display:none;
+}
+
+.tumbler input[type="checkbox"] + label{
+  position:relative;
+  padding-left: 2.25rem;
+  cursor:pointer;
+  transition: .2s;
+}
+
+.tumbler input[type="checkbox"] + label::after{
+  position:absolute;
+  top: 0;
+  left: -1.75rem;
+  box-sizing:border-box;
+  display: block;
+  content: "";
+  background-color: transparent;
+  border: 1px solid #a4c2a0;
+  border-radius: 50%/100%;
+  height:1.75rem;
+  width:3.5rem;
+}
+
+.tumbler input[type="checkbox"]:checked + label::after{
+  border-color: #44d530;
+}
+
+.tumbler input[type="checkbox"] + label::before{
+  position: absolute;
+  top: 0;
+  left: -1.75rem;
+  box-sizing:border-box;
+  display: block;
+  content: "";
+  background-color: #a4c2a0;
+  height:1.75rem;
+  width:1.75rem;
+  border: .25rem solid black;
+  border-radius: 50%;
+  transition: .2s;
+}
+
+.tumbler input[type="checkbox"]:checked + label{
+  color: #44d530;
+}
+
+.tumbler input[type="checkbox"]:checked + label::before{
+  left:0;
+  background-color: #195711;
+  border-width: .25rem;
+}
+
+.vol{
+  display:block;
+  text-align: center;
+  font-size: 3rem;
+}
+
+.vol.inactive{
+  display: none;
+}
+
+.vol input[type="number"]{
+  font-family: 'FZ DIGITAL 9';
+  text-align: right;
+  background-color: #000000;
+  border: none;
+  outline: none;
+  color: #44d530;
+  font-size: 3rem;
+  line-height: 3rem;
+  width: 5ch;
+  margin: 0 .5ch;
+}
+
+
+#create{
+  display: block;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 0 auto;
+  width: 22.5vw;
+  height: 15vh;
+  border: .5rem solid #b61515;
+  background-color: #714d4d;
+  color: #670c0c;
+  font-size: 3rem;
+  text-transform: uppercase;
+  box-shadow: 0 0 .9rem .25rem #0d160c, inset 0 0 .9rem .25rem #0d160c;
+  text-shadow: -1px 1px 0 #0d160c,
+				        1px 1px 0 #0d160c,
+				        1px -1px 0 #0d160c,
+				        -1px -1px 0 #0d160c,
+                0 0 .25rem #0d160c;
+  transition: .7s;
+}
+
+#create:hover{
+  box-shadow: 0 0 .9rem .25rem #db0713, inset 0 0 .9rem .25rem #db0713;
+  text-shadow: -1px 1px 0 #0d160c,
+				        1px 1px 0 #0d160c,
+				        1px -1px 0 #0d160c,
+				        -1px -1px 0 #0d160c,
+                0 0 1.25rem #db0713;
+  background-color: #000000;
+  border-color: #ec1521;
+  color:  #ec1521;
+}
+
+#create.filled{
+  border-color: #43b933;
+  background-color: #7fb877;
+  color: #43b933;
+}
+
+#create.filled:hover{
+  animation: glow .7s infinite alternate ease-in-out;
+  background-color: #000000;
+}
+
+
+
+
+@media screen and (orientation: portrait){
+  .radio-option{
+    flex-basis: 20%;
+    width:25%;
+    max-width:25%;
+  }
+
+  #create{
+    width: 40vw;
+  }
+}

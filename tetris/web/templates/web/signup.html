@@ -1,4 +1,11 @@
 {% extends './base_main.html' %}
+
+{% block extra_css %}
+  {%for file in css %}
+    <link rel="stylesheet" href="/static/css/{{file}}.css">
+  {% endfor %}
+{% endblock %}
+
 {% block big_login %}
     <h2>Создание нового игрока</h2>
     <form class="big-form" action='/signup/' method='POST'>

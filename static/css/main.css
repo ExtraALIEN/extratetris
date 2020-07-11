@@ -1,0 +1,244 @@
+@font-face {
+    font-family: 'Monitorca';
+    src: url('/static/fonts/Monitorca.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Monitorca';
+    src: url('/static/fonts/Monitorca-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Digital-7 Mono';
+    src: url('/static/fonts/Digital-7MonoItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Digital-7 Mono';
+    src: url('/static/fonts/Digital-7Mono.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'FZ DIGITAL 9';
+    src: url('/static/fonts/FZ-DIGITAL9.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Interstate Mono-Lgt';
+    src: url('/static/fonts/InterstateMono-Lgt.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+@keyframes flick{
+  0%{
+    color: #43b933;
+    text-shadow: 0 0 0 #29b91e,0 0 0 #55b64d ;
+  }
+
+  100%{
+    color: #44d530;
+    text-shadow: 0 0 1rem #29b91e,0 0 2rem #55b64d ;
+  }
+}
+
+@keyframes glow{
+  0% {
+    box-shadow: 0 0 .75rem .25rem #85fb76, inset 0 0 .75rem .25rem #85fb76;
+    border-color: #96f98a;
+    color: #96f98a;
+    text-shadow: 0 0 .25rem #96f98a;
+  }
+  100% {
+    box-shadow: 0 0 .5rem .15rem #5dba50, inset 0 0 .5rem .15rem #5dba50;
+    border-color: #43b933;
+    color: #43b933;
+    text-shadow: 0 0 .5rem #43b933;
+
+  }
+}
+
+@keyframes floating{
+  0% {background-position: 0% 0%;}
+  100% {background-position: 80px -80px;}
+}
+
+@keyframes blink{
+  0% {opacity:1;}
+  50%  {opacity: 0;}
+  100% {opacity:1;}
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-content: stretch;
+  background-color: #000000;
+  color: #cbe4c8;
+  font-family: 'Monitorca';
+  font-size: 1.25rem;
+}
+
+body > header {
+  flex-basis: 10vh;
+  flex-grow: 1;
+  position: relative;
+  text-align: center;
+}
+
+body > main {
+  flex-basis: 90vh;
+  flex-grow: 9;
+  max-height: 90vh;
+  overflow-x: hidden;
+}
+
+body > footer {
+  position: fixed;
+  bottom:0;
+  right: 1ch;
+  flex-basis:0;
+}
+
+
+h1, h2, h3 {
+  text-align: center;
+  margin: 1rem auto;
+
+}
+
+h1 {
+  font-size: 3rem;
+  font-family: 'Digital-7 Mono';
+  font-style: italic;
+  color: #43b933;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 1.7rem;
+  font-weight: bold;
+  color: #43b933;
+}
+
+a {
+  transition: .3s;
+  color: #43b933;
+  cursor:pointer;
+}
+
+a:link{
+  text-decoration: none;
+  color: #d8ffd5;
+}
+
+a:visited{
+  color: #d8ffd5;
+}
+
+a:hover{
+  color: #d8ffd5;
+}
+
+a:active{
+  color: #fe2121;
+}
+
+
+a.flick{
+  color: #43b933;
+}
+
+a.flick:hover{
+  animation: flick 1.5s infinite alternate ease-out;
+}
+
+button {
+  font-family: 'Monitorca';
+  cursor: pointer;
+}
+
+
+.home{
+  width: 16rem;
+  margin: 0 auto;
+}
+
+.info {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #84c3cc;
+}
+
+.js-new-info{
+  padding: 1rem;
+}
+
+@media screen and (max-height: 950px){
+  body > header {
+    flex-basis: 5vh;
+  }
+}
+
+@media screen and (max-width: 1550px){
+  html{
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 1400px){
+  html{
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 1300px){
+  html{
+    font-size: 11px;
+  }
+}
+
+@media screen and (max-width: 1175px){
+  html{
+    font-size: 10px;
+  }
+}
+
+@media screen and (max-width: 1075px){
+  html{
+    font-size: 9px;
+  }
+}
+
+@media screen and (max-width: 600px){
+  h1{
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 500px) and (orientation: portrait){
+  html {
+    font-size: 8px;
+  }
+}

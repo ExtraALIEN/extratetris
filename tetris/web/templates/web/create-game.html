@@ -1,5 +1,11 @@
 {% extends "./base_main.html" %}
 
+{% block extra_css %}
+  {%for file in css %}
+    <link rel="stylesheet" href="/static/css/{{file}}.css">
+  {% endfor %}
+{% endblock %}
+
 {% block create_game %}
   <h2>Создать игру</h2>
   <form action='/create-game/' method='POST'>

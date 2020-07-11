@@ -1,0 +1,90 @@
+.graph{
+  width: 80%;
+  margin: .5rem auto;
+  min-height: 100vh;
+  border: 1px solid white;
+  position: relative;
+}
+
+.graph .modes {
+  position: absolute;
+  width: 15%;
+  height: 50%;
+  left: 82.5%;
+  top: 10%;
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.graph .modes li{
+  flex-basis: 5%;
+  text-align: center;
+  font-size: 1.25rem;
+  line-height: 1.25rem;
+  cursor:pointer;
+}
+
+.graph .modes .displaying{
+  color: #30a109;
+}
+
+.graph .legend{
+  position: absolute;
+  width: 15%;
+  height: 20%;
+  left: 82.5%;
+  top: 80%;
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.legend .color-0, .game-results .col .color-0{
+  color: #c61212;
+}
+
+.legend .color-1, .game-results .col .color-1{
+  color: #004bf1;
+}
+
+.legend .color-2, .game-results .col .color-2{
+  color: #e9a611;
+}
+
+.legend .color-3, .game-results .col .color-3{
+  color: #05db0e;
+}
+
+.game-results{
+  width: 80%;
+  margin: 1rem auto;
+  display:flex;
+  flex-direction: row;
+  flex-wrap:nowrap;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+
+.game-results .col{
+  flex-basis: 20%;
+  flex-grow:1;
+  text-align: center;
+}
+
+
+.game-results .col > li{
+  height: 1.5rem;
+}
+
+.game-results li:nth-child(2n+1){
+  color: #30a109;
+}
+
+.game-results .end{
+  margin-bottom: 1.5rem;
+}

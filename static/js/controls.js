@@ -102,7 +102,7 @@ function sendSensorCommand(elem){
 
 
 function activateSensorControls(){
-  let sensorControls = document.querySelectorAll('.touchscreen-controls');
+  let sensorControls = document.querySelectorAll('.touchscreen-controls > div');
   for (let x of [...sensorControls]){
     x.addEventListener('touchstart', sensorControlField);
     x.addEventListener('touchend', sensorControlField);
@@ -110,7 +110,7 @@ function activateSensorControls(){
 }
 
 function deactivateSensorControls(){
-  let sensorControls = document.querySelectorAll('.touchscreen-controls');
+  let sensorControls = document.querySelectorAll('.touchscreen-controls > div');
   for (let x of [...sensorControls]){
     x.removeEventListener('touchstart', sensorControlField);
     x.removeEventListener('touchend', sensorControlField);
