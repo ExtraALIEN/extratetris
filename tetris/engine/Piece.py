@@ -1,6 +1,7 @@
 from random import randint, random
-from engine.ListMethods import rotate as list_rotate, sum
+from engine.utils import rotate as list_rotate, sum
 from web.helpers import SHAPES, POWERUPS
+
 
 def get_shape(number, color):
     sh = []
@@ -22,7 +23,6 @@ class Piece:
         self.shape = get_shape(self.shape_number, self.color)
         for i in range(randint(0, 4)):
             self.rotate()
-
 
     def rotate(self, clockwise=True):
         self.shape = list_rotate(self.shape, clockwise)

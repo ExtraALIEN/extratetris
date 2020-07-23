@@ -2,30 +2,26 @@ import json
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from web.helpers import GAME_TYPES, VOLUME_STANDARD, COUNT_STATS, TYPE_STATS, TYPE_OF_BEST
+from web.helpers import GAME_TYPES, VOLUME_STANDARD, \
+                        COUNT_STATS, TYPE_STATS, TYPE_OF_BEST, LIST_BEST, \
+                        BEST_UPDATE, DIC_STATS, DIC_DIVIDES
 
 
-class PlayerRecord(models.Model):
-    best_speed_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
-                                       on_delete=models.SET_NULL, related_name='best_speed_REC')
-    best_score_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
-                                       on_delete=models.SET_NULL, related_name='best_score_REC')
-    best_distance_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
-                                          on_delete=models.SET_NULL, related_name='best_distance_REC')
-    best_survival_time_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
-                                               on_delete=models.SET_NULL, related_name='best_survival_time_REC')
-    best_lines_count_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
-                                             on_delete=models.SET_NULL, related_name='best_lines_count_REC')
-    best_countdown_score_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
-                                                 on_delete=models.SET_NULL, related_name='best_countdown_score_REC')
-    best_time_lines_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
-                                            on_delete=models.SET_NULL, related_name='best_time_lines_REC')
-    best_time_climb_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
-                                            on_delete=models.SET_NULL, related_name='best_time_climb_REC')
-    best_time_drag_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
-                                           on_delete=models.SET_NULL, related_name='best_time_drag_REC')
-    best_time_acc_REC = models.ForeignKey('SingleGameRecord', blank=True, null=True,
-                                          on_delete=models.SET_NULL, related_name='best_time_acc_REC')
+class PlayerRecordMetaclass(models.base.ModelBase):
+
+    def __new__(cls, name, bases, attrs):
+        for stat in LIST_BEST:
+            att = f'best_{stat}_REC'
+            attrs[att] = models.ForeignKey('SingleGameRecord',
+                                           blank=True, null=True,
+                                           on_delete=models.SET_NULL,
+                                           related_name=att)
+        clsobj = super().__new__(cls, name, bases, attrs)
+        return clsobj
+
+
+class PlayerRecord(models.Model, metaclass=PlayerRecordMetaclass):
+    pass
 
 
 class PlayerManager(models.Manager):
@@ -35,13 +31,13 @@ class PlayerManager(models.Manager):
         if guests:
             last = self.all().filter(is_guest=True).order_by('-pk')[0]
             number = int(last.login[5:]) + 1
-            guest_login = 'guest' + str(number)
+            guest_login = f'guest{str(number)}'
         else:
             guest_login = 'guest1'
         guest = Player(is_guest=True,
-                      login=guest_login,
-                      password='',
-                      username='* anonymous *')
+                       login=guest_login,
+                       password='',
+                       username='* anonymous *')
         guest.save()
         return guest
 
@@ -50,17 +46,17 @@ class PlayerManager(models.Manager):
         prop = ''
         games = 'TOTAL_games'
         if len(mode) == 2:
-            prop = mode + '_rating'
-            games = 'M_' + mode + '_games'
+            prop = f'{mode}_rating'
+            games = f'M_{mode}_games'
         elif mode == 'hours':
             prop = 'TOTAL_time'
         else:
-            prop = 'best_' + mode
+            prop = f'best_{mode}'
         ord = prop
         if not mode.startswith('time_'):
-            ord = '-' + prop
+            ord = f'-{prop}'
         top_players = list(self.all()
-                               .exclude(**{prop + '__isnull': True})
+                               .exclude(**{f'{prop}__isnull': True})
                                .order_by(ord))[:max_number]
         data = [{'pos': top_players.index(x) + 1,
                  'username': x.username,
@@ -70,8 +66,25 @@ class PlayerManager(models.Manager):
         return data
 
 
+class PlayerMetaclass(models.base.ModelBase):
 
-class Player(models.Model):
+    def __new__(cls, name, bases, attrs):
+        for type in TYPE_STATS:
+            for stat in COUNT_STATS:
+                att = f'{type}_{stat}'
+                m_att = f'M_{att}'
+                attrs[att] = models.FloatField(default=0.0)
+                attrs[m_att] = models.FloatField(default=0.0)
+            e_att = f'{type}_eff'
+            attrs[e_att] = models.FloatField(default=0.0)
+            if type != 'TOTAL':
+                r_att = f'{type}_rating'
+                attrs[r_att] = models.FloatField(default=1500.0)
+        clsobj = super().__new__(cls, name, bases, attrs)
+        return clsobj
+
+
+class Player(models.Model, metaclass=PlayerMetaclass):
     objects = PlayerManager()
     is_guest = models.BooleanField(default=False)
     login = models.CharField(max_length=20, unique=True)
@@ -88,198 +101,9 @@ class Player(models.Model):
     best_time_climb = models.FloatField(null=True, blank=True)
     best_time_drag = models.FloatField(null=True, blank=True)
     best_time_acc = models.FloatField(null=True, blank=True)
-    record_card = models.OneToOneField(PlayerRecord, null=True, blank=True, on_delete=models.CASCADE)
-    TOTAL_games = models.FloatField(default=0.0)
-    TOTAL_eff = models.FloatField(default=0.0)
-    TOTAL_score = models.FloatField(default=0.0)
-    TOTAL_time = models.FloatField(default=0.0)
-    TOTAL_actions = models.FloatField(default=0.0)
-    TOTAL_lines = models.FloatField(default=0.0)
-    TOTAL_distance = models.FloatField(default=0.0)
-    TOTAL_figures = models.FloatField(default=0.0)
-    CL_games = models.FloatField(default=0.0)
-    CL_eff = models.FloatField(default=0.0)
-    CL_score = models.FloatField(default=0.0)
-    CL_time = models.FloatField(default=0.0)
-    CL_actions = models.FloatField(default=0.0)
-    CL_lines = models.FloatField(default=0.0)
-    CL_distance = models.FloatField(default=0.0)
-    CL_figures = models.FloatField(default=0.0)
-    CL_rating = models.FloatField(default=1500.0)
-    DM_games = models.FloatField(default=0.0)
-    DM_eff = models.FloatField(default=0.0)
-    DM_score = models.FloatField(default=0.0)
-    DM_time = models.FloatField(default=0.0)
-    DM_actions = models.FloatField(default=0.0)
-    DM_lines = models.FloatField(default=0.0)
-    DM_distance = models.FloatField(default=0.0)
-    DM_figures = models.FloatField(default=0.0)
-    DM_rating = models.FloatField(default=1500.0)
-    SU_games = models.FloatField(default=0.0)
-    SU_eff = models.FloatField(default=0.0)
-    SU_score = models.FloatField(default=0.0)
-    SU_time = models.FloatField(default=0.0)
-    SU_actions = models.FloatField(default=0.0)
-    SU_lines = models.FloatField(default=0.0)
-    SU_distance = models.FloatField(default=0.0)
-    SU_figures = models.FloatField(default=0.0)
-    SU_rating = models.FloatField(default=1500.0)
-    LI_games = models.FloatField(default=0.0)
-    LI_eff = models.FloatField(default=0.0)
-    LI_score = models.FloatField(default=0.0)
-    LI_time = models.FloatField(default=0.0)
-    LI_actions = models.FloatField(default=0.0)
-    LI_lines = models.FloatField(default=0.0)
-    LI_distance = models.FloatField(default=0.0)
-    LI_figures = models.FloatField(default=0.0)
-    LI_rating = models.FloatField(default=1500.0)
-    CO_games = models.FloatField(default=0.0)
-    CO_eff = models.FloatField(default=0.0)
-    CO_score = models.FloatField(default=0.0)
-    CO_time = models.FloatField(default=0.0)
-    CO_actions = models.FloatField(default=0.0)
-    CO_lines = models.FloatField(default=0.0)
-    CO_distance = models.FloatField(default=0.0)
-    CO_figures = models.FloatField(default=0.0)
-    CO_rating = models.FloatField(default=1500.0)
-    SA_games = models.FloatField(default=0.0)
-    SA_eff = models.FloatField(default=0.0)
-    SA_score = models.FloatField(default=0.0)
-    SA_time = models.FloatField(default=0.0)
-    SA_actions = models.FloatField(default=0.0)
-    SA_lines = models.FloatField(default=0.0)
-    SA_distance = models.FloatField(default=0.0)
-    SA_figures = models.FloatField(default=0.0)
-    SA_rating = models.FloatField(default=1500.0)
-    DR_games = models.FloatField(default=0.0)
-    DR_eff = models.FloatField(default=0.0)
-    DR_score = models.FloatField(default=0.0)
-    DR_time = models.FloatField(default=0.0)
-    DR_actions = models.FloatField(default=0.0)
-    DR_lines = models.FloatField(default=0.0)
-    DR_distance = models.FloatField(default=0.0)
-    DR_figures = models.FloatField(default=0.0)
-    DR_rating = models.FloatField(default=1500.0)
-    AC_games = models.FloatField(default=0.0)
-    AC_eff = models.FloatField(default=0.0)
-    AC_score = models.FloatField(default=0.0)
-    AC_time = models.FloatField(default=0.0)
-    AC_actions = models.FloatField(default=0.0)
-    AC_lines = models.FloatField(default=0.0)
-    AC_distance = models.FloatField(default=0.0)
-    AC_figures = models.FloatField(default=0.0)
-    AC_rating = models.FloatField(default=1500.0)
-    CF_games = models.FloatField(default=0.0)
-    CF_eff = models.FloatField(default=0.0)
-    CF_score = models.FloatField(default=0.0)
-    CF_time = models.FloatField(default=0.0)
-    CF_actions = models.FloatField(default=0.0)
-    CF_lines = models.FloatField(default=0.0)
-    CF_distance = models.FloatField(default=0.0)
-    CF_figures = models.FloatField(default=0.0)
-    CF_rating = models.FloatField(default=1500.0)
-    HF_games = models.FloatField(default=0.0)
-    HF_eff = models.FloatField(default=0.0)
-    HF_score = models.FloatField(default=0.0)
-    HF_time = models.FloatField(default=0.0)
-    HF_actions = models.FloatField(default=0.0)
-    HF_lines = models.FloatField(default=0.0)
-    HF_distance = models.FloatField(default=0.0)
-    HF_figures = models.FloatField(default=0.0)
-    HF_rating = models.FloatField(default=1500.0)
-    RA_games = models.FloatField(default=0.0)
-    RA_eff = models.FloatField(default=0.0)
-    RA_score = models.FloatField(default=0.0)
-    RA_time = models.FloatField(default=0.0)
-    RA_actions = models.FloatField(default=0.0)
-    RA_lines = models.FloatField(default=0.0)
-    RA_distance = models.FloatField(default=0.0)
-    RA_figures = models.FloatField(default=0.0)
-    RA_rating = models.FloatField(default=1500.0)
-    M_TOTAL_games = models.FloatField(default=0.0)
-    M_TOTAL_score = models.FloatField(default=0.0)
-    M_TOTAL_time = models.FloatField(default=0.0)
-    M_TOTAL_actions = models.FloatField(default=0.0)
-    M_TOTAL_lines = models.FloatField(default=0.0)
-    M_TOTAL_distance = models.FloatField(default=0.0)
-    M_TOTAL_figures = models.FloatField(default=0.0)
-    M_CL_games = models.FloatField(default=0.0)
-    M_CL_score = models.FloatField(default=0.0)
-    M_CL_time = models.FloatField(default=0.0)
-    M_CL_actions = models.FloatField(default=0.0)
-    M_CL_lines = models.FloatField(default=0.0)
-    M_CL_distance = models.FloatField(default=0.0)
-    M_CL_figures = models.FloatField(default=0.0)
-    M_DM_games = models.FloatField(default=0.0)
-    M_DM_score = models.FloatField(default=0.0)
-    M_DM_time = models.FloatField(default=0.0)
-    M_DM_actions = models.FloatField(default=0.0)
-    M_DM_lines = models.FloatField(default=0.0)
-    M_DM_distance = models.FloatField(default=0.0)
-    M_DM_figures = models.FloatField(default=0.0)
-    M_SU_games = models.FloatField(default=0.0)
-    M_SU_score = models.FloatField(default=0.0)
-    M_SU_time = models.FloatField(default=0.0)
-    M_SU_actions = models.FloatField(default=0.0)
-    M_SU_lines = models.FloatField(default=0.0)
-    M_SU_distance = models.FloatField(default=0.0)
-    M_SU_figures = models.FloatField(default=0.0)
-    M_LI_games = models.FloatField(default=0.0)
-    M_LI_score = models.FloatField(default=0.0)
-    M_LI_time = models.FloatField(default=0.0)
-    M_LI_actions = models.FloatField(default=0.0)
-    M_LI_lines = models.FloatField(default=0.0)
-    M_LI_distance = models.FloatField(default=0.0)
-    M_LI_figures = models.FloatField(default=0.0)
-    M_CO_games = models.FloatField(default=0.0)
-    M_CO_score = models.FloatField(default=0.0)
-    M_CO_time = models.FloatField(default=0.0)
-    M_CO_actions = models.FloatField(default=0.0)
-    M_CO_lines = models.FloatField(default=0.0)
-    M_CO_distance = models.FloatField(default=0.0)
-    M_CO_figures = models.FloatField(default=0.0)
-    M_SA_games = models.FloatField(default=0.0)
-    M_SA_score = models.FloatField(default=0.0)
-    M_SA_time = models.FloatField(default=0.0)
-    M_SA_actions = models.FloatField(default=0.0)
-    M_SA_lines = models.FloatField(default=0.0)
-    M_SA_distance = models.FloatField(default=0.0)
-    M_SA_figures = models.FloatField(default=0.0)
-    M_DR_games = models.FloatField(default=0.0)
-    M_DR_score = models.FloatField(default=0.0)
-    M_DR_time = models.FloatField(default=0.0)
-    M_DR_actions = models.FloatField(default=0.0)
-    M_DR_lines = models.FloatField(default=0.0)
-    M_DR_distance = models.FloatField(default=0.0)
-    M_DR_figures = models.FloatField(default=0.0)
-    M_AC_games = models.FloatField(default=0.0)
-    M_AC_score = models.FloatField(default=0.0)
-    M_AC_time = models.FloatField(default=0.0)
-    M_AC_actions = models.FloatField(default=0.0)
-    M_AC_lines = models.FloatField(default=0.0)
-    M_AC_distance = models.FloatField(default=0.0)
-    M_AC_figures = models.FloatField(default=0.0)
-    M_CF_games = models.FloatField(default=0.0)
-    M_CF_score = models.FloatField(default=0.0)
-    M_CF_time = models.FloatField(default=0.0)
-    M_CF_actions = models.FloatField(default=0.0)
-    M_CF_lines = models.FloatField(default=0.0)
-    M_CF_distance = models.FloatField(default=0.0)
-    M_CF_figures = models.FloatField(default=0.0)
-    M_HF_games = models.FloatField(default=0.0)
-    M_HF_score = models.FloatField(default=0.0)
-    M_HF_time = models.FloatField(default=0.0)
-    M_HF_actions = models.FloatField(default=0.0)
-    M_HF_lines = models.FloatField(default=0.0)
-    M_HF_distance = models.FloatField(default=0.0)
-    M_HF_figures = models.FloatField(default=0.0)
-    M_RA_games = models.FloatField(default=0.0)
-    M_RA_score = models.FloatField(default=0.0)
-    M_RA_time = models.FloatField(default=0.0)
-    M_RA_actions = models.FloatField(default=0.0)
-    M_RA_lines = models.FloatField(default=0.0)
-    M_RA_distance = models.FloatField(default=0.0)
-    M_RA_figures = models.FloatField(default=0.0)
+    record_card = models.OneToOneField(PlayerRecord,
+                                       null=True, blank=True,
+                                       on_delete=models.CASCADE)
 
     def save_new(self):
         record = PlayerRecord()
@@ -288,15 +112,14 @@ class Player(models.Model):
         self.save()
 
     def do_login(self, url='/'):
-        from web.helpers import auto_login
         from django.http import HttpResponseRedirect
+        from web.helpers import auto_login
         key = auto_login(self)
         response = HttpResponseRedirect(url)
         response.set_cookie('session_key', key,
                             domain='localhost',
                             httponly=True,
                             expires=timezone.now()+timedelta(days=5))
-        print('session ', url, key)
         return response
 
     def do_logout(self, request):
@@ -305,7 +128,7 @@ class Player(models.Model):
         return HttpResponseRedirect('/')
 
     def get_url(self):
-        return '/profile/'+str(self.pk)
+        return f'/profile/{str(self.pk)}'
 
     def has_room(self):
         if hasattr(self, 'current_room') and self.current_room is not None:
@@ -313,77 +136,63 @@ class Player(models.Model):
         return None
 
     def update_stats(self, **kwargs):
-                     # type=None, rec=None, multiplayer=False, score=None, time=None,
-                     # actions=None, lines=None, distance=None, figures=None,
-                     # countdown_score=None, time_lines=None, time_drag=None,
-                     # time_climb=None, max_speed=None, games=1):
+        # type=None, rec=None, multiplayer=False, score=None, time=None,
+        # actions=None, lines=None, distance=None, figures=None,
+        # countdown_score=None, time_lines=None, time_drag=None,
+        # time_climb=None, max_speed=None, games=1):
         types = ['TOTAL', kwargs['type']]
         if kwargs['multiplayer']:
             types.append('M_TOTAL')
-            types.append('M_'+ kwargs['type'])
+            types.append(f'M_{kwargs["type"]}')
         for x in kwargs:
             if x in COUNT_STATS:
                 for t in types:
-                    prop = t + '_' + x
-                    new_val = getattr(self, prop) +  kwargs[x]
+                    prop = f'{t}_{x}'
+                    new_val = getattr(self, prop) + kwargs[x]
                     setattr(self, prop, new_val)
         self.update_best(**kwargs)
         self.save()
 
     def update_eff(self, type=None, eff=None):
         self.TOTAL_eff += eff
-        prop = type + '_eff'
+        prop = f'{type}_eff'
         new_val = getattr(self, prop) + eff
         setattr(self, prop, new_val)
 
     def update_rating(self, type, delta):
-        prop = type + '_rating'
+        prop = f'{type}_rating'
         new_rating = round(getattr(self, prop) + delta)
         setattr(self, prop, new_rating)
 
     def update_best(self, **kwargs):
-        if kwargs['score'] and kwargs['score'] > self.best_score:
-            self.best_score = kwargs['score']
-            self.record_card.best_score_REC = kwargs['rec']
-        if kwargs['countdown_score'] and kwargs['countdown_score'] > self.best_countdown_score:
-            self.best_countdown_score = kwargs['countdown_score']
-            self.record_card.best_countdown_score_REC = kwargs['rec']
-        if not self.best_time_lines or kwargs['time_lines'] and kwargs['time_lines'] < self.best_time_lines:
-            self.best_time_lines = kwargs['time_lines']
-            self.record_card.best_time_lines_REC = kwargs['rec']
-        if not self.best_time_drag or kwargs['time_drag'] and kwargs['time_drag'] < self.best_time_drag:
-            self.best_time_drag = kwargs['time_drag']
-            self.record_card.best_time_drag_REC = kwargs['rec']
-        if not self.best_time_climb or kwargs['time_climb'] and kwargs['time_climb'] < self.best_time_climb:
-            self.best_time_climb = kwargs['time_climb']
-            self.record_card.best_time_climb_REC = kwargs['rec']
-        if not self.best_time_acc or kwargs['time_acc'] and kwargs['time_acc'] < self.best_time_acc:
-            self.best_time_acc = kwargs['time_acc']
-            self.record_card.best_time_acc_REC = kwargs['rec']
-        if kwargs['time'] and kwargs['time'] > self.best_survival_time:
-            self.best_survival_time = kwargs['time']
-            self.record_card.best_survival_time_REC = kwargs['rec']
-        if kwargs['max_speed'] and kwargs['max_speed'] > self.best_speed:
-            self.best_speed = kwargs['max_speed']
-            self.record_card.best_speed_REC = kwargs['rec']
-        if kwargs['lines'] and kwargs['lines'] > self.best_lines_count:
-            self.best_lines_count = kwargs['lines']
-            self.record_card.best_lines_count_REC = kwargs['rec']
-        if kwargs['distance'] and kwargs['distance'] > self.best_distance:
-            self.best_distance = kwargs['distance']
-            self.record_card.best_distance_REC = kwargs['rec']
-        self.record_card.save()
 
+        def update_record(res, prop):
+            setattr(self, prop, res)
+            setattr(self.record_card, f'{prop}_REC', kwargs['rec'])
+
+        for stat in BEST_UPDATE:
+            res = kwargs[stat]
+            if res:
+                prop = f'best_{BEST_UPDATE[stat]}'
+                cur = getattr(self, prop)
+                if cur is None:
+                    update_record(res, prop)
+                elif stat.startswith('time_'):
+                    if res < cur:
+                        update_record(res, prop)
+                elif res > cur:
+                    update_record(res, prop)
+        self.record_card.save()
 
     def get_profile_stats(self):
         stats = {
             'user': {
-                'outside' : True,
+                'outside': True,
                 'username': self.username,
                 'date_joined': self.date_joined.strftime('%d %b %Y %H:%I %Z')
                  },
             'best': {
-                'outside' : True,
+                'outside': True,
                 'speed': round(self.best_speed, 2),
                 'score': int(self.best_score),
                 'lines': int(self.best_lines_count),
@@ -394,63 +203,37 @@ class Player(models.Model):
                 'time_drag': '-',
                 'time_acc': '-',
                 'countdown_score': int(self.best_countdown_score),
-                },
-            # 'rating': {self.rating},
+                }
         }
-        if self.best_time_lines:
-            stats['best']['time_lines'] = round(self.best_time_lines/60, 2)
-        if self.best_time_climb:
-            stats['best']['time_climb'] = round(self.best_time_climb/60, 2)
-        if self.best_time_drag:
-            stats['best']['time_drag'] = round(self.best_time_drag/60, 2)
-        if self.best_time_acc:
-            stats['best']['time_acc'] = round(self.best_time_acc/60, 2)
-
+        for x in ['lines', 'climb', 'drag', 'acc']:
+            att = f'best_time_{x}'
+            cur = getattr(self, att)
+            if cur:
+                stat = f'time_{x}'
+                stats['best'][stat] = round(cur/60, 2)
         full_stats = COUNT_STATS + ['eff'] + ['rating']
         for t in TYPE_STATS:
             dic = {}
             for st in full_stats:
-                key = t + '_' + st
+                key = f'{t}_{st}'
                 if t == 'TOTAL' and st == 'rating':
                     continue
                 dic[st] = float(getattr(self, key))
                 if st == 'eff':
-                    games_key = 'M_' + t + '_games'
+                    games_key = f'M_{t}_games'
                     games = int(getattr(self, games_key))
                     if games > 0:
                         dic[st] = round(dic[st]/games, 2)
             dic['outside'] = False
-            dic['score_game'] = '-'
-            dic['lines_game'] = '-'
-            dic['distance_game'] = '-'
-            dic['figures_game'] = '-'
-            dic['time_game'] = '-'
-            dic['distance_line'] = '-'
-            dic['figures_line'] = '-'
-            dic['actions_figure'] = '-'
-            dic['score_figure'] = '-'
-            dic['score_actions'] = '-'
-            dic['score_distance'] = '-'
-            dic['score_sec'] = '-'
-            dic['lines_min'] = '-'
-            dic['actions_min'] = '-'
-            dic['figures_min'] = '-'
-            if dic['games'] > 0:
-                dic['score_game'] = dic['score']/dic['games']
-                dic['lines_game'] = dic['lines']/dic['games']
-                dic['figures_game'] = dic['figures']/dic['games']
-                dic['distance_game'] = dic['distance']/dic['games']
-                dic['time_game'] = dic['time']/dic['games']
-            if dic['lines'] > 0:
-                dic['distance_line'] = dic['distance']/dic['lines']
-                dic['figures_line'] = dic['figures']/dic['lines']
-            if dic['figures'] > 0:
-                dic['actions_figure'] = dic['actions']/dic['figures']
-                dic['score_figure'] = dic['score']/dic['figures']
-            if dic['actions'] > 0:
-                dic['score_actions'] = dic['score']/dic['actions']
-            if dic['distance'] > 0:
-                dic['score_distance'] = dic['score']/dic['distance']
+            for x in DIC_STATS:
+                for stat in DIC_STATS[x]:
+                    att = f'{stat}_{x}'
+                    dic[att] = '-'
+            for x in DIC_DIVIDES:
+                for stat in DIC_STATS[DIC_DIVIDES[x]]:
+                    if dic[x] > 0:
+                        att = f'{stat}_{DIC_DIVIDES[x]}'
+                        dic[att] = dic[stat]/dic[x]
             if dic['time'] > 0:
                 dic['score_sec'] = dic['score']/dic['time']
                 dic['lines_min'] = dic['lines']/(dic['time']/60)
@@ -481,8 +264,6 @@ class Player(models.Model):
             game['place'] = x.get_place(self)
             games.append(game)
         return games
-
-
 
 
 class SingleGameRecord(models.Model):
@@ -524,17 +305,12 @@ class SingleGameRecord(models.Model):
     def save_graphs(self, graphs):
         data = {}
         for x in graphs:
-            data[x] = {'score': {'times': [0],
-                                 'vals': [0]},
-                       'lines': {'times': [0],
-                                 'vals': [0]},
-                       'speed': {'times': [0],
-                                 'vals': [0]},
-                       'distance': {'times': [0],
-                                    'vals': [0]},
-                       'figures': {'times': [0],
-                                   'vals': [0]},
-                       }
+            data[x] = {}
+            for stat in ['score', 'lines', 'speed', 'distance', 'figures']:
+                data[x][stat] = {
+                                 'times': [0],
+                                 'vals': [0]
+                                 }
             for time in graphs[x]:
                 for stat in graphs[x][time]:
                     data[x][stat]['times'].append(time)
@@ -543,7 +319,7 @@ class SingleGameRecord(models.Model):
         self.save()
 
     def graphs_data(self):
-        data = {'game' : json.loads(self.graphs),
+        data = {'game': json.loads(self.graphs),
                 'last': self.graph_last10_player()
                 }
         if self.type in TYPE_OF_BEST:
@@ -573,48 +349,60 @@ class SingleGameRecord(models.Model):
         names = [stats[x]['username'] for x in stats.keys()]
         players = []
         for name in names:
-            players.append(Player.objects.filter(username=name.replace('_', '-')))
+            players.append(Player.objects
+                                 .filter(username=name.replace('_', '-')))
         games = {}
         for x in range(len(players)):
             if players[x].count() == 1:
-                games[x] = players[x][0].recorded_games.filter(type=self.type) \
-                                                      .order_by('-started_at')[:10]
+                games[x] = players[x][0] \
+                           .recorded_games \
+                           .filter(type=self.type) \
+                           .order_by('-started_at')[:10]
         data = {}
-        divides = {}
         for x in games:
-            data[x] = {'times': [0],
-                       'speed': [0],
+            data[x] = {'speed': [0],
                        'score': [0],
                        'distance': [0],
                        'figures': [0],
-                       'lines': [0]
-                      }
+                       'lines': [0],
+                       'max_times': [],
+                       }
             summary = [game.graph_of_player(names[x]) for game in games[x]]
-            data[x]['divide'] = len(summary)
+            max_time = int(max([max([graph[stat]['times'][-1]
+                           for stat in graph])
+                           for graph in summary])) + 1
             for graph in summary:
+                cur_max_time = int(max([graph[stat]['times'][-1]
+                                   for stat in graph])) + 1
+                data[x]['max_times'].append(cur_max_time)
                 for stat in graph:
-                    max_time = int(graph[stat]['times'][-1]) + 1
-
-                    if max_time > data[x]['times'][-1]:
-                        data[x]['times'] = list(range(0, max_time+1))
+                    stat_max_time = int(graph[stat]['times'][-1]) + 1
                     pos = 0
-                    for time in range(max_time):
-                        while graph[stat]['times'][pos] < time:
+                    for time in range(stat_max_time):
+                        while graph[stat]['times'][pos] < \
+                              time < graph[stat]['times'][-1]:
                             pos += 1
-                        if time > len(data[x][stat])-1:
+                        t = graph[stat]['times'][pos]
+                        v = graph[stat]['vals'][pos]
+                        if time > len(data[x][stat]) - 1:
                             data[x][stat].append(0)
-
-                        data[x][stat][time] += graph[stat]['vals'][pos]
+                        if time != int(t):
+                            v = graph[stat]['vals'][pos-1]
+                        data[x][stat][time] += v
+                    for time in range(stat_max_time, max_time):
+                        if time > len(data[x][stat]) - 1:
+                            data[x][stat].append(0)
+                        data[x][stat][time] += graph[stat]['vals'][-1]
         return data
 
     def get_url(self):
-        return '/results/' + str(self.pk)
+        return f'/results/{str(self.pk)}'
 
     def get_place(self, player):
         places = self.load_results()
         for x in places:
             if player.username in places[x]:
-                return x + '/' + str(self.size)
+                return f'{x}/{str(self.size)}'
 
     def load_stats(self):
         return json.loads(self.stats)
@@ -622,23 +410,24 @@ class SingleGameRecord(models.Model):
 
 class Session(models.Model):
     key = models.CharField(max_length=255, unique=True)
-    user = models.ForeignKey(Player, blank=True, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(Player, blank=True,
+                             null=True, on_delete=models.CASCADE)
     expires = models.DateTimeField()
 
 
 class TetrisRoomManager(models.Manager):
     def next_id(self):
         if self.all().count() > 0:
-
             return self.all().order_by('-pk')[0].pk + 1
-
         else:
             return 1
+
 
 class TetrisRoom(models.Model):
     objects = TetrisRoomManager()
     room_id = models.IntegerField(default=0)
-    author = models.OneToOneField(Player, on_delete=models.CASCADE, related_name="current_room")
+    author = models.OneToOneField(Player, on_delete=models.CASCADE,
+                                  related_name="current_room")
     players = models.IntegerField()
     guests = models.IntegerField(default=0)
     bots = models.IntegerField(default=0)
@@ -652,7 +441,6 @@ class TetrisRoom(models.Model):
     started = models.BooleanField(default=False)
     start_players = models.TextField(default="")
 
-
     def add_player(self, player, pos):
         self.active_players.add(player)
         if player.is_guest:
@@ -660,8 +448,8 @@ class TetrisRoom(models.Model):
         pp = json.loads(self.players_at_positions)
         pp[str(pos)] = player.username
         if self.ranked:
-            rateprop = self.type + '_rating'
-            pp[str(pos)] += ':' + str(round(getattr(player, rateprop)))
+            rateprop = f'{self.type}_rating'
+            pp[str(pos)] += f':{str(round(getattr(player, rateprop)))}'
         self.players_at_positions = json.dumps(pp)
         self.save()
 
@@ -679,7 +467,7 @@ class TetrisRoom(models.Model):
         pp = json.loads(self.players_at_positions)
         pp[str(pos)] = bot.username
         if self.ranked:
-            pp[str(pos)] += ':' + str(bot.rating)
+            pp[str(pos)] += f':{str(bot.rating)}'
         self.players_at_positions = json.dumps(pp)
         botlevels = json.loads(self.botlevels)
         botlevels.append(bot.level)
@@ -693,7 +481,7 @@ class TetrisRoom(models.Model):
         botinfo = pp[str(pos)]
         if self.ranked:
             botinfo = botinfo.split(':')[0]
-        level = re.sub('\D', '', botinfo)
+        level = re.sub(r'\D', '', botinfo)
         pp[str(pos)] = ''
         self.players_at_positions = json.dumps(pp)
         botlevels = json.loads(self.botlevels)
@@ -708,30 +496,23 @@ class TetrisRoom(models.Model):
         pp = json.loads(pl)
         info = []
         for x in pp:
-            info.append({'pos': x, 'username' : pp[x] or '---'})
+            info.append({'pos': x, 'username': pp[x] or '---'})
         return info
 
-
-
-
     def get_volume(self):
-        print(self.proc)
         if self.type in VOLUME_STANDARD:
             if self.type == 'CO':
                 return (self.proc*VOLUME_STANDARD[self.type]) / 100
             return int((self.proc*VOLUME_STANDARD[self.type]) // 100)
 
-
-
-
     def is_full(self):
         return self.active_players.count() + self.bots == self.players
 
     def get_url(self):
-        return '/room/'+ str(self.room_id)
+        return f'/room/{str(self.room_id)}'
 
     def delete_url(self):
-        return '/room/'+ str(self.room_id)+'/delete/'
+        return f'/room/{str(self.room_id)}/delete/'
 
     def start(self):
         self.started = True

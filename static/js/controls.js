@@ -30,7 +30,9 @@ function controlField(event, sensorData=''){
       msg.place = document.querySelector('.powerups .active').dataset.pos;
       msg.target_field = +[...c].pop();
     }
-    document.conn.send(JSON.stringify(msg));
+    if (msg.command){
+      document.conn.send(JSON.stringify(msg));
+    }
   }
 }
 

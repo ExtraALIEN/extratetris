@@ -3,7 +3,7 @@ import websockets
 from django.utils import timezone
 from engine.Field import Field
 from engine.ingame import process_command
-from engine.rating import calculate_rating_change
+from engine.utils import calculate_rating_change
 from web.models import TetrisRoom, SingleGameRecord
 from web.helpers import GAME_COUNTS, POWERUPS, VOLUME_STANDARD
 from random import randint
@@ -39,8 +39,6 @@ class Room:
                 arg['drag_finish'] = (proc*VOLUME_STANDARD['DR']) // 100
             elif self.type == 'AC':
                 arg['acc_finish'] = (proc*VOLUME_STANDARD['AC']) // 100
-
-
         self.fields = [Field(pos=i, **arg) for i in range(self.players)]
         self.start_time = None
         self.lines = 0
@@ -48,14 +46,12 @@ class Room:
         self.next_negative = 11
         self.next_negative2 = 14
 
-
     def human_players(self):
         s = self.players
         for field in self.fields:
             if field.websocket == 'bot':
                 s -= 1
         return s
-
 
     def start_timers(self):
         delay = .01
@@ -115,10 +111,9 @@ class Room:
         if announce:
             self.announce_goals()
 
-
     def detect_places(self):
         from engine.roomUtils import broadcast_room
-        results = {}  # res: [pos,]
+        results = {}
         for field in self.fields:
             res = field.result
             pos = field.pos
@@ -130,10 +125,8 @@ class Room:
                 if res not in results:
                     results[res] = []
                 results[res].append(pos)
-        # print(results)
         places = sorted(results)
-        # print(places)
-        if self.type in ['CL', 'DM', 'SU', 'CO', 'CF', 'HF' ,'RA']:
+        if self.type in ['CL', 'DM', 'SU', 'CO', 'CF', 'HF', 'RA']:
             places = list(reversed(places))
         if -9000 in places and places[0] == -9000:
             tmp = places[0]
@@ -164,7 +157,7 @@ class Room:
             next_eff = 100
             for x in sorted(places):
                 bank = 0
-                for y in places[x]:  #
+                for y in places[x]:
                     bank += next_eff
                     next_eff -= gap
                 eff_points[x] = bank/len(places[x])
@@ -172,13 +165,16 @@ class Room:
             for field in self.fields:
                 rating_prop = 'rating'
                 if field.websocket != 'bot':
-                    rating_prop = self.type + '_rating'
-                start_ratings[field.pos] = getattr(field.start_player, rating_prop)
-
-        rec = SingleGameRecord(type=self.type, started_at=self.start_time, size=self.players)
+                    rating_prop = f'{self.type}_rating'
+                start_ratings[field.pos] = getattr(field.start_player,
+                                                   rating_prop)
+        rec = SingleGameRecord(type=self.type, started_at=self.start_time,
+                               size=self.players)
         results = {place:
-                   [self.fields[pos].start_player.username for pos in places[place]]
-                    for place in places}
+                   [self.fields[pos].start_player.username
+                    for pos in places[place]]
+                   for place in places
+                   }
         rec.save_results(results)
         stats = {}
         graphs = {}
@@ -200,7 +196,8 @@ class Room:
                                         lines=field.lines,
                                         distance=field.distance,
                                         figures=field.total_figures,
-                                        countdown_score=field.score_intermediate_st,
+                                        countdown_score=field
+                                                        .score_intermediate_st,
                                         time_lines=field.time_lines,
                                         time_drag=field.time_drag,
                                         time_climb=field.time_climb,
@@ -208,7 +205,6 @@ class Room:
                                         max_speed=field.max_speed,
                                         games=1
                                         )
-
                     if self.players > 1:
                         eff = 0
                         for p in places:
@@ -217,7 +213,8 @@ class Room:
                                 break
                         player.update_eff(self.type, eff)
                         if self.ranked:
-                            delta = calculate_rating_change(eff, field.pos, start_ratings)
+                            delta = calculate_rating_change(eff, field.pos,
+                                                            start_ratings)
                             player.update_rating(self.type, delta)
                     player.save()
         rec.save_stats(stats)
@@ -234,7 +231,6 @@ class Room:
         if self.need_record():
             self.update_records(final_places)
 
-
     def finish_game(self, forced=False):
         from engine.roomUtils import clear_room, remove_fields_bots
         tetris_room = TetrisRoom.objects.get(room_id=self.id)
@@ -248,7 +244,12 @@ class Room:
 
     def announce_powerup(self, pos, num, powerup=None, time=None):
         from engine.roomUtils import broadcast_room
-        msg = {'type': 'powerup', 'pos' : pos, 'num': num + 1, 'powerup': powerup, 'time': time}
+        msg = {'type': 'powerup',
+               'pos': pos,
+               'num': num + 1,
+               'powerup': powerup,
+               'time': time
+               }
         broadcast_room(self.id, msg)
 
     def reset_flag(self):
@@ -265,12 +266,12 @@ class Room:
 
     def announce_flag(self, pos, y):
         from engine.roomUtils import broadcast_room
-        msg = {'type': 'flag', 'pos' : pos, 'y': y}
+        msg = {'type': 'flag', 'pos': pos, 'y': y}
         broadcast_room(self.id, msg)
 
     def announce_lines(self):
         from engine.roomUtils import broadcast_room
-        msg = {'type': 'room-lines', 'lines' : self.lines}
+        msg = {'type': 'room-lines', 'lines': self.lines}
         broadcast_room(self.id, msg)
 
     def move_flag(self, pos):
@@ -288,13 +289,12 @@ class Room:
             else:
                 field.flag_hold = False
 
-
     def unblind(self, pos, x):
         from engine.roomUtils import broadcast_room
-        msg = { 'type': 'remove-blind',
-                'pos': pos,
-                'x': x
-        }
+        msg = {'type': 'remove-blind',
+               'pos': pos,
+               'x': x
+               }
         if x == 'queue':
             del msg['x']
         broadcast_room(self.id, msg)
@@ -308,7 +308,8 @@ class Room:
 
     def execute_powerup(self, code, target, starter=None):
         from engine.roomUtils import broadcast_room
-        if target not in self.fields_in_game() or self.fields[target].game_over:
+        if target not in self.fields_in_game() \
+                or self.fields[target].game_over:
             return 0
         powerup = POWERUPS[code]
         tg = self.fields[target]
@@ -316,20 +317,20 @@ class Room:
             if powerup == 'shield':
                 tg.shield_time += 45
                 msg_snd = {
-                    'type': 'powerup-sound',
-                    'pos': tg.pos,
-                    'file': powerup
-                }
+                            'type': 'powerup-sound',
+                            'pos': tg.pos,
+                            'file': powerup
+                            }
                 broadcast_room(self.id, msg_snd)
             else:
                 tg.shield_time -= 15
                 if tg.shield_time < 0:
                     tg.shield_time = 0
                 msg_snd = {
-                    'type': 'powerup-sound',
-                    'pos': tg.pos,
-                    'file': 'block'
-                }
+                            'type': 'powerup-sound',
+                            'pos': tg.pos,
+                            'file': 'block'
+                            }
                 broadcast_room(self.id, msg_snd)
             return 1
         msg = None
@@ -339,44 +340,44 @@ class Room:
             tg.powerup_mul *= 0.75
         elif powerup == 'speed_up':
             tg.change_speed(10)
-            msg =  {'type': 'update-tetris',
-                    'pos' : tg.pos,
-                    'speed': tg.speed,
-                    'time': tg.time
-                    }
+            msg = {'type': 'update-tetris',
+                   'pos': tg.pos,
+                   'speed': tg.speed,
+                   'time': tg.time
+                   }
         elif powerup == 'speed_down':
             tg.change_speed(-10)
             tg.natural_acceleration *= 1.15
-            msg =  {'type': 'update-tetris',
-                    'pos' : tg.pos,
-                    'speed': tg.speed,
-                    'time': tg.time
-                    }
+            msg = {'type': 'update-tetris',
+                   'pos': tg.pos,
+                   'speed': tg.speed,
+                   'time': tg.time
+                   }
         elif powerup.startswith('line_add'):
             i = int(powerup[-1])
             for x in range(i):
                 tg.add_line()
             msg = {'type': 'refresh-tetris',
-                   'pos' : tg.pos,
+                   'pos': tg.pos,
                    'surface': tg.surface_to_view(),
                    'new_piece': tg.active_piece.to_view()
-                  }
+                   }
         elif powerup.startswith('line_remove'):
             i = int(powerup[-1])
             for x in range(i):
                 tg.remove_line()
             msg = {'type': 'refresh-tetris',
-                   'pos' : tg.pos,
+                   'pos': tg.pos,
                    'surface': tg.surface_to_view(),
                    'new_piece': tg.active_piece.to_view()
-                  }
+                   }
         elif powerup == 'copy_figure':
             piece = tg.active_piece
             tg.queue.fill(piece.color, piece.shape_number)
             msg = {'type': 'refresh-tetris',
-                            'pos' : tg.pos,
-                            'queue': tg.queue.to_view(),
-                    }
+                   'pos': tg.pos,
+                   'queue': tg.queue.to_view(),
+                   }
         elif powerup == 'duration_up':
             tg.powerups_lifetime /= 0.8
             for x in tg.powerups_time:
@@ -388,19 +389,19 @@ class Room:
         elif powerup == 'thunder':
             tg.put_thunder()
             msg = {'type': 'refresh-tetris',
-                   'pos' : tg.pos,
+                   'pos': tg.pos,
                    'surface': tg.surface_to_view(),
                    'new_piece': tg.active_piece.to_view()
-                  }
+                   }
         elif powerup == 'shield':
             tg.shield_time += 45
         elif powerup == 'bomb':
             tg.put_bomb()
             msg = {'type': 'refresh-tetris',
-                   'pos' : tg.pos,
+                   'pos': tg.pos,
                    'surface': tg.surface_to_view(),
                    'new_piece': tg.active_piece.to_view()
-                  }
+                   }
         elif powerup == 'trash':
             for x in range(3):
                 tg.remove_powerup(x)
@@ -413,7 +414,7 @@ class Room:
             if tg.set_blind_queue():
                 msg = {'type': 'blind',
                        'pos': tg.pos,
-                      }
+                       }
         elif powerup == 'drink':
             tg.drink_time += 15
         elif powerup == 'weak_signal':
@@ -423,13 +424,12 @@ class Room:
         if msg is not None:
             broadcast_room(self.id, msg)
         msg_snd = {
-            'type': 'powerup-sound',
-            'pos': tg.pos,
-            'file': powerup
-        }
+                    'type': 'powerup-sound',
+                    'pos': tg.pos,
+                    'file': powerup
+                    }
         broadcast_room(self.id, msg_snd)
         return 1
 
-
     def to_view(self):
-        return {x : self.fields[x].to_view() for x in range(len(self.fields))}
+        return {x: self.fields[x].to_view() for x in range(len(self.fields))}

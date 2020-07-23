@@ -1,6 +1,7 @@
 from engine.Piece import Piece
 from web.helpers import VOLUME_STANDARD
 
+
 class ActivePiece(Piece):
     def __init__(self, current_piece, x, y, field):
         self.color = current_piece.color
@@ -9,7 +10,6 @@ class ActivePiece(Piece):
         self.x = x
         self.y = y
         self.field = field
-
 
     def fix_y(self):
         if sum(self.shape[0]) == 0:
@@ -23,7 +23,6 @@ class ActivePiece(Piece):
                               current_piece=current_piece,
                               field=self.field)
         return phantom
-
 
     def bottom_points(self):
         def bottom_point(x):
@@ -39,7 +38,6 @@ class ActivePiece(Piece):
             if points[x] != -1:
                 result[x] = points[x]
         return result
-
 
     def detect_landing_row(self):
         land_y = None
@@ -75,17 +73,18 @@ class ActivePiece(Piece):
                     sh[y].append(shape[y][x])
         return sh
 
-
     def detect_possible_landing_height(self, trimmed_shape, top):
         top = self.field.top_points()
-        bottoms = list(filter(lambda a: a != -1, [*self.bottom_points().values()]))
+        bottoms = list(filter(lambda a: a != -1,
+                              [*self.bottom_points().values()]))
         base = min(bottoms)
         width = len(bottoms)
         height = len(trimmed_shape)
         result = []
         for x in range(self.field.width + 1 - width):
             h = top[x]
-            while self.blocked_at(trimmed_shape, h, x) and h < self.field.height-1:
+            while self.blocked_at(trimmed_shape, h, x) \
+                    and h < self.field.height-1:
                 h += 1
             y = [(b-base)+h-height+1 for b in bottoms]
             result.append(y)
@@ -93,14 +92,12 @@ class ActivePiece(Piece):
 
     def blocked_at(self, sh, y0, x0):
         for y in range(len(sh)):
-                if y0-y < 0:
+            if y0-y < 0:
+                return True
+            for x in range(len(sh[0])):
+                if sh[y][x] > 0 and self.field.surface[y0-y][x0+x] > 0:
                     return True
-                for x in range(len(sh[0])):
-                    if sh[y][x] > 0 and self.field.surface[y0-y][x0+x] > 0:
-                        return True
         return False
-
-
 
     def blocked(self):
         for y in range(len(self.shape)):
@@ -134,9 +131,11 @@ class ActivePiece(Piece):
             self.y = phantom.y
             self.field.distance += 1
             self.field.update_graph('distance', self.field.distance)
-            if self.field.distance >= VOLUME_STANDARD['DR'] and self.field.time_drag_st is None:
+            if self.field.distance >= VOLUME_STANDARD['DR'] \
+                    and self.field.time_drag_st is None:
                 self.field.time_drag_st = self.field.time
-            if self.field.distance >= self.field.drag_finish and self.field.time_drag is None:
+            if self.field.distance >= self.field.drag_finish \
+                    and self.field.time_drag is None:
                 self.field.time_drag = self.field.time
                 if self.field.room.type == 'DR':
                     self.field.end_game()
@@ -162,12 +161,8 @@ class ActivePiece(Piece):
 
     def to_view(self):
         obj = {self.y-y:
-               {self.x+x: self.shape[y][x] for x in range(len(self.shape[y])) if self.shape[y][x] > 0}
+               {self.x+x: self.shape[y][x] for x in range(len(self.shape[y]))
+                if self.shape[y][x] > 0}
                for y in range(len(self.shape))}
         obj['pos'] = self.field.pos
         return obj
-
-                # def active_piece_to_view(self):
-                #     return {'x': self.active_piece.x,
-                #             'y': self.active_piece.y,
-                #             'shape': self.active_piece.shape}

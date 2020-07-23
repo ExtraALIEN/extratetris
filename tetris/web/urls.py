@@ -14,5 +14,4 @@ urlpatterns = [
     path('profile/<int:profile_id>/', views.profile),
     path('results/<int:game_number>/', views.recorded_game),
     path('top/<str:mode>/', views.top_results),
-    path('test/', views.testpage)
 ]

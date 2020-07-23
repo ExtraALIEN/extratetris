@@ -6,10 +6,10 @@ from engine.roomUtils import room_connect, create_room, find_next_id, \
 from engine.ingame import add_ready, process_command
 from engine.lobbyUtils import connect_lobby, disconnect_lobby
 
+
 class ConnectRoom(JsonWebsocketConsumer):
     def connect(self):
         self.accept()
-
 
     def receive_json(self, data):
         type = data['type']
@@ -28,11 +28,8 @@ class ConnectRoom(JsonWebsocketConsumer):
         elif type == 'del-bot':
             del_bot(data)
 
-
-
     def disconnect(self, close_code):
         room_hard_disconnect(self)
-
 
 
 class CreateRoom(JsonWebsocketConsumer):
@@ -42,11 +39,13 @@ class CreateRoom(JsonWebsocketConsumer):
 
     def receive_json(self, data):
         if data['command'] == 'init_room':
-            create_room(find_next_id(), int(data['players']), data['game_type'], float(data['volume']), bool(data['ranked']), bool(data['crazy']));
-
+            create_room(find_next_id(), int(data['players']),
+                        data['game_type'], float(data['volume']),
+                        bool(data['ranked']), bool(data['crazy']))
 
     def disconnect(self, close_code):
         pass
+
 
 class Lobby(JsonWebsocketConsumer):
     def connect(self):

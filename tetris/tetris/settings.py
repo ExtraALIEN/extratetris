@@ -15,17 +15,17 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ')%+5#rlo43xkli9qa-bb&t0k7fqv@j)hh1e%kxd6g!#9sgr^uf'
+with open(os.path.join(BASE_DIR, '..', 'etc', 'sec.txt')) as f:
+    SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost','gunicorn', 'daphne']
+ALLOWED_HOSTS = ['localhost', 'gunicorn', 'daphne']
 
 
 # Application definition
@@ -80,8 +80,8 @@ WSGI_APPLICATION = 'tetris.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME' : 'extratetris',
-        'USER' : 'tetris_backend'
+        'NAME': 'extratetris',
+        'USER': 'tetris_backend'
     }
 }
 
@@ -91,13 +91,15 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth \
+                .password_validation.MinimumLengthValidator',
         'OPTIONS': {
-            'min_length' : 6,
+            'min_length': 6,
         },
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth \
+                .password_validation.NumericPasswordValidator',
     },
 ]
 

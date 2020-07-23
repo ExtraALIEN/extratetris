@@ -39,32 +39,27 @@ function buildMultipleDataObj(results){
               'distance': {},
               'lines': {},
               'figures': {}};
-  let divides = {};
-  let times = {}
+  let times = {};
+  let maxTimes = {};
   for (let x of [...results]){
     let [stat, pos, vals] = [x.dataset.stat, x.dataset.pos, x.dataset.vals];
-    if (stat === 'divide' && !(pos in divides) ){
-      divides[pos] = vals;
-    }
-  }
-  for (let x of [...results]){
-    let [stat, pos, vals] = [x.dataset.stat, x.dataset.pos, x.dataset.vals];
-    if (stat === 'times'){
-      times[pos] = JSON.parse(vals);
-    }
-  }
-  for (let x of [...results]){
-    let [stat, pos, vals] = [x.dataset.stat, x.dataset.pos, x.dataset.vals];
-    if (!(['times', 'divide']).includes(stat)){
-      let v = JSON.parse(vals).map(a=> a/divides[pos]);
-      while(v.length < times[pos].length){
-        v.push(v[v.length-1]);
+    if (stat === 'max_times') {
+      let t = JSON.parse(vals);
+      t.sort((a,b)=> b-a);
+      maxTimes[pos] = JSON.parse(vals);
+      times[pos] = [];
+      for(let i=0; i< t[0]; i++){
+        times[pos].push(i);
       }
-      v.pop();
-      times[pos].pop();
+    }
+  }
+  for (let x of [...results]){
+    let [stat, pos, vals] = [x.dataset.stat, x.dataset.pos, x.dataset.vals];
+    if (stat !== 'max_times'){
+      let v = JSON.parse(vals).map(a => a/maxTimes[pos].length);
       data[stat][pos] = {'times': times[pos],
                         'vals': v
-      };
+                        };
     }
   }
   return data;
@@ -114,6 +109,7 @@ function currentAvg(data, stat, range, delta){
       }
       time += delta;
     }
+
   }
   return output;
 }
@@ -341,13 +337,14 @@ function displayGraph(data, stat){
   for(let x in data){
     for (let pos in data[x][stat]){
         let toDisplay = lineData(data[x][stat][pos]);
+        // console.log(toDisplay);
         svg.append("path")
            .datum(toDisplay)
            .attr("fill", "none")
            .attr("stroke", `${TETRIS_COLORS.record[pos]}`)
            .attr("stroke-width", x === 'last' ? 1 : 4)
            .attr("stroke-dasharray", x === 'best' ? [5,5] : null)
-           .attr("opacity", x === 'best' ? .4 : .95)
+           .attr("opacity", x === 'best' ? .4 : x === 'last' ? .95 : .95)
            .attr("d", d3.line()
                         .x(d => timeScale(d.x))
                         .y(d => valScale(d.y))
