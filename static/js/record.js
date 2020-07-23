@@ -337,7 +337,6 @@ function displayGraph(data, stat){
   for(let x in data){
     for (let pos in data[x][stat]){
         let toDisplay = lineData(data[x][stat][pos]);
-        // console.log(toDisplay);
         svg.append("path")
            .datum(toDisplay)
            .attr("fill", "none")

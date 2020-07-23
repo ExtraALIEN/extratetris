@@ -84,7 +84,6 @@ class LoginForm(forms.Form):
 
     def clean_login(self):
         input = self.cleaned_data['login']
-        print(input)
         return input
 
     def save(self):

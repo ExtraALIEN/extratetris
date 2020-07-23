@@ -67,7 +67,7 @@ function sendSensorCommand(elem){
   let sensorData = elem.dataset.command;
   if (elem.dataset.command === 'use') {
     let total = [...document.querySelectorAll('.tetris-view')].length;
-    sensorData = `Numpad${Math.floor(randomNumberInRange(1,total+1))}`;
+    sensorData = `Numpad${elem.dataset.to}`;
   }
   controlField({'code': null}, sensorData=sensorData);
   if(!elem.timer){
@@ -89,6 +89,8 @@ function activateSensorControls(){
     x.addEventListener('touchstart', sensorControlField);
     x.addEventListener('touchend', sensorControlField);
   }
+  let rotateButton = document.getElementById('rotate');
+  rotateButton.addEventListener('touchstart', setNextTarget);
 }
 
 function deactivateSensorControls(){
@@ -98,6 +100,14 @@ function deactivateSensorControls(){
     x.removeEventListener('touchstart', sensorControlField);
     x.removeEventListener('touchend', sensorControlField);
   }
+  let rotateButton = document.getElementById('rotate');
+  rotateButton.removeEventListener('touchstart', setNextTarget);
+}
+
+function setNextTarget(event){
+  let use = document.getElementById('use');
+  use.dataset.to = +use.dataset.to % 4 + 1;
+  use.querySelector('span').innerHTML = use.dataset.to;
 }
 
 function changePowerup(next){
