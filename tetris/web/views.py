@@ -212,9 +212,9 @@ def top_results(request, mode='score'):
         scripts = ['top']
         css = ['top']
         return render(request, 'web/top.html', {'mode': mode,
-                                                'type_mode': types[mode],
+                                                'type_mode': TOP_TYPES[mode],
                                                 'players': players,
-                                                'types': types,
+                                                'types': TOP_TYPES,
                                                 'scripts': scripts,
                                                 'css': css})
     return HttpResponseRedirect('/')
