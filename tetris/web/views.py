@@ -68,7 +68,7 @@ def login(request):
             if key:
                 response = HttpResponseRedirect('/')
                 response.set_cookie('session_key', key,
-                                    domain='localhost',
+                                    # domain='localhost',
                                     httponly=True,
                                     expires=timezone.now()+timedelta(days=5))
                 return response

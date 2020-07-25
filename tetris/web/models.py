@@ -117,7 +117,7 @@ class Player(models.Model, metaclass=PlayerMetaclass):
         key = auto_login(self)
         response = HttpResponseRedirect(url)
         response.set_cookie('session_key', key,
-                            domain='localhost',
+                            # domain='localhost',
                             httponly=True,
                             expires=timezone.now()+timedelta(days=5))
         return response
