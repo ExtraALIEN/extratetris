@@ -147,7 +147,7 @@ let botLevels = document.querySelectorAll('.bot-level input');
 for (let x of [...botLevels]){
   x.addEventListener('change', limitLevel);
 }
-let conn = new WebSocket('ws://localhost/ws/connect/');
+let conn = new WebSocket(`ws://${location.host}/ws/connect/`);
 
 
 

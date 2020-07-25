@@ -49,6 +49,6 @@ function updateRoom(event){
   }
 }
 
-let conn = new WebSocket('ws://localhost/ws/lobby/');
+let conn = new WebSocket(`ws://${location.host}/ws/lobby/`);
 
 conn.onmessage = updateRoom;

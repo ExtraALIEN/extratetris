@@ -86,7 +86,7 @@
   top:0;
   bottom:0;
   left: -8.33333%;
-  background-image: url("http://localhost/static/pic/flag.png");
+  background-image: url("/static/pic/flag.png");
   background-size: 100% 100%;
 }
 
@@ -408,91 +408,91 @@
 }
 
 .cell.powerup-1::before{
-  background-image: url("http://localhost/static/pic/1.png");
+  background-image: url("/static/pic/1.png");
 }
 
 .cell.powerup-2::before{
-  background-image: url("http://localhost/static/pic/2.png");
+  background-image: url("/static/pic/2.png");
 }
 
 .cell.powerup-3::before{
-  background-image: url("http://localhost/static/pic/3.png");
+  background-image: url("/static/pic/3.png");
 }
 
 .cell.powerup-4::before{
-  background-image: url("http://localhost/static/pic/4.png");
+  background-image: url("/static/pic/4.png");
 }
 
 .cell.powerup-5::before{
-  background-image: url("http://localhost/static/pic/5.png");
+  background-image: url("/static/pic/5.png");
 }
 
 .cell.powerup-6::before{
-  background-image: url("http://localhost/static/pic/6.png");
+  background-image: url("/static/pic/6.png");
 }
 
 .cell.powerup-7::before{
-  background-image: url("http://localhost/static/pic/7.png");
+  background-image: url("/static/pic/7.png");
 }
 
 .cell.powerup-8::before{
-  background-image: url("http://localhost/static/pic/8.png");
+  background-image: url("/static/pic/8.png");
 }
 .cell.powerup-9::before{
-  background-image: url("http://localhost/static/pic/9.png");
+  background-image: url("/static/pic/9.png");
 }
 
 .cell.powerup-10::before{
-  background-image: url("http://localhost/static/pic/10.png");
+  background-image: url("/static/pic/10.png");
 }
 
 .cell.powerup-11::before{
-  background-image: url("http://localhost/static/pic/11.png");
+  background-image: url("/static/pic/11.png");
 }
 
 .cell.powerup-12::before{
-  background-image: url("http://localhost/static/pic/12.png");
+  background-image: url("/static/pic/12.png");
 }
 
 .cell.powerup-13::before{
-  background-image: url("http://localhost/static/pic/13.png");
+  background-image: url("/static/pic/13.png");
 }
 
 .cell.powerup-14::before{
-  background-image: url("http://localhost/static/pic/14.png");
+  background-image: url("/static/pic/14.png");
 }
 
 .cell.powerup-15::before{
-  background-image: url("http://localhost/static/pic/15.png");
+  background-image: url("/static/pic/15.png");
 }
 
 .cell.powerup-16::before{
-  background-image: url("http://localhost/static/pic/16.png");
+  background-image: url("/static/pic/16.png");
 }
 
 .cell.powerup-17::before{
-  background-image: url("http://localhost/static/pic/17.png");
+  background-image: url("/static/pic/17.png");
 }
 
 .cell.powerup-18::before{
-  background-image: url("http://localhost/static/pic/18.png");
+  background-image: url("/static/pic/18.png");
 }
 
 .cell.powerup-19::before{
-  background-image: url("http://localhost/static/pic/19.png");
+  background-image: url("/static/pic/19.png");
 }
 
 .cell.powerup-20::before{
-  background-image: url("http://localhost/static/pic/20.png");
+  background-image: url("/static/pic/20.png");
 }
 
 .cell.powerup-21::before{
-  background-image: url("http://localhost/static/pic/21.png");
+  background-image: url("/static/pic/21.png");
 }
 
 .cell.blind{
   z-index: 10;
-  background-image: url("http://localhost/static/pic/blind.png");
+  background-image: url("/static/pic/blind.png");
   border: none;
   background-size: 80px 80px;
   animation: floating 1s infinite linear;
@@ -529,7 +529,7 @@
 }
 
 .queue.blind > div{
-  background-image: url("http://localhost/static/pic/blind.png");
+  background-image: url("/static/pic/blind.png");
   border: none;
   background-size: 80px 80px;
   animation: floating 1s infinite linear;
@@ -775,87 +775,87 @@
 }
 
 .powerups .powerup-1{
-  background-image: url("http://localhost/static/pic/1.png");
+  background-image: url("/static/pic/1.png");
 }
 
 .powerups .powerup-2{
-  background-image: url("http://localhost/static/pic/2.png");
+  background-image: url("/static/pic/2.png");
 }
 
 .powerups .powerup-3{
-  background-image: url("http://localhost/static/pic/3.png");
+  background-image: url("/static/pic/3.png");
 }
 
 .powerups .powerup-4{
-  background-image: url("http://localhost/static/pic/4.png");
+  background-image: url("/static/pic/4.png");
 }
 
 .powerups .powerup-5{
-  background-image: url("http://localhost/static/pic/5.png");
+  background-image: url("/static/pic/5.png");
 }
 
 .powerups .powerup-6{
-  background-image: url("http://localhost/static/pic/6.png");
+  background-image: url("/static/pic/6.png");
 }
 
 .powerups .powerup-7{
-  background-image: url("http://localhost/static/pic/7.png");
+  background-image: url("/static/pic/7.png");
 }
 
 .powerups .powerup-8{
-  background-image: url("http://localhost/static/pic/8.png");
+  background-image: url("/static/pic/8.png");
 }
 
 .powerups .powerup-9{
-  background-image: url("http://localhost/static/pic/9.png");
+  background-image: url("/static/pic/9.png");
 }
 
 .powerups .powerup-10{
-  background-image: url("http://localhost/static/pic/10.png");
+  background-image: url("/static/pic/10.png");
 }
 
 .powerups .powerup-11{
-  background-image: url("http://localhost/static/pic/11.png");
+  background-image: url("/static/pic/11.png");
 }
 
 .powerups .powerup-12{
-  background-image: url("http://localhost/static/pic/12.png");
+  background-image: url("/static/pic/12.png");
 }
 
 .powerups .powerup-13{
-  background-image: url("http://localhost/static/pic/13.png");
+  background-image: url("/static/pic/13.png");
 }
 
 .powerups .powerup-14{
-  background-image: url("http://localhost/static/pic/14.png");
+  background-image: url("/static/pic/14.png");
 }
 
 .powerups .powerup-15{
-  background-image: url("http://localhost/static/pic/15.png");
+  background-image: url("/static/pic/15.png");
 }
 
 .powerups .powerup-16{
-  background-image: url("http://localhost/static/pic/16.png");
+  background-image: url("/static/pic/16.png");
 }
 
 .powerups .powerup-17{
-  background-image: url("http://localhost/static/pic/17.png");
+  background-image: url("/static/pic/17.png");
 }
 
 .powerups .powerup-18{
-  background-image: url("http://localhost/static/pic/18.png");
+  background-image: url("/static/pic/18.png");
 }
 
 .powerups .powerup-19{
-  background-image: url("http://localhost/static/pic/19.png");
+  background-image: url("/static/pic/19.png");
 }
 
 .powerups .powerup-20{
-  background-image: url("http://localhost/static/pic/20.png");
+  background-image: url("/static/pic/20.png");
 }
 
 .powerups .powerup-21{
-  background-image: url("http://localhost/static/pic/21.png");
+  background-image: url("/static/pic/21.png");
 }
 
 .powerups .time-12{
