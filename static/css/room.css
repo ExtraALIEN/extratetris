@@ -17,7 +17,7 @@
   animation: flick .2s infinite alternate;
 }
 
-.soundcontrol{
+.soundcontrol, .vibcontrol{
   position: absolute;
   top: 1rem;
   right:1rem;
@@ -28,7 +28,13 @@
   cursor: pointer;
 }
 
-.soundcontrol.mute{
+.vibcontrol{
+  display: none;
+  right: 5rem;
+  background-image: url('/static/pic/vib.png');
+}
+
+.soundcontrol.mute, .vibcontrol.mute{
   opacity: .4;
 }
 
@@ -926,10 +932,11 @@
 .touchscreen-controls{
     display: none;
     position: fixed;
-    top: 78vh;
+    top: 75vh;
     left: 5vw;
-    width: 60vw;
+    width: 90vw;
     height: 20vh;
+    opacity: .75;
 }
 
 .touchscreen-controls > div{
@@ -939,8 +946,10 @@
 .touchscreen-controls .round{
     border-bottom: 2px solid #5e4507;
     border-radius: 50%;
-    width: 6vh;
-    height: 6vh;
+    width: 10vh;
+    height: 10vh;
+    max-width: 7rem;
+    max-height: 7rem;
     background-image: radial-gradient(circle, #ba8d1a, #000000);
 }
 
@@ -950,32 +959,34 @@
 }
 
 .touchscreen-controls .left{
-  top: 25%;
-  left: 10%;
+  top: 20%;
+  left: 0;
 }
 
 .touchscreen-controls .right{
-  top: 25%;
-  left: 40%;
+  top: 20%;
+  left: 30%;
 }
 
 .touchscreen-controls .down{
   top: 55%;
-  left: 25%;
+  left: 15%;
 }
 
 .touchscreen-controls .rotate{
-  top: 30%;
+  top: 20%;
   left: 70%;
-  width: 10vh;
-  height: 10vh;
+  width: 15vh;
+  height: 15vh;
+  max-width: 10.5rem;
+  max-height: 10.5rem;
 }
 
 .touchscreen-controls .select, .touchscreen-controls .use{
   background-image: radial-gradient(circle, #baa51a, #000000);
   border-bottom: 2px solid #5e4e07;
   top: 5%;
-  left: 60%;
+  left: 65%;
   width: 5vh;
   height: 2vh;
 }
@@ -1100,20 +1111,29 @@
     font-size: 2rem;
   }
 
-  .touchscreen-controls.show{
+  .touchscreen-controls.show, .vibcontrol{
       display: block;
-      top: 88vh;
-      left: 25vw;
-      width: 50vw;
-      height: 10vh;
   }
 
-  .touchscreen-controls .left, .touchscreen-controls .right, .touchscreen-controls .rotate, .touchscreen-controls .select{
+  .touchscreen-controls .left, .touchscreen-controls .right{
     top: 5%;
   }
 
-  .touchscreen-controls .down.touchscreen-controls .use{
-    top: 25%;
+  .touchscreen-controls .left{
+    left: 0;
+  }
+
+  .touchscreen-controls .down{
+    left: 10%;
+    top: 50%;
+  }
+
+  .touchscreen-controls .right{
+    left: 20%;
+  }
+
+  .touchscreen-controls .rotate, .touchscreen-controls .select{
+    top: 20%;
   }
 
   .touchscreen-controls .use{
@@ -1210,7 +1230,7 @@
     background-position: 50% 20%;
   }
 
-  .touchscreen-controls.show{
+  .touchscreen-controls.show, .vibcontrol{
     display: block;
   }
 }

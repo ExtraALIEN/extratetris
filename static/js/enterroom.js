@@ -40,7 +40,7 @@ function getReady(){
 
 function copyURL(event){
   let textArea = document.createElement("textarea");
-  textArea.value = event.target.dataset.url;
+  textArea.value = `${location.host}${event.target.dataset.url}`;
   textArea.style.color = 'transparent';
   document.body.appendChild(textArea);
   textArea.focus();

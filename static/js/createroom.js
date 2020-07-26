@@ -103,7 +103,7 @@ function checkCrazy(event){
   }
 }
 
-let conn = new WebSocket(`ws://${location.host}/ws/create/`;
+let conn = new WebSocket(`ws://${location.host}/ws/create/`);
 
 conn.onmessage = function(event){
 };

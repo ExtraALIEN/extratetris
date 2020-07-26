@@ -1,4 +1,4 @@
-import {randomNumberInRange, TETRIS_SOUNDS} from './utils.js';
+import {randomNumberInRange, TETRIS_SOUNDS, TETRIS_SETTINGS} from './utils.js';
 
 function createSoundSources(){
   vol['main'] = ctx.createGain();
@@ -40,28 +40,32 @@ function playSound({pos, file, speed=0}){
   }
 }
 
-function initSoundControl(){
-  let btn = document.querySelector('.soundcontrol');
-  btn.addEventListener('click', toggleMute);
+function initSettingsControl(prop){
+  let btn = document.querySelector(`.${prop}control`);
+  btn.addEventListener('click', toggleMute(prop));
   document.body.addEventListener('keydown', function(event){
-    if (event.code === 'KeyM') {
-      toggleMute();
+    if (event.code === TETRIS_SETTINGS[prop]) {
+      toggleMute(event, prop);
     }
   });
-  let stored = localStorage.getItem('sound');
+  let stored = localStorage.getItem(prop);
   if (!stored){
-    localStorage.setItem('sound', 'on');
+    localStorage.setItem(prop, 'on');
   } else if (stored === 'off'){
-    toggleMute(null, false);
+    toggleMute(prop)(null, false);
   }
 }
 
-function toggleMute(event, manual=true){
-  let btn = document.querySelector('.soundcontrol');
-  btn.classList.toggle('mute');
-  vol['main'].gain.setValueAtTime(+(!vol['main'].gain.value), ctx.currentTime);
-  if (manual) {
-    localStorage.setItem('sound', localStorage.getItem('sound') === 'on' ? 'off': 'on');
+function toggleMute(prop){
+  return function(event, manual=true){
+    let btn = document.querySelector(`.${prop}control`);
+    btn.classList.toggle('mute');
+    if (prop === 'sound'){
+      vol['main'].gain.setValueAtTime(+(!vol['main'].gain.value), ctx.currentTime);
+    }
+    if (manual) {
+      localStorage.setItem(prop, localStorage.getItem(prop) === 'on' ? 'off': 'on');
+    }
   }
 }
 
@@ -70,6 +74,7 @@ let vol = {};
 let uncontinousSound = {};
 createSoundSources();
 let soundBank = loadSounds();
-initSoundControl();
+initSettingsControl('sound');
+initSettingsControl('vib');
 
 export {playSound};

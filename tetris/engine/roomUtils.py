@@ -83,6 +83,7 @@ def init_room(conn, data):
                 conn.send_json(upd)
             if field.game_over:
                 msg = {'type': 'game-over',
+                       'mode': room.type,
                        'pos': field.pos,
                        'username': field.start_player.username,
                        'stats': field.game_stats_to_view(),

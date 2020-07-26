@@ -11,7 +11,7 @@
   <div class='room-number'>
    <h2>
       <span data-room-number='{{room.room_id}}' id='room-number'> Room: {{room.room_id}}</span>
-      <span id='copy-url' data-url='extratetris.ru{{room.get_url}}'>Click here to copy URL</span>
+      <span id='copy-url' data-url='{{room.get_url}}'>Click here to copy URL</span>
       <span data-room-type='{{room.type}}' id='room-type'>Type: {{room.type}}</span>
       {% if limited %}
       <span data-limit='{{room.get_volume}}' id='room-limit'> Limit : {{room.get_volume}}</span>
@@ -20,9 +20,10 @@
   </div>
 {% endblock %}
 
-{% block soundcontrol %}
+{% block settings %}
   <div class='soundcontrol'>
-
+  </div>
+  <div class='vibcontrol'>
   </div>
 {% endblock %}
 

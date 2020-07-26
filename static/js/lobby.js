@@ -143,8 +143,8 @@ function showGameover({pos, stats, mode, username, silent}){
     else if (cell.classList.contains('timing')){
       val = secondsToMinutes(val, cell.classList.contains('dec'));
     }
-    else if (cell.parentElement.classList.contains('main-value') &&
-            ['SU', 'LI', 'SA', 'DR', 'AC', 'HF'].includes(mode)){
+    else if (x === 'result' &&
+      ['SU', 'LI', 'SA', 'DR', 'AC', 'HF'].includes(mode)){
       val = secondsToMinutes(val, mode !== 'SU');
     }
     else if (val %1 !== 0){

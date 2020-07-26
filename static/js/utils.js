@@ -205,6 +205,11 @@ const TETRIS_SOUNDS = {
     'uncSounds': ['move', 'rotate', 'select']
 };
 
+const TETRIS_SETTINGS = {
+  'sound': 'KeyM',
+  'vib:': 'KeyV'
+};
+
 function addLeadingZeroes(num, digits){
   num = num + '';
   while(num.length < digits){
@@ -251,5 +256,6 @@ function deepUpdate(acc, cur){
   }
 }
 
-export {TETRIS_VALUES, TETRIS_COLORS, TETRIS_SOUNDS, addLeadingZeroes, randomNumberInRange, secondsToMinutes,
+export {TETRIS_VALUES, TETRIS_COLORS, TETRIS_SOUNDS, TETRIS_SETTINGS,
+addLeadingZeroes, randomNumberInRange, secondsToMinutes,
 deepUpdate, secondsToHours};

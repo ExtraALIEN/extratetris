@@ -1,5 +1,6 @@
 import {playSound} from './sound.js';
 import {TETRIS_VALUES , randomNumberInRange} from './utils.js';
+import {makeVibrate} from './vib.js';
 
 function activateControls(){
   document.body.addEventListener('keydown', controlField);
@@ -18,6 +19,7 @@ function controlField(event, sensorData=''){
   }
   if (sensorData !== ''){
     c = sensorData;
+    makeVibrate(100);
   }
   let msg = {'type': 'control'};
   if (c === 'Numpad0' || c === 'KeyQ'){
@@ -102,6 +104,7 @@ function deactivateSensorControls(){
   }
   let rotateButton = document.getElementById('rotate');
   rotateButton.removeEventListener('touchstart', setNextTarget);
+  makeVibrate(0);
 }
 
 function setNextTarget(event){

@@ -242,3 +242,9 @@ button {
     font-size: 8px;
   }
 }
+
+@media screen and (max-width: 400px) and (orientation: portrait){
+  html {
+    font-size: 6px;
+  }
+}
